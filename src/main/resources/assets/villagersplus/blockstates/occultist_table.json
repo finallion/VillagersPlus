@@ -1,0 +1,24 @@
+{
+  "variants": {
+    "filling=0": {
+      "model": "villagersplus:block/occultist_workstation"
+    },
+    "filling=1": {
+      "model": "villagersplus:block/occultist_workstation_filled_01"
+    },
+    "filling=2": {
+      "model": "villagersplus:block/occultist_workstation_filled_02"
+    },
+    "filling=3": {
+      "model": "villagersplus:block/occultist_workstation_filled_03"
+    },
+    "filling=4": {
+      "model": "villagersplus:block/occultist_workstation_filled_04"
+    },
+    "filling=5": {
+      "model": "villagersplus:block/occultist_workstation_filled_05"
+    }
+  }
+}
+
+

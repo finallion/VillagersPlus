@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": {
+      "item": "minecraft:glass"
+    },
+    "#": {
+      "item": "minecraft:cobbled_deepslate"
+    }
+  },
+  "pattern": [
+    " X ",
+    " X ",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:alchemist_table"
+  }
+}

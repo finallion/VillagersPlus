@@ -1,0 +1,249 @@
+{
+  "variants": {
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=true,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_full_0"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_3"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=false,facing=north": {
+      "model": "villagersplus:block/alchemist_workstation_empty_0"
+    },
+
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=true,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_full_0"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_3"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=false,facing=east": {
+      "y": 90,
+      "model": "villagersplus:block/alchemist_workstation_empty_0"
+    },
+
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=true,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_full_0"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_3"
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_2"
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_1"
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=false,facing=west": {
+      "y": 270,
+      "model": "villagersplus:block/alchemist_workstation_empty_0"
+    },
+
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_2",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_2",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_2",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_1",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_1",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_1",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=true,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_full_0",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=true,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_3",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=true,has_bottle_2=false,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=true,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=true,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_2",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=true,has_bottle_2=false,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1",
+      "y": 180
+    },
+    "has_bottle_0=true,has_bottle_1=false,has_bottle_2=false,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=true,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_1",
+      "y": 180
+    },
+    "has_bottle_0=false,has_bottle_1=false,has_bottle_2=false,extended=false,facing=south": {
+      "model": "villagersplus:block/alchemist_workstation_empty_0",
+      "y": 180
+    }
+  }
+}
+
+

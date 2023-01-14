@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": {
+      "item": "minecraft:stripped_warped_stem"
+    },
+    "Y": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:warped_horticulturist_table"
+  }
+}

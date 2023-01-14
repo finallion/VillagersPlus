@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": {
+      "item": "minecraft:stripped_crimson_stem"
+    },
+    "Y": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:crimson_horticulturist_table"
+  }
+}

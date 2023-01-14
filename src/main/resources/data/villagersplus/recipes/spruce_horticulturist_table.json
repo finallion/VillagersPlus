@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": {
+      "item": "minecraft:stripped_spruce_log"
+    },
+    "Y": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:spruce_horticulturist_table"
+  }
+}

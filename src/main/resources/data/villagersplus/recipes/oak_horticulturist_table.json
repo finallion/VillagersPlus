@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": {
+      "item": "minecraft:stripped_oak_log"
+    },
+    "Y": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:oak_horticulturist_table"
+  }
+}

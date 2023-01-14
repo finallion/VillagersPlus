@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": {
+      "item": "minecraft:stripped_birch_log"
+    },
+    "Y": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "item": "villagersplus:birch_horticulturist_table"
+  }
+}

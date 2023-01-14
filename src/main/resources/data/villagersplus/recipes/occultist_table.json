@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "Y": {
+      "item": "minecraft:amethyst_block"
+    },
+    "#": {
+      "item": "minecraft:calcite"
+    },
+    "X": {
+      "item": "minecraft:smooth_basalt"
+    }
+  },
+  "pattern": [
+    "###",
+    " Y ",
+    "XXX"
+  ],
+  "result": {
+    "item": "villagersplus:occultist_table"
+  }
+}

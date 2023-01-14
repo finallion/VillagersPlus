@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.finallion.villagersplus.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EntityBucketItemMixin",
+    "StructurePoolAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

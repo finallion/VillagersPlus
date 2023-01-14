@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "villagersplus",
+  "version": "1.0",
+
+  "name": "Villagers Plus",
+  "description": "New villagers, new trades and new beautiful and useful workstations.",
+  "authors": [
+    "Finallion"
+  ],
+  "contact": {
+    "homepage": "https://github.com/finallion",
+    "sources": ""
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/villagersplus/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.finallion.villagersplus.VillagersPlus"
+    ],
+    "client": [
+      "com.finallion.villagersplus.client.VillagersPlusClient"
+    ]
+  },
+  "mixins": [
+    "villagersplus.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric-api": "*",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

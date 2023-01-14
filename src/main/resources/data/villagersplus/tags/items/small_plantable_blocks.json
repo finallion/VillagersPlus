@@ -1,0 +1,42 @@
+{
+  "values": [
+    "#minecraft:small_flowers",
+    "#minecraft:saplings",
+    "minecraft:fern",
+    "minecraft:grass",
+    "minecraft:bamboo",
+    "minecraft:dead_bush",
+    "minecraft:mangrove_propagule",
+    "minecraft:red_mushroom",
+    "minecraft:brown_mushroom",
+    "minecraft:sweet_berries",
+
+    "minecraft:crimson_fungus",
+    "minecraft:warped_fungus",
+    "minecraft:crimson_roots",
+    "minecraft:warped_roots",
+    "minecraft:nether_sprouts",
+    "minecraft:twisting_vines",
+
+    "minecraft:dead_tube_coral",
+    "minecraft:dead_brain_coral",
+    "minecraft:dead_bubble_coral",
+    "minecraft:dead_fire_coral",
+    "minecraft:dead_horn_coral",
+    "minecraft:tube_coral",
+    "minecraft:brain_coral",
+    "minecraft:bubble_coral",
+    "minecraft:fire_coral",
+    "minecraft:horn_coral",
+    "minecraft:dead_tube_coral_fan",
+    "minecraft:dead_brain_coral_fan",
+    "minecraft:dead_bubble_coral_fan",
+    "minecraft:dead_fire_coral_fan",
+    "minecraft:dead_horn_coral_fan",
+    "minecraft:tube_coral_fan",
+    "minecraft:brain_coral_fan",
+    "minecraft:bubble_coral_fan",
+    "minecraft:fire_coral_fan",
+    "minecraft:horn_coral_fan"
+  ]
+}
