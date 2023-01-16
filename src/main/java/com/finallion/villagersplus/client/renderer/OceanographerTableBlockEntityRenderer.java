@@ -3,46 +3,41 @@ package com.finallion.villagersplus.client.renderer;
 import com.finallion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.finallion.villagersplus.blocks.OceanographerTableBlock;
 import com.finallion.villagersplus.init.ModTags;
+import com.finallion.villagersplus.mixin.TropicalFishEntityInvoker;
 import com.finallion.villagersplus.util.DuckBucketable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CoralFanBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.AxolotlEntityRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.*;
 import net.minecraft.client.render.entity.model.AxolotlEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EntityModels;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EntityBucketItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
-
-import java.util.function.Function;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class OceanographerTableBlockEntityRenderer implements BlockEntityRenderer<OceanographerTableBlockEntity> {
     private final BlockRenderManager manager;
     private final EntityRenderDispatcher entityRenderDispatcher;
+    private final MinecraftClient minecraft;
     private float[] xOffset = new float[]{0.06F, 1.5F, 1.3F, 0.1F};
     private final float[] yOffsetNorth = new float[]{0.45F, 0.75F, 0.3F, 0.45F};
     private final float[] yOffsetSouth = new float[]{0.75F, 0.45F, 0.45F, 0.3F};
@@ -54,6 +49,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
     private float[] zOffsetFan = new float[]{0.17F, 1.25F, 0.3F, 1.2F};
 
     public OceanographerTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.minecraft = MinecraftClient.getInstance();
         this.manager = ctx.getRenderManager();
         this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
     }
@@ -109,15 +105,20 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
             }
 
 
+
             ItemStack itemStack = defaultedList.get(4);
             if (itemStack.getItem() instanceof EntityBucketItem bucketItem) {
                 Entity fish = ((DuckBucketable) bucketItem).getEntityType().create(world);
 
                 if (fish != null && itemStack.getNbt() != null) {
+                    fish.readNbt(itemStack.getOrCreateNbt());
+
                     if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
-                        ((TropicalFishEntity) fish).setVariant(itemStack.getNbt().getInt("BucketVariantTag"));
-                    } else {
-                        fish.readNbt(itemStack.getOrCreateNbt());
+                        int id = itemStack.getNbt().getInt("BucketVariantTag");
+                        DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
+                        DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
+                        TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
+                        ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
                     }
                 }
 
@@ -135,13 +136,13 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                     k += k * k;
                     matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
 
-                    matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation));
-                    Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
+                    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+                    Vector3f vec3f = new Vector3f(0.5F, 1.0F, 0.5F);
                     vec3f.normalize();
-                    matrixStack.multiply(vec3f.getDegreesQuaternion(h));
+                    matrixStack.multiply((new Quaternionf()).rotationAxis(h * 0.017453292F, vec3f));
 
                     if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
-                        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
                     }
 
                     matrixStack.scale(g, g, g);
@@ -160,12 +161,15 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
                 matrixStack.pop();
             }
-
         }
     }
 
     private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
         this.manager.getModelRenderer().render(world, this.manager.getModel(coral.getDefaultState()), coral.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), coral.getDefaultState().getRenderingSeed(pos), overlay);
+    }
+
+    public EntityRendererFactory.Context getEntityRenderer() {
+        return new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), minecraft.getEntityRenderDispatcher().getHeldItemRenderer(), minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer);
     }
 
 }

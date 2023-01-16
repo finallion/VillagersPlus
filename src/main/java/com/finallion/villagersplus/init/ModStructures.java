@@ -2,6 +2,11 @@ package com.finallion.villagersplus.init;
 
 import com.finallion.villagersplus.mixin.StructurePoolAccessor;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePool;
@@ -9,15 +14,12 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ModStructures {
-    private static final RegistryKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = RegistryKey.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, new Identifier("minecraft", "empty"));
+    private static final RegistryKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier("minecraft", "empty"));
     private static final Identifier plainsPoolLocation = new Identifier("minecraft:village/plains/houses");
     private static final Identifier desertPoolLocation = new Identifier("minecraft:village/desert/houses");
     private static final Identifier savannaPoolLocation = new Identifier("minecraft:village/savanna/houses");
@@ -25,8 +27,8 @@ public class ModStructures {
     private static final Identifier taigaPoolLocation = new Identifier("minecraft:village/taiga/houses");
 
     public static void registerJigsaws(MinecraftServer server) {
-        Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().get(Registry.STRUCTURE_POOL_KEY);
-        Registry<StructureProcessorList> processorListRegistry = server.getRegistryManager().get(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+        Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().get(RegistryKeys.TEMPLATE_POOL);
+        Registry<StructureProcessorList> processorListRegistry = server.getRegistryManager().get(RegistryKeys.PROCESSOR_LIST);
 
         addBuildingToPool(templatePoolRegistry, processorListRegistry, plainsPoolLocation, "villagersplus:village/plains/plains_alchemist", 10);
         addBuildingToPool(templatePoolRegistry, processorListRegistry, plainsPoolLocation, "villagersplus:village/plains/plains_oceanographer", 10);

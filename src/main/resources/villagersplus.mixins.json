@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "EntityBucketItemMixin",
-    "StructurePoolAccessor"
+    "StructurePoolAccessor",
+    "TropicalFishEntityInvoker"
   ],
   "client": [
   ],

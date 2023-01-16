@@ -306,7 +306,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
                 }
             }
         } else {
-            world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 3.0F, Explosion.DestructionType.NONE);
+            world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 3.0F, World.ExplosionSourceType.NONE);
             slots.set(0, ItemStack.EMPTY);
             slots.set(1, ItemStack.EMPTY);
             slots.set(2, ItemStack.EMPTY);

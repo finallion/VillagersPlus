@@ -8,8 +8,8 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 
@@ -35,7 +35,7 @@ public class SellPotionItemFactory implements TradeOffers.Factory {
 
     public TradeOffer create(Entity entity, Random random) {
         ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
-        List<Potion> list = (List) Registry.POTION.stream().filter((potionx) -> {
+        List<Potion> list = (List) Registries.POTION.stream().filter((potionx) -> {
             return !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potionx);
         }).collect(Collectors.toList());
 
