@@ -75,12 +75,13 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
 
                     return ActionResult.success(world.isClient);
-                } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 2) {
+                } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
+                    blockEntity.insertCoral(itemStack, 4);
+
                     if (!player.isCreative()) {
                         itemStack.decrement(1);
                     }
 
-                    blockEntity.insertCoral(itemStack, 4);
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(FISH, state.get(FISH) + 1), 3);
