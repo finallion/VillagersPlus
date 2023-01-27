@@ -52,11 +52,11 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
         if (world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity && state.get(FLOWERS) < 4) {
             if (itemStack.isIn(ModTags.TALL_PLANTABLE_BLOCKS) && state.get(FLOWERS) == 0) {
+                blockEntity.insertFlower(itemStack, state.get(FLOWERS));
+
                 if (!player.isCreative()) {
                     itemStack.decrement(1);
                 }
-
-                blockEntity.insertFlower(itemStack, state.get(FLOWERS));
                 if (!world.isClient()) {
                     world.setBlockState(pos, state.with(FLOWERS, 4).with(IS_TALL_FLOWER, true), 3);
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -64,11 +64,11 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
                 return ActionResult.success(world.isClient);
             } else if (itemStack.isIn(ModTags.SMALL_PLANTABLE_BLOCKS)) {
+                blockEntity.insertFlower(itemStack, state.get(FLOWERS));
+
                 if (!player.isCreative()) {
                     itemStack.decrement(1);
                 }
-
-                blockEntity.insertFlower(itemStack, state.get(FLOWERS));
                 if (!world.isClient()) {
                     world.setBlockState(pos, state.with(FLOWERS, state.get(FLOWERS) + 1).with(IS_TALL_FLOWER, false), 3);
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
