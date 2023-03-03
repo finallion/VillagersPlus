@@ -18,8 +18,9 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
     private final BlockRenderManager manager;
@@ -147,15 +148,15 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     private void renderFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
-        this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState()), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), flower.getDefaultState().getRenderingSeed(pos), overlay);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState()), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, new Random(), flower.getDefaultState().getRenderingSeed(pos), overlay);
     }
 
 
     private void renderTallFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean lower, int overlay) {
         if (lower) {
-            this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), flower.getDefaultState().getRenderingSeed(pos), overlay);
+            this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, new Random(), flower.getDefaultState().getRenderingSeed(pos), overlay);
         } else {
-            this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.UPPER)), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), flower.getDefaultState().getRenderingSeed(pos), overlay);
+            this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.UPPER)), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, new Random(), flower.getDefaultState().getRenderingSeed(pos), overlay);
         }
     }
 }

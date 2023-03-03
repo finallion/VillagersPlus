@@ -31,11 +31,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 public class OccultistTableBlock extends WorkstationBlock {
     public static final IntProperty FILLING;
@@ -121,7 +121,7 @@ public class OccultistTableBlock extends WorkstationBlock {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
-                this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
+                this.dropExperience((ServerWorld) world, pos, table.getLevels());
             }
 
             super.onStateReplaced(state, world, pos, newState, moved);

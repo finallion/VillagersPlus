@@ -25,8 +25,8 @@ public class ModPointOfInterestType {
                 ModBlocks.BIRCH_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.JUNGLE_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.ACACIA_HORTICULTURIST_TABLE_BLOCK,
-                ModBlocks.SPRUCE_HORTICULTURIST_TABLE_BLOCK,
-                ModBlocks.MANGROVE_HORTICULTURIST_TABLE_BLOCK);
+                ModBlocks.SPRUCE_HORTICULTURIST_TABLE_BLOCK);
+                //ModBlocks.MANGROVE_HORTICULTURIST_TABLE_BLOCK);
         OCCULTIST_POI = PointOfInterestHelper.register(new Identifier(VillagersPlus.MOD_ID,"occultist"), 1, 1, ModBlocks.OCCULTIST_TABLE_BLOCK);
         OCEANOGRAPHER_POI = PointOfInterestHelper.register(new Identifier(VillagersPlus.MOD_ID,"oceanographer"), 1, 1, ModBlocks.OCEANOGRAPHER_TABLE_BLOCK);
         ALCHEMIST_POI = PointOfInterestHelper.register(new Identifier(VillagersPlus.MOD_ID,"alchemist"), 1, 1, ModBlocks.ALCHEMIST_TABLE_BLOCK);

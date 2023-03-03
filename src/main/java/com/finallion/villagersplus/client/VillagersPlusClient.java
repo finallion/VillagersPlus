@@ -16,8 +16,6 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.particle.SonicBoomParticle;
-import net.minecraft.client.particle.WaterSuspendParticle;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -44,7 +42,6 @@ public class VillagersPlusClient implements ClientModInitializer {
                 ModBlocks.ACACIA_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.SPRUCE_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.JUNGLE_HORTICULTURIST_TABLE_BLOCK,
-                ModBlocks.MANGROVE_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.CRIMSON_HORTICULTURIST_TABLE_BLOCK,
                 ModBlocks.WARPED_HORTICULTURIST_TABLE_BLOCK
         );

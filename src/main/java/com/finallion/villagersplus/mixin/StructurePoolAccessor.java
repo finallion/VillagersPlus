@@ -20,5 +20,5 @@ public interface StructurePoolAccessor {
     void setRawTemplates(List<Pair<StructurePoolElement, Integer>> elementCounts);
 
     @Accessor("elements")
-    ObjectArrayList<StructurePoolElement> getTemplates();
+    List<StructurePoolElement> getTemplates();
 }

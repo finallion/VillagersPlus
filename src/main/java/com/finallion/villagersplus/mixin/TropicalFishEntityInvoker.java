@@ -6,7 +6,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(TropicalFishEntity.class)
 public interface TropicalFishEntityInvoker {
-
+/*
     @Invoker("setTropicalFishVariant")
     public void setTropicalFishVariantMixin(int variant);
+
+ */
 }

@@ -27,16 +27,14 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+
+import java.util.Random;
 
 public class OceanographerTableBlockEntityRenderer implements BlockEntityRenderer<OceanographerTableBlockEntity> {
     private final BlockRenderManager manager;
-    private final EntityRenderDispatcher entityRenderDispatcher;
     private final MinecraftClient minecraft;
     private float[] xOffset = new float[]{0.06F, 1.5F, 1.3F, 0.1F};
     private final float[] yOffsetNorth = new float[]{0.45F, 0.75F, 0.3F, 0.45F};
@@ -51,7 +49,6 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
     public OceanographerTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.minecraft = MinecraftClient.getInstance();
         this.manager = ctx.getRenderManager();
-        this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
     }
 
     public void render(OceanographerTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -115,10 +112,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
                     if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
                         int id = itemStack.getNbt().getInt("BucketVariantTag");
-                        DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
-                        DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
-                        TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
-                        ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
+                        ((TropicalFishEntity) fish).setVariant(id);
                     }
                 }
 
@@ -136,13 +130,13 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                     k += k * k;
                     matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
 
-                    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
-                    Vector3f vec3f = new Vector3f(0.5F, 1.0F, 0.5F);
+                    matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation));
+                    Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
                     vec3f.normalize();
-                    matrixStack.multiply((new Quaternionf()).rotationAxis(h * 0.017453292F, vec3f));
+                    matrixStack.multiply(vec3f.getDegreesQuaternion(h));
 
                     if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
-                        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+                        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
                     }
 
                     matrixStack.scale(g, g, g);
@@ -156,7 +150,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                         f = 0.0F;
                     }
 
-                    this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+                    MinecraftClient.getInstance().getEntityRenderDispatcher().render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
                 }
 
                 matrixStack.pop();
@@ -165,12 +159,9 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
     }
 
     private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
-        this.manager.getModelRenderer().render(world, this.manager.getModel(coral.getDefaultState()), coral.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), coral.getDefaultState().getRenderingSeed(pos), overlay);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(coral.getDefaultState()), coral.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, new Random(), coral.getDefaultState().getRenderingSeed(pos), overlay);
     }
 
-    public EntityRendererFactory.Context getEntityRenderer() {
-        return new EntityRendererFactory.Context(minecraft.getEntityRenderDispatcher(), minecraft.getItemRenderer(), minecraft.getBlockRenderManager(), minecraft.getEntityRenderDispatcher().getHeldItemRenderer(), minecraft.getResourceManager(), minecraft.getEntityModelLoader(), minecraft.textRenderer);
-    }
 
 }
 

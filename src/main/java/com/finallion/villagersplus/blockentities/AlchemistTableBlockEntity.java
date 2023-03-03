@@ -23,6 +23,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -172,7 +173,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
     }
 
     protected Text getContainerName() {
-        return Text.translatable("container.alchemist_table");
+        return new TranslatableText("container.alchemist_table");
     }
 
     public int size() {
@@ -306,7 +307,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
                 }
             }
         } else {
-            world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 3.0F, World.ExplosionSourceType.NONE);
+            world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), 3.0F, Explosion.DestructionType.NONE);
             slots.set(0, ItemStack.EMPTY);
             slots.set(1, ItemStack.EMPTY);
             slots.set(2, ItemStack.EMPTY);
