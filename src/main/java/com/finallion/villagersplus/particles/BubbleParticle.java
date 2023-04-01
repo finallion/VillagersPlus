@@ -28,7 +28,7 @@ public class BubbleParticle extends SpriteBillboardParticle {
             this.markDead();
         }
 
-        if (!this.dead && !this.world.getBlockState(new BlockPos(this.x, this.y, this.z)).isOf(ModBlocks.OCEANOGRAPHER_TABLE_BLOCK)) {
+        if (!this.dead && !this.world.getBlockState(new BlockPos(BlockPos.ofFloored(this.x, this.y, this.z))).isOf(ModBlocks.OCEANOGRAPHER_TABLE_BLOCK)) {
             this.markDead();
         }
 

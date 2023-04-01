@@ -25,7 +25,7 @@ public class VillagersPlus implements ModInitializer {
 	public static ItemGroup ITEM_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "group"))
 			.displayName(Text.literal("VillagersPlus"))
 			.icon(() -> new ItemStack(ModBlocks.OAK_HORTICULTURIST_TABLE_BLOCK))
-			.entries((enabledFeatures, entries, operatorEnabled) -> {
+			.entries((enabledFeatures, entries) -> {
 				entries.add(ModBlocks.OAK_HORTICULTURIST_TABLE_BLOCK);
 				entries.add(ModBlocks.BIRCH_HORTICULTURIST_TABLE_BLOCK);
 				entries.add(ModBlocks.SPRUCE_HORTICULTURIST_TABLE_BLOCK);

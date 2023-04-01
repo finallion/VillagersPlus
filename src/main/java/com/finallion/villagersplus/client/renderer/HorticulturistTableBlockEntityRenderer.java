@@ -68,16 +68,8 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                         Vec3d offset = flowerOne.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         Vec3d offset2 = flowerTwo.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         matrixStack.translate(-offset.x + 0.15D, -offset.y + 0.95D, -offset.z + 0.15D);
-                        if (flowerOne.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.75F, 0.75F, 0.75F);
-                            matrixStack.translate(0, 0.15D, 0);
-                        }
                         renderFlower(flowerOne, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset2.x - 0.3D, -offset2.y, -offset2.z - 0.3D - 0.05D);
-                        if (flowerTwo.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.75F, 0.75F, 0.75F);
-                            matrixStack.translate(0, 0.15D, 0);
-                        }
                         renderFlower(flowerTwo, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                     }
                     case 3 -> {
@@ -88,22 +80,10 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                         Vec3d offset2 = flowerTwo.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         Vec3d offset3 = flowerThree.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         matrixStack.translate(-offset.x + 0.15D, -offset.y + 0.95D, -offset.z);
-                        if (flowerOne.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.6F, 0.6F, 0.6F);
-                            matrixStack.translate(0, 0.2D, 0);
-                        }
                         renderFlower(flowerOne, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset2.x - 0.3D, -offset2.y - 0.05D, -offset2.z - 0.15D);
-                        if (flowerTwo.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.6F, 0.6F, 0.6F);
-                            matrixStack.translate(0, 0.2D, 0);
-                        }
                         renderFlower(flowerTwo, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset3.x -0.05D, -offset3.y + 0, -offset3.z + 0.3D);
-                        if (flowerThree.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.6F, 0.6F, 0.6F);
-                            matrixStack.translate(0, 0.2D, 0);
-                        }
                         renderFlower(flowerThree, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                     }
                     case 4 -> {
@@ -116,28 +96,12 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                         Vec3d offset3 = flowerThree.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         Vec3d offset4 = flowerFour.getDefaultState().getModelOffset(blockEntity.getWorld(), pos);
                         matrixStack.translate(-offset.x + 0.15D, -offset.y + 0.95D, -offset.z + 0.15D);
-                        if (flowerOne.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.5F, 0.5F, 0.5F);
-                            matrixStack.translate(0, 0.25D, 0);
-                        }
                         renderFlower(flowerOne, blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset2.x, -offset2.y - 0.05D, -offset2.z - 0.3D - 0.05D);
-                        if (flowerTwo.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.5F, 0.5F, 0.5F);
-                            matrixStack.translate(0, 0.25D, 0);
-                        }
                         renderFlower(Block.getBlockFromItem(defaultedList.get(1).getItem()), blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset3.x - 0.3D, -offset3.y + 0, -offset3.z);
-                        if (flowerThree.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.5F, 0.5F, 0.5F);
-                            matrixStack.translate(0, 0.25D, 0);
-                        }
                         renderFlower(Block.getBlockFromItem(defaultedList.get(2).getItem()), blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                         matrixStack.translate(-offset4.x - 0.05D, -offset4.y - 0.05D, -offset4.z + 0.37D);
-                        if (flowerFour.getDefaultState().isIn(ModTags.SCALABLE_BLOCKS)) {
-                            matrixStack.scale(0.5F, 0.5F, 0.5F);
-                            matrixStack.translate(0, 0.25D, 0);
-                        }
                         renderFlower(Block.getBlockFromItem(defaultedList.get(3).getItem()), blockEntity.getWorld(), pos, matrixStack, vertexConsumerProvider, j);
                     }
                 }

@@ -134,7 +134,7 @@ public class ModTrades {
             factories.add(new TradeOffers.SellItemFactory(Items.MAGMA_CREAM, 4, 1, 3));
             factories.add(new TradeOffers.SellItemFactory(Items.PUFFERFISH, 5, 1, 3));
             factories.add(new TradeOffers.SellItemFactory(Items.FERMENTED_SPIDER_EYE, 5, 1, 3));
-            factories.add(new SellPotionItemFactory(Items.POTION, Items.POTION, 5, 4, 5));
+            factories.add(new SellPotionItemFactory(Items.POTION, Items.POTION, 5, 4, 7));
         });
 
         TradeOfferHelper.registerVillagerOffers(ModProfessions.ALCHEMIST, 3, factories -> {
@@ -147,7 +147,7 @@ public class ModTrades {
         });
 
         TradeOfferHelper.registerVillagerOffers(ModProfessions.ALCHEMIST, 4, factories -> {
-            factories.add(new SellPotionItemFactory(Items.POTION, Items.SPLASH_POTION, 8, 4, 6));
+            factories.add(new SellPotionItemFactory(Items.POTION, Items.SPLASH_POTION, 8, 4, 8));
         });
 
         TradeOfferHelper.registerVillagerOffers(ModProfessions.ALCHEMIST, 5, factories -> {
