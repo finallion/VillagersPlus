@@ -20,6 +20,7 @@ import net.minecraft.client.render.entity.model.AxolotlEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.*;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.ItemStack;
@@ -108,58 +109,61 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
             ItemStack itemStack = defaultedList.get(4);
             if (itemStack.getItem() instanceof EntityBucketItem bucketItem) {
-                Entity fish = ((DuckBucketable) bucketItem).getEntityType().create(world);
+                EntityType<?> type = ((DuckBucketable) bucketItem).getEntityType();
+                if (type != null) {
+                    Entity fish = type.create(world);
 
-                if (fish != null && itemStack.getNbt() != null) {
-                    fish.readNbt(itemStack.getOrCreateNbt());
+                    if (fish != null && itemStack.getNbt() != null) {
+                        fish.readNbt(itemStack.getOrCreateNbt());
 
-                    if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
-                        int id = itemStack.getNbt().getInt("BucketVariantTag");
-                        DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
-                        DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
-                        TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
-                        ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
+                        if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
+                            int id = itemStack.getNbt().getInt("BucketVariantTag");
+                            DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
+                            DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
+                            TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
+                            ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
+                        }
                     }
+
+                    matrixStack.push();
+
+                    if (fish != null) {
+                        long time = world.getTime();
+                        float g = 0.53125F;
+                        float h = Math.max(fish.getWidth(), fish.getHeight());
+                        if ((double) h > 1.0D) {
+                            g /= h;
+                        }
+
+                        float k = MathHelper.sin(time * 0.1F) / 2.0F + 0.5F;
+                        k += k * k;
+                        matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
+
+                        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
+                        Vector3f vec3f = new Vector3f(0.5F, 1.0F, 0.5F);
+                        vec3f.normalize();
+                        matrixStack.multiply((new Quaternionf()).rotationAxis(h * 0.017453292F, vec3f));
+
+                        if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
+                            matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
+                        }
+
+                        matrixStack.scale(g, g, g);
+
+                        if (!(fish instanceof AxolotlEntity)) {
+                            f = (float) time / 4;
+                        } else {
+                            matrixStack.translate(0.0D, -0.2F, 0.0D);
+                            matrixStack.scale(0.8F, 0.8F, 0.8F);
+                            //f = Math.abs(f) * 10.0F;
+                            f = 0.0F;
+                        }
+
+                        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+                    }
+
+                    matrixStack.pop();
                 }
-
-                matrixStack.push();
-
-                if (fish != null) {
-                    long time = world.getTime();
-                    float g = 0.53125F;
-                    float h = Math.max(fish.getWidth(), fish.getHeight());
-                    if ((double) h > 1.0D) {
-                        g /= h;
-                    }
-
-                    float k = MathHelper.sin(time * 0.1F) / 2.0F + 0.5F;
-                    k += k * k;
-                    matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
-
-                    matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
-                    Vector3f vec3f = new Vector3f(0.5F, 1.0F, 0.5F);
-                    vec3f.normalize();
-                    matrixStack.multiply((new Quaternionf()).rotationAxis(h * 0.017453292F, vec3f));
-
-                    if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
-                        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
-                    }
-
-                    matrixStack.scale(g, g, g);
-
-                    if (!(fish instanceof AxolotlEntity)) {
-                        f = (float) time / 4;
-                    } else {
-                        matrixStack.translate(0.0D, -0.2F, 0.0D);
-                        matrixStack.scale(0.8F, 0.8F, 0.8F);
-                        //f = Math.abs(f) * 10.0F;
-                        f = 0.0F;
-                    }
-
-                    this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
-                }
-
-                matrixStack.pop();
             }
         }
     }
