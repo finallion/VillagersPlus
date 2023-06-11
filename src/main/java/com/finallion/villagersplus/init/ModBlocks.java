@@ -22,18 +22,18 @@ import net.minecraft.util.Identifier;
 
 public class ModBlocks {
 
-    public static final Block ALCHEMIST_TABLE_BLOCK = new AlchemistTableBlock(FabricBlockSettings.of(Material.METAL).strength(0.5F).luminance((state) -> 1).nonOpaque());
-    public static final Block OCEANOGRAPHER_TABLE_BLOCK = new OceanographerTableBlock(FabricBlockSettings.of(Material.GLASS).strength(0.5F).luminance((state) -> 12).nonOpaque().solidBlock((state, world, pos) -> false).suffocates((state, world, pos) -> false));
-    public static final Block OAK_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block DARK_OAK_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block ACACIA_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block JUNGLE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block SPRUCE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block BIRCH_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block MANGROVE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block CRIMSON_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block WARPED_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.of(Material.WOOD).strength(0.5F).nonOpaque());
-    public static final Block OCCULTIST_TABLE_BLOCK = new OccultistTableBlock(FabricBlockSettings.of(Material.STONE).strength(0.5F).luminance((state) -> state.get(OccultistTableBlock.FILLING) * 2).nonOpaque());
+    public static final Block ALCHEMIST_TABLE_BLOCK = new AlchemistTableBlock(FabricBlockSettings.create().strength(0.5F).luminance((state) -> 1).nonOpaque());
+    public static final Block OCEANOGRAPHER_TABLE_BLOCK = new OceanographerTableBlock(FabricBlockSettings.create().strength(0.5F).luminance((state) -> 12).nonOpaque().solidBlock((state, world, pos) -> false).suffocates((state, world, pos) -> false));
+    public static final Block OAK_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block DARK_OAK_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block ACACIA_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block JUNGLE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block SPRUCE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block BIRCH_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block MANGROVE_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block CRIMSON_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block WARPED_HORTICULTURIST_TABLE_BLOCK = new HorticulturistTableBlock(FabricBlockSettings.create().strength(0.5F).nonOpaque().burnable());
+    public static final Block OCCULTIST_TABLE_BLOCK = new OccultistTableBlock(FabricBlockSettings.create().strength(0.5F).luminance((state) -> state.get(OccultistTableBlock.FILLING) * 2).nonOpaque());
 
     public static final BlockEntityType<OceanographerTableBlockEntity> OCEANOGRAPHER_TABLE_BLOCK_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE,

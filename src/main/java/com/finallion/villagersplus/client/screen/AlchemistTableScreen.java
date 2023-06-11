@@ -1,15 +1,10 @@
 package com.finallion.villagersplus.client.screen;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import com.finallion.villagersplus.VillagersPlus;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,35 +28,32 @@ public class AlchemistTableScreen extends HandledScreen<AlchemistTableScreenHand
         this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
     }
 
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
+        super.render(context, mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         int k = ((AlchemistTableScreenHandler)this.handler).getFuel();
         int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
         if (l > 0) {
-            this.drawTexture(matrices, i + 60, j + 44, 176, 29, l, 4);
+            context.drawTexture(TEXTURE, i + 60, j + 44, 176, 29, l, 4);
         }
 
         int m = ((AlchemistTableScreenHandler)this.handler).getBrewTime();
         if (m > 0) {
             int n = (int)(28.0F * (1.0F - (float)m / 400.0F));
             if (n > 0) {
-                this.drawTexture(matrices, i + 97, j + 16, 176, 0, 9, n);
+                context.drawTexture(TEXTURE, i + 97, j + 16, 176, 0, 9, n);
             }
 
             n = BUBBLE_PROGRESS[m / 2 % 7];
             if (n > 0) {
-                this.drawTexture(matrices, i + 63, j + 14 + 29 - n, 185, 29 - n, 12, n);
+                context.drawTexture(TEXTURE, i + 63, j + 14 + 29 - n, 185, 29 - n, 12, n);
             }
         }
 

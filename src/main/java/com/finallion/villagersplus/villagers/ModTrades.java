@@ -31,6 +31,7 @@ public class ModTrades {
             factories.add(new TradeOffers.SellItemFactory(Items.JUNGLE_LEAVES, 4, 2, 3));
             factories.add(new TradeOffers.SellItemFactory(Items.MANGROVE_LEAVES, 4, 2, 3));
             factories.add(new TradeOffers.SellItemFactory(Items.OAK_LEAVES, 4, 2, 3));
+            factories.add(new TradeOffers.SellItemFactory(Items.CHERRY_LEAVES, 4, 2, 3));
             factories.add(new TradeOffers.ProcessItemFactory(Items.STICK, 3, Items.DEAD_BUSH, 1, 8, 4));
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.GRASS, 4, 12, 3));
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.FERN, 2, 12, 4));
@@ -47,6 +48,7 @@ public class ModTrades {
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.BIRCH_SAPLING, 2, 12, 3));
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.DARK_OAK_SAPLING, 2, 12, 3));
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.JUNGLE_SAPLING, 2, 12, 3));
+            factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.CHERRY_SAPLING, 2, 12, 3));
             factories.add(new TradeOffers.BuyForOneEmeraldFactory(Items.OAK_SAPLING, 2, 12, 3));
         });
 
@@ -60,6 +62,7 @@ public class ModTrades {
         });
 
         TradeOfferHelper.registerVillagerOffers(ModProfessions.HORTICULTURIST, 5, factories -> {
+            factories.add(new TradeOffers.SellItemFactory(Items.PINK_PETALS, 4, 1, 4));
             factories.add(new TradeOffers.SellItemFactory(Items.BLUE_ORCHID, 4, 1, 4));
             factories.add(new TradeOffers.SellItemFactory(Items.WITHER_ROSE, 8, 1, 5));
             factories.add(new TradeOffers.SellItemFactory(Items.FLOWERING_AZALEA_LEAVES, 4, 2, 2));

@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.particle.SonicBoomParticle;
 import net.minecraft.client.particle.WaterSuspendParticle;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
@@ -50,7 +51,7 @@ public class VillagersPlusClient implements ClientModInitializer {
         );
 
 
-        BlockEntityRendererRegistry.register(ModBlocks.HORTICULTURIST_TABLE_BLOCK_ENTITY, HorticulturistTableBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(ModBlocks.OCEANOGRAPHER_TABLE_BLOCK_ENTITY, OceanographerTableBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlocks.HORTICULTURIST_TABLE_BLOCK_ENTITY, HorticulturistTableBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(ModBlocks.OCEANOGRAPHER_TABLE_BLOCK_ENTITY, OceanographerTableBlockEntityRenderer::new);
     }
 }
