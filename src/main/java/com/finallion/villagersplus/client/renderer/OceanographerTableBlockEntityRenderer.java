@@ -111,54 +111,57 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
             ItemStack itemStack = defaultedList.get(4);
             if (itemStack.getItem() instanceof EntityBucketItem bucketItem) {
-                Entity fish = ((DuckBucketable) bucketItem).getEntityType().create(world);
+                EntityType<?> type = ((DuckBucketable) bucketItem).getEntityType();
+                if (type != null) {
+                    Entity fish = type.create(world);
 
-                if (fish != null && itemStack.getNbt() != null) {
-                    if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
-                        ((TropicalFishEntity) fish).setVariant(itemStack.getNbt().getInt("BucketVariantTag"));
-                    } else {
-                        fish.readNbt(itemStack.getOrCreateNbt());
+                    if (fish != null && itemStack.getNbt() != null) {
+                        if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
+                            ((TropicalFishEntity) fish).setVariant(itemStack.getNbt().getInt("BucketVariantTag"));
+                        } else {
+                            fish.readNbt(itemStack.getOrCreateNbt());
+                        }
                     }
+
+                    matrixStack.push();
+
+                    if (fish != null) {
+                        long time = world.getTime();
+                        float g = 0.53125F;
+                        float h = Math.max(fish.getWidth(), fish.getHeight());
+                        if ((double) h > 1.0D) {
+                            g /= h;
+                        }
+
+                        float k = MathHelper.sin(time * 0.1F) / 2.0F + 0.5F;
+                        k += k * k;
+                        matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
+
+                        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation));
+                        Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
+                        vec3f.normalize();
+                        matrixStack.multiply(vec3f.getDegreesQuaternion(h));
+
+                        if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
+                            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+                        }
+
+                        matrixStack.scale(g, g, g);
+
+                        if (!(fish instanceof AxolotlEntity)) {
+                            f = (float) time / 4;
+                        } else {
+                            matrixStack.translate(0.0D, -0.2F, 0.0D);
+                            matrixStack.scale(0.8F, 0.8F, 0.8F);
+                            //f = Math.abs(f) * 10.0F;
+                            f = 0.0F;
+                        }
+
+                        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+                    }
+
+                    matrixStack.pop();
                 }
-
-                matrixStack.push();
-
-                if (fish != null) {
-                    long time = world.getTime();
-                    float g = 0.53125F;
-                    float h = Math.max(fish.getWidth(), fish.getHeight());
-                    if ((double) h > 1.0D) {
-                        g /= h;
-                    }
-
-                    float k = MathHelper.sin(time * 0.1F) / 2.0F + 0.5F;
-                    k += k * k;
-                    matrixStack.translate(0.5D, (double) (0.5F + k * 0.05F), 0.5D);
-
-                    matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation));
-                    Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
-                    vec3f.normalize();
-                    matrixStack.multiply(vec3f.getDegreesQuaternion(h));
-
-                    if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
-                        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
-                    }
-
-                    matrixStack.scale(g, g, g);
-
-                    if (!(fish instanceof AxolotlEntity)) {
-                        f = (float) time / 4;
-                    } else {
-                        matrixStack.translate(0.0D, -0.2F, 0.0D);
-                        matrixStack.scale(0.8F, 0.8F, 0.8F);
-                        //f = Math.abs(f) * 10.0F;
-                        f = 0.0F;
-                    }
-
-                    this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
-                }
-
-                matrixStack.pop();
             }
 
         }
