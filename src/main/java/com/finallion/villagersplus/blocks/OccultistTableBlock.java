@@ -1,7 +1,9 @@
 package com.finallion.villagersplus.blocks;
 
+import com.finallion.villagersplus.VillagersPlus;
 import com.finallion.villagersplus.blockentities.AlchemistTableBlockEntity;
 import com.finallion.villagersplus.blockentities.OccultistTableBlockEntity;
+import com.finallion.villagersplus.config.VPConfig;
 import com.finallion.villagersplus.init.ModBlocks;
 import com.finallion.villagersplus.init.ModParticles;
 import net.minecraft.block.*;
@@ -70,15 +72,18 @@ public class OccultistTableBlock extends WorkstationBlock {
             }
 
             if (!world.isClient()) {
-                if (tile.getLevels() >= 400) {
+                int levels = tile.getLevels();
+                int maxLevels = VillagersPlus.CONFIG.max_exp_amount;
+
+                if (levels >= 0.8 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 5);
-                } else if (tile.getLevels() >= 300) {
+                } else if (levels >= 0.6 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 4);
-                } else if (tile.getLevels() >= 200) {
+                } else if (levels >= 0.4 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 3);
-                } else if (tile.getLevels() >= 100) {
+                } else if (levels >= 0.2 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 2);
-                } else if (tile.getLevels() > 0) {
+                } else if (levels > 0) {
                     state = state.with(OccultistTableBlock.FILLING, 1);
                 } else {
                     state = state.with(OccultistTableBlock.FILLING, 0);

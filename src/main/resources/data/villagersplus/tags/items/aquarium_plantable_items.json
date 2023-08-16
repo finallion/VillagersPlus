@@ -1,4 +1,5 @@
 {
+  "replace": false,
   "values": [
     "minecraft:dead_tube_coral",
     "minecraft:dead_brain_coral",

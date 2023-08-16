@@ -1,13 +1,11 @@
-package com.finallion.villagersplus.trade_offer.tradeOffers;
+package com.finallion.villagersplus.tradeoffers.trades;
 
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;

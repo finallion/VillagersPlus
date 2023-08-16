@@ -1,35 +1,34 @@
-package com.finallion.villagersplus.trade_offer.tradeOffers;
+package com.finallion.villagersplus.tradeoffers.trades;
 
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import org.jetbrains.annotations.NotNull;
 
-public class JsonBuyItemTradeOffer extends JsonTradeOffer {
+public class JsonSellItemTradeOffer extends JsonTradeOffer {
 
     @Override
     @NotNull
     public TradeOffers.Factory deserialize(JsonObject json) {
         loadDefaultStats(json);
 
-        ItemStack buy = getItemStackFromJson(json.get("buy").getAsJsonObject());
-        ItemStack currency = getItemStackFromJson(json.get("reward").getAsJsonObject());
+        ItemStack sell = getItemStackFromJson(json.get("sell").getAsJsonObject());
+        ItemStack currency = getItemStackFromJson(json.get("priceIn").getAsJsonObject());
 
-        return new Factory(buy, currency, maxUses, experience, priceMultiplier);
+        return new Factory(sell, currency, maxUses, experience, priceMultiplier);
     }
 
     private static class Factory implements TradeOffers.Factory {
-        private final ItemStack buy;
+        private final ItemStack sell;
         private final ItemStack currency;
         private final int maxUses;
         private final int experience;
         private final float multiplier;
 
-        public Factory(ItemStack buy, ItemStack currency, int maxUses, int experience, float multiplier) {
-            this.buy = buy;
+        public Factory(ItemStack sell, ItemStack currency, int maxUses, int experience, float multiplier) {
+            this.sell = sell;
             this.currency = currency;
             this.maxUses = maxUses;
             this.experience = experience;
@@ -37,8 +36,7 @@ public class JsonBuyItemTradeOffer extends JsonTradeOffer {
         }
 
         public TradeOffer create(Entity entity, net.minecraft.util.math.random.Random random) {
-            return new TradeOffer(buy, currency, this.maxUses, this.experience, this.multiplier);
+            return new TradeOffer(currency, sell, this.maxUses, this.experience, multiplier);
         }
-
     }
 }

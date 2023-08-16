@@ -1,4 +1,4 @@
-package com.finallion.villagersplus.trade_offer;
+package com.finallion.villagersplus.tradeoffers;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.village.TradeOffers;

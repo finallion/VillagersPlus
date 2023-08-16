@@ -1,4 +1,4 @@
-package com.finallion.villagersplus.trade_offer;
+package com.finallion.villagersplus.tradeoffers;
 
 import com.finallion.villagersplus.VillagersPlus;
 import com.google.gson.GsonBuilder;
@@ -29,6 +29,8 @@ public class DefaultTradeOfferResourceListener extends JsonDataLoader implements
             if (!jsonElement.isJsonObject()) {
                 return;
             }
+
+            VillagersPlus.LOGGER.info("Deserializing default trades of profession: " + jsonElement.getAsJsonObject().get("profession").getAsString());
 
             TradeOfferManager.deserializeJson(jsonElement.getAsJsonObject());
         });

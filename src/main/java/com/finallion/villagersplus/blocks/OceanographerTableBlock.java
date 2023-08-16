@@ -1,22 +1,16 @@
 package com.finallion.villagersplus.blocks;
 
-import com.finallion.villagersplus.blockentities.HorticulturistTableBlockEntity;
 import com.finallion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.finallion.villagersplus.init.ModParticles;
 import com.finallion.villagersplus.init.ModTags;
-import com.finallion.villagersplus.util.DuckBucketable;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Bucketable;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -26,8 +20,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -63,7 +55,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         ItemStack itemStack = player.getStackInHand(hand);
 
         if (world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity blockEntity) {
-                if (itemStack.isIn(ModTags.AQUARIUM_PLANTABLE_BLOCKS) && state.get(CORALS) < 4) {
+                if (itemStack.isIn(ModTags.AQUARIUM_PLANTABLE_ITEMS) && state.get(CORALS) < 4) {
                     blockEntity.insertCoral(itemStack, state.get(CORALS));
 
                     if (!player.isCreative()) {
@@ -75,6 +67,10 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
+                    if (world.isClient) {
+                        world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_CORAL_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+                    }
+
                     return ActionResult.success(world.isClient);
                 } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
                     blockEntity.insertCoral(itemStack, 4);
@@ -83,11 +79,12 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         itemStack.decrement(1);
                     }
 
-
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(FISH, state.get(FISH) + 1), 3);
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
+
+                    if (world.isClient) player.playSound(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                     return ActionResult.success(world.isClient);
                 }

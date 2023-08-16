@@ -1,0 +1,595 @@
+{
+  "profession": "villagersplus:oceanographer",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "sea_pickle",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "water_bucket",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "seagrass",
+          "count": 4
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "kelp",
+          "count": 8
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      }
+    ],
+    "apprentice": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "brain_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "bubble_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "fire_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "horn_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "tube_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "tube_coral",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_tube_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "brain_coral",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_brain_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "bubble_coral",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_bubble_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "horn_coral",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_horn_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "fire_coral",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_fire_coral",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 3
+      }
+    ],
+    "journeyman": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "brain_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "bubble_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "fire_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "horn_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "tube_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "tube_coral_fan",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_tube_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "brain_coral_fan",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_brain_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "bubble_coral_fan",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_bubble_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "horn_coral_fan",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_horn_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "fire_coral_fan",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_fire_coral_fan",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      }
+    ],
+    "expert": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "brain_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "bubble_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "fire_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "horn_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "tube_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "tube_coral_block",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_tube_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "brain_coral_block",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_brain_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "bubble_coral_block",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_bubble_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "horn_coral_block",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_horn_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagersplus:process_item",
+        "sell": {
+          "item": "fire_coral_block",
+          "count": 1
+        },
+        "convertible": {
+          "item": "dead_fire_coral_block",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 5
+      }
+    ],
+    "master": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "nautilus_shell",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 6
+        },
+        "max_uses": 12,
+        "villager_experience": 15
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "sponge",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 8
+        },
+        "max_uses": 8,
+        "villager_experience": 10
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "scute",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 8,
+        "villager_experience": 8
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "tropical_fish_bucket",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 8,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "axolotl_bucket",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 8,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "pufferfish_bucket",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 8,
+        "villager_experience": 4
+      }
+    ]
+  }
+}

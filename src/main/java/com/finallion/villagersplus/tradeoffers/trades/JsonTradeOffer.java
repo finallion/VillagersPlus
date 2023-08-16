@@ -1,4 +1,4 @@
-package com.finallion.villagersplus.trade_offer.tradeOffers;
+package com.finallion.villagersplus.tradeoffers.trades;
 
 import com.google.gson.JsonObject;
 import net.minecraft.item.Item;

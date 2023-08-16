@@ -1,14 +1,13 @@
-package com.finallion.villagersplus.trade_offer;
+package com.finallion.villagersplus.tradeoffers;
 
 import com.finallion.villagersplus.VillagersPlus;
-import com.finallion.villagersplus.trade_offer.tradeOffers.*;
+import com.finallion.villagersplus.tradeoffers.trades.*;
 import com.google.gson.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -26,6 +25,7 @@ public class TradeOfferManager {
     }
 
     public static void registerTradeOffers() {
+        VillagersPlus.LOGGER.info("Registered JSON trade offer adapter.");
         tradeOfferRegistry.put(new Identifier(VillagersPlus.MOD_ID,"sell_item"), new JsonSellItemTradeOffer());
         tradeOfferRegistry.put(new Identifier(VillagersPlus.MOD_ID,"buy_item"), new JsonBuyItemTradeOffer());
         tradeOfferRegistry.put(new Identifier(VillagersPlus.MOD_ID,"process_item"), new JsonProcessItemTradeOffer());
@@ -37,7 +37,6 @@ public class TradeOfferManager {
 
     public static void deserializeJson(JsonObject jsonRoot) {
         Identifier professionId = Identifier.tryParse(jsonRoot.get("profession").getAsString());
-        VillagersPlus.LOGGER.info("Deserializing default trades of profession: " + professionId);
 
         Registries.VILLAGER_PROFESSION
                 .getOrEmpty(professionId)
@@ -57,10 +56,11 @@ public class TradeOfferManager {
                 JsonTradeOffer adapter = tradeOfferRegistry.get(Identifier.tryParse(trade.get("type").getAsString()));
 
                 if (adapter == null) {
-                    VillagersPlus.LOGGER.error("Trade type: " + trade.get("type").getAsString());
+                    VillagersPlus.LOGGER.error("Trade type: " + trade.get("type").getAsString() + " is broken.");
                     VillagersPlus.LOGGER.error("Error in deserializing trades." +
                             "Trade element: " + tradeElement + " and " +
-                            "Trade: " + trade + " in " + tradesArray + " is null.");
+                            "Trade: " + trade + " in " + tradesArray + " is broken. \n" +
+                            "Sending faulty JSON: " + jsonRoot);
                 } else {
                     tradeConsumer.accept(level, adapter.deserialize(trade));
                 }

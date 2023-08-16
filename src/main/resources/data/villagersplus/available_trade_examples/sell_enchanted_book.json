@@ -1,0 +1,16 @@
+{
+  "profession": "villagersplus:horticulturist",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:sell_enchanted_book",
+        "currency": {
+          "item": "emerald"
+        },
+        "price_multiplier": 0.2,
+        "max_uses": 12,
+        "villager_experience": 1
+      }
+    ]
+  }
+}
