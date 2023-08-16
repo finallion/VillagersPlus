@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "villagersplus",
-  "version": "1.9",
+  "version": "1.9.1",
   "name": "Villagers Plus",
   "description": "New villagers, new trades and new beautiful and useful workstations.",
   "authors": [
@@ -33,8 +33,5 @@
     "fabric-api": "*",
     "minecraft": "~1.19",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

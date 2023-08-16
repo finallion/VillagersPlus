@@ -1,0 +1,23 @@
+{
+  "profession": "villagersplus:horticulturist",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:sell_map",
+        "structure_id": "minecraft:on_woodland_explorer_maps",
+        "name": "filled_map",
+        "buy": {
+          "item": "compass",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "price_multiplier": 0.2,
+        "max_uses": 1,
+        "villager_experience": 1
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@ package com.finallion.villagersplus.client.renderer;
 
 import com.finallion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.finallion.villagersplus.blocks.OceanographerTableBlock;
-import com.finallion.villagersplus.init.ModTags;
+import com.finallion.villagersplus.mixin.EntityAccessorMixin;
 import com.finallion.villagersplus.util.DuckBucketable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,36 +13,26 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.AxolotlEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.model.AxolotlEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EntityModels;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EntityBucketItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.MobSpawnerLogic;
+import net.minecraft.util.math.random.Random;;
 import net.minecraft.world.World;
 
-import java.util.function.Function;
 
 public class OceanographerTableBlockEntityRenderer implements BlockEntityRenderer<OceanographerTableBlockEntity> {
     private final BlockRenderManager manager;
     private final EntityRenderDispatcher entityRenderDispatcher;
+
     private float[] xOffset = new float[]{0.06F, 1.5F, 1.3F, 0.1F};
     private final float[] yOffsetNorth = new float[]{0.45F, 0.75F, 0.3F, 0.45F};
     private final float[] yOffsetSouth = new float[]{0.75F, 0.45F, 0.45F, 0.3F};
@@ -52,6 +42,8 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
     private float[] xOffsetFan = new float[]{0.2F, 1.25F, 1.2F, 0.2F};
     private float[] zOffsetFan = new float[]{0.17F, 1.25F, 0.3F, 1.2F};
+
+    private float prevValue = 0.0F;
 
     public OceanographerTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         this.manager = ctx.getRenderManager();
@@ -108,7 +100,6 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                 matrixStack.pop();
             }
 
-
             ItemStack itemStack = defaultedList.get(4);
             if (itemStack.getItem() instanceof EntityBucketItem bucketItem) {
                 EntityType<?> type = ((DuckBucketable) bucketItem).getEntityType();
@@ -125,7 +116,9 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
                     matrixStack.push();
 
-                    if (fish != null) {
+                    if (fish != null && world != null) {
+                        ((EntityAccessorMixin)fish).setTouchingWater(true);
+
                         long time = world.getTime();
                         float g = 0.53125F;
                         float h = Math.max(fish.getWidth(), fish.getHeight());
@@ -141,35 +134,39 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                         Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
                         vec3f.normalize();
                         matrixStack.multiply(vec3f.getDegreesQuaternion(h));
-
-                        if (itemStack.isIn(ModTags.ROTATIONAL_BUCKET_ENTITIES)) {
-                            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
-                        }
-
                         matrixStack.scale(g, g, g);
 
-                        if (!(fish instanceof AxolotlEntity)) {
-                            f = (float) time / 4;
+                        if (!(fish instanceof AxolotlEntity axolotlEntity)) {
+                            f = (float) world.getTime() / 4;
+                            matrixStack.translate(0.0D, -0.2F, 0.0D);
+
+                            this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
                         } else {
                             matrixStack.translate(0.0D, -0.2F, 0.0D);
                             matrixStack.scale(0.8F, 0.8F, 0.8F);
-                            //f = Math.abs(f) * 10.0F;
-                            f = 0.0F;
-                        }
 
-                        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+                            float animationProgress = world.getTime() % 20 / 20.0F;
+                            float targetValue = 2.15F * MathHelper.sin(animationProgress * (float) Math.PI * 4F);
+                            float smoothedValue = prevValue + 0.002F * (targetValue - prevValue);
+                            prevValue = smoothedValue;
+
+                            if (MinecraftClient.getInstance().isPaused()) {
+                                smoothedValue = 0.0F;
+                                prevValue = 0.0F;
+                            }
+
+                            this.entityRenderDispatcher.getRenderer(axolotlEntity).render(axolotlEntity, 0.0F, smoothedValue, matrixStack, vertexConsumerProvider, i);
+                        }
                     }
 
                     matrixStack.pop();
                 }
             }
-
         }
     }
 
     private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
         this.manager.getModelRenderer().render(world, this.manager.getModel(coral.getDefaultState()), coral.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), coral.getDefaultState().getRenderingSeed(pos), overlay);
     }
-
 }
 

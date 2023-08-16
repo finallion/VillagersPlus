@@ -1,0 +1,20 @@
+{
+  "profession": "villagersplus:horticulturist",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "wheat_seeds",
+          "count": 4
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 8,
+        "villager_experience": 1
+      }
+    ]
+  }
+}

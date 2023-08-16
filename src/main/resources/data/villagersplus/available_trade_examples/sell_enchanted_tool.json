@@ -1,0 +1,20 @@
+{
+  "profession": "villagersplus:horticulturist",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:sell_enchanted_tool",
+        "sell": {
+          "item": "diamond_pickaxe",
+          "count": 1
+        },
+        "basePriceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      }
+    ]
+  }
+}

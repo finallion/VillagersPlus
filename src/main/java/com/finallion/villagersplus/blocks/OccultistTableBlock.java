@@ -1,17 +1,11 @@
 package com.finallion.villagersplus.blocks;
 
-import com.finallion.villagersplus.blockentities.AlchemistTableBlockEntity;
+import com.finallion.villagersplus.VillagersPlus;
 import com.finallion.villagersplus.blockentities.OccultistTableBlockEntity;
-import com.finallion.villagersplus.init.ModBlocks;
 import com.finallion.villagersplus.init.ModParticles;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -19,23 +13,16 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class OccultistTableBlock extends WorkstationBlock {
     public static final IntProperty FILLING;
@@ -70,15 +57,18 @@ public class OccultistTableBlock extends WorkstationBlock {
             }
 
             if (!world.isClient()) {
-                if (tile.getLevels() >= 400) {
+                int levels = tile.getLevels();
+                int maxLevels = VillagersPlus.CONFIG.max_exp_amount;
+
+                if (levels >= 0.8 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 5);
-                } else if (tile.getLevels() >= 300) {
+                } else if (levels >= 0.6 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 4);
-                } else if (tile.getLevels() >= 200) {
+                } else if (levels >= 0.4 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 3);
-                } else if (tile.getLevels() >= 100) {
+                } else if (levels >= 0.2 * maxLevels) {
                     state = state.with(OccultistTableBlock.FILLING, 2);
-                } else if (tile.getLevels() > 0) {
+                } else if (levels > 0) {
                     state = state.with(OccultistTableBlock.FILLING, 1);
                 } else {
                     state = state.with(OccultistTableBlock.FILLING, 0);
@@ -96,6 +86,8 @@ public class OccultistTableBlock extends WorkstationBlock {
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return true;
     }
+
+
 
     public static <T extends ParticleEffect> void createParticleSpiral(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int length, T type, Random random) {
         double yCoord = y + 1.1D; // top of block

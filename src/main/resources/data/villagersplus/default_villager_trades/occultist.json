@@ -1,0 +1,444 @@
+{
+  "profession": "villagersplus:occultist",
+  "trades": {
+    "novice": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "small_amethyst_bud",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "medium_amethyst_bud",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 1
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "large_amethyst_bud",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 2
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "amethyst_cluster",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "tinted_glass",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 8
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "amethyst_shard",
+          "count": 3
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "glow_ink_sac",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      }
+    ],
+    "apprentice": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "soul_lantern",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "soul_torch",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "glowstone_dust",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 2
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "soul_sand",
+          "count": 2
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "soul_soil",
+          "count": 2
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      }
+    ],
+    "journeyman": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "red_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "orange_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "yellow_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "lime_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "green_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "light_blue_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "blue_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "cyan_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "magenta_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "pink_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "purple_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "white_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "gray_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "light_gray_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "black_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "brown_candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      }
+    ],
+    "expert": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "quartz",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "spectral_arrow",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "candle",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      }
+    ],
+    "master": [
+      {
+        "type": "villagersplus:sell_item",
+        "sell": {
+          "item": "experience_bottle",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 4
+      },
+      {
+        "type": "villagersplus:buy_item",
+        "buy": {
+          "item": "poisonous_potato",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 10
+        },
+        "max_uses": 12,
+        "villager_experience": 10
+      }
+    ]
+  }
+}

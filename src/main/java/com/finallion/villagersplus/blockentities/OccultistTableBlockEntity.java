@@ -1,5 +1,6 @@
 package com.finallion.villagersplus.blockentities;
 
+import com.finallion.villagersplus.VillagersPlus;
 import com.finallion.villagersplus.blocks.OccultistTableBlock;
 import com.finallion.villagersplus.init.ModBlocks;
 import net.minecraft.block.BlockState;
@@ -24,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class OccultistTableBlockEntity extends BlockEntity {
     private int levels = 0;
-    private final int MAX_EXP_STORAGE = 500;
-    private final int AMOUNT = 50;
+    private final int MAX_EXP_STORAGE = VillagersPlus.CONFIG.max_exp_amount;
+    private final int AMOUNT = VillagersPlus.CONFIG.exp_amount;
 
     public OccultistTableBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.OCCULTIST_TABLE_BLOCK_ENTITY, pos, state);
@@ -62,7 +63,6 @@ public class OccultistTableBlockEntity extends BlockEntity {
                         player.addExperience(levels);
                         this.levels = 0;
                     }
-
                 }
             }
         }

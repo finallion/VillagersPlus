@@ -1,11 +1,5 @@
 package com.finallion.villagersplus.client.screen;
 
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
-
 import com.finallion.villagersplus.VillagersPlus;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
