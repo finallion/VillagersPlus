@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.lion.villagersplus.mixin.fabric",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+  ],
+  "mixins": [
+    "EntityBucketItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

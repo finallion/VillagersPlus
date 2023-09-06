@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "villagersplus:horticulturist_warped",
+    "villagersplus:horticulturist_crimson",
+    "villagersplus:horticulturist_oak",
+    "villagersplus:horticulturist_dark_oak",
+    "villagersplus:horticulturist_birch",
+    "villagersplus:horticulturist_jungle",
+    "villagersplus:horticulturist_spruce",
+    "villagersplus:horticulturist_acacia",
+    "villagersplus:horticulturist_cherry",
+    "villagersplus:horticulturist_bamboo",
+    "villagersplus:horticulturist_mangrove",
+    "villagersplus:oceanographer",
+    "villagersplus:occultist",
+    "villagersplus:alchemist"
+  ]
+}

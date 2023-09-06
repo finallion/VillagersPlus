@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "com.lion.villagersplus.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "mixins": [
+    "EntityAccessorMixin",
+    "StructurePoolAccessor",
+    "VillagerEntityMixin",
+    "WanderingTraderMixin",
+    "TropicalFishEntityInvoker"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

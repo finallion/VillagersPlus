@@ -1,0 +1,31 @@
+{
+  "container.alchemist_table": "Стіл алхіміка",
+
+  "block.villagersplus.alchemist_table": "Стіл алхіміка",
+  "block.villagersplus.occultist_table": "Зачарована раковина",
+  "block.villagersplus.oceanographer_table": "Акваріум",
+  "block.villagersplus.oak_horticulturist_table": "Дубовий ящик-кашпо",
+  "block.villagersplus.dark_oak_horticulturist_table": "Темно-дубовий ящик-кашпо",
+  "block.villagersplus.spruce_horticulturist_table": "Смерековий ящик-кашпо",
+  "block.villagersplus.jungle_horticulturist_table": "Тропічний ящик-кашпо",
+  "block.villagersplus.birch_horticulturist_table": "Березовий ящик-кашпо",
+  "block.villagersplus.acacia_horticulturist_table": "Акацієвий ящик-кашпо",
+  "block.villagersplus.mangrove_horticulturist_table": "Мангровий ящик-кашпо",
+  "block.villagersplus.crimson_horticulturist_table": "Багряний ящик-кашпо",
+  "block.villagersplus.warped_horticulturist_table": "Химерний ящик-кашпо",
+  "block.villagersplus.cherry_horticulturist_table": "Cherry Flower Tub",
+  "block.villagersplus.bamboo_horticulturist_table": "Bamboo Flower Tub",
+
+  "entity.minecraft.villager.alchemist": "Алхімік",
+  "entity.minecraft.villager.occultist": "Окультист",
+  "entity.minecraft.villager.oceanographer": "Океанограф",
+  "entity.minecraft.villager.horticulturist": "Садівник",
+
+
+  "entity.minecraft.villager.villagersplus.alchemist": "Алхімік",
+  "entity.minecraft.villager.villagersplus.occultist": "Окультист",
+  "entity.minecraft.villager.villagersplus.oceanographer": "Океанограф",
+  "entity.minecraft.villager.villagersplus.horticulturist": "Садівник",
+
+  "itemGroup.villagersplus.group": "VillagersPlus"
+}
