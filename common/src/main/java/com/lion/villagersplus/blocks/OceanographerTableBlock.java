@@ -56,10 +56,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
                 if (itemStack.isIn(VPTags.AQUARIUM_PLANTABLE_ITEMS) && state.get(CORALS) < 4) {
                     blockEntity.insertCoral(itemStack, state.get(CORALS));
 
-                    if (!player.isCreative()) {
-                        itemStack.decrement(1);
-                    }
-
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(CORALS, state.get(CORALS) + 1), 3);
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -72,10 +68,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     return ActionResult.success(world.isClient);
                 } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
                     blockEntity.insertCoral(itemStack, 4);
-
-                    if (!player.isCreative()) {
-                        itemStack.decrement(1);
-                    }
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(FISH, state.get(FISH) + 1), 3);

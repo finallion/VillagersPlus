@@ -39,32 +39,63 @@ public class VPConfig implements Config {
     @Description("Weight of the house in the village structure pool. Higher values increase the chance of generating.")
     public int plains_alchemist_weight = 10;
     public int plains_occultist_weight = 10;
-    public int plains_horticulturist_weight = 10;
+    public int plains_horticulturist_weight = 7;
     public int plains_oceanographer_weight = 15;
 
     @Description("Weight of the house in a village. Higher values increase the chance of generating.")
     public int taiga_alchemist_weight = 10;
     public int taiga_occultist_weight = 10;
-    public int taiga_horticulturist_weight = 10;
+    public int taiga_horticulturist_weight = 7;
     public int taiga_oceanographer_weight = 15;
 
     @Description("Weight of the house in a village. Higher values increase the chance of generating.")
     public int savanna_alchemist_weight = 10;
     public int savanna_occultist_weight = 10;
-    public int savanna_horticulturist_weight = 10;
+    public int savanna_horticulturist_weight = 7;
     public int savanna_oceanographer_weight = 15;
 
     @Description("Weight of the house in a village. Higher values increase the chance of generating.")
     public int snowy_alchemist_weight = 10;
     public int snowy_occultist_weight = 10;
-    public int snowy_horticulturist_weight = 10;
+    public int snowy_horticulturist_weight = 7;
     public int snowy_oceanographer_weight = 15;
 
     @Description("Weight of the house in a village. Higher values increase the chance of generating.")
     public int desert_alchemist_weight = 10;
     public int desert_occultist_weight = 10;
-    public int desert_horticulturist_weight = 10;
+    public int desert_horticulturist_weight = 7;
     public int desert_oceanographer_weight = 15;
+
+    @Description("Two flower offsets in flower tub for small flowers. Each offset is added to the following offsets.")
+    public float first_flower_in_two_X_offset = 0.15F;
+    public float first_flower_in_two_Z_offset = 0.15F;
+
+    public float second_flower_in_two_X_offset = -0.3F;
+    public float second_flower_in_two_Z_offset = -0.35F;
+
+    @Description("Three flower offsets in flower tub for small flowers. Each offset is added to the following offsets.")
+    public float first_flower_in_three_X_offset = 0.15F;
+    public float first_flower_in_three_Z_offset = 0F;
+
+    public float second_flower_in_three_X_offset = -0.3F;
+    public float second_flower_in_three_Z_offset = -0.15F;
+
+    public float third_flower_in_three_X_offset = -0.05F;
+    public float third_flower_in_three_Z_offset = 0.3F;
+
+    @Description("Four flower offsets in flower tub for small flowers. Each offset is added to the following offsets.")
+    public float first_flower_in_four_X_offset = 0.15F;
+    public float first_flower_in_four_Z_offset = 0.15F;
+
+    public float second_flower_in_four_X_offset = 0F;
+    public float second_flower_in_four_Z_offset = -0.35F;
+
+    public float third_flower_in_four_X_offset = -0.3F;
+    public float third_flower_in_four_Z_offset = 0F;
+
+    public float forth_flower_in_four_X_offset = -0.05F;
+    public float forth_flower_in_four_Z_offset = 0.37F;
+
 
 }
 

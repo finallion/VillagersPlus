@@ -12,14 +12,14 @@ New villagers, new trades and new beautiful and useful workstations.
 '''
 logoFile = "villagersplus_logo.png"
 
-[[dependencies.graveyard]]
+[[dependencies.villagersplus]]
 modId = "forge"
 mandatory = true
 versionRange = "[41.0.22,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.graveyard]]
+[[dependencies.villagersplus]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20,)"

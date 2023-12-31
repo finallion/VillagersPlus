@@ -30,6 +30,7 @@ public class VPVillagerProfessions {
     public static final Predicate<RegistryEntry<PointOfInterestType>> HORTICULTURIST_PREDICATE = (registryEntry) -> registryEntry.value() ==
             VPPointOfInterestTypes.HORTICULTURIST_ACACIA_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_BAMBOO_POI.get()
+                    || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_OAK_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_BIRCH_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_CHERRY_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_CRIMSON_POI.get()

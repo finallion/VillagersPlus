@@ -110,9 +110,13 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                     Entity fish = type.create(world);
 
                     if (fish != null && itemStack.getNbt() != null) {
-                        fish.readNbt(itemStack.getOrCreateNbt());
+                        if (fish instanceof AxolotlEntity axolotl && itemStack.getNbt().contains("Variant")) {
+                            axolotl.setVariant(AxolotlEntity.Variant.byId(itemStack.getNbt().getInt("Variant")));
+                        }
 
                         if (fish instanceof TropicalFishEntity && itemStack.getNbt().contains("BucketVariantTag")) {
+                            fish.readNbt(itemStack.getOrCreateNbt());
+
                             int id = itemStack.getNbt().getInt("BucketVariantTag");
                             DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
                             DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
