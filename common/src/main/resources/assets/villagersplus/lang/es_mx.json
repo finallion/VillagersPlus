@@ -1,0 +1,31 @@
+{
+  "container.alchemist_table": "Mesa de Alquimista",
+
+  "block.villagersplus.alchemist_table": "Mesa de Alquimista",
+  "block.villagersplus.occultist_table": "Cuenco Encantado",
+  "block.villagersplus.oceanographer_table": "Pecera",
+  "block.villagersplus.oak_horticulturist_table": "Macetero de Roble",
+  "block.villagersplus.dark_oak_horticulturist_table": "Macetero de Roble Oscuro",
+  "block.villagersplus.spruce_horticulturist_table": "Macetero de Abeto",
+  "block.villagersplus.jungle_horticulturist_table": "Macetero de Jungla",
+  "block.villagersplus.birch_horticulturist_table": "Macetero de Abedul",
+  "block.villagersplus.acacia_horticulturist_table": "Macetero de Acacia",
+  "block.villagersplus.mangrove_horticulturist_table": "Macetero de Mangle",
+  "block.villagersplus.crimson_horticulturist_table": "Macetero Carmesí",
+  "block.villagersplus.warped_horticulturist_table": "Macetero Distorsionado",
+  "block.villagersplus.cherry_horticulturist_table": "Macetero de Cerezo",
+  "block.villagersplus.bamboo_horticulturist_table": "Macetero de Bambú",
+
+  "entity.minecraft.villager.alchemist": "Alquimista",
+  "entity.minecraft.villager.occultist": "Ocultista",
+  "entity.minecraft.villager.oceanographer": "Oceanógrafo",
+  "entity.minecraft.villager.horticulturist": "Horticultor",
+
+  "entity.minecraft.villager.villagersplus.alchemist": "Alquimista",
+  "entity.minecraft.villager.villagersplus.occultist": "Ocultista",
+  "entity.minecraft.villager.villagersplus.oceanographer": "Oceanógrafo",
+  "entity.minecraft.villager.villagersplus.horticulturist": "Horticultor",
+
+
+  "itemGroup.villagersplus.group": "VillagersPlus"
+}
