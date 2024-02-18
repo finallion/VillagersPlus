@@ -13,8 +13,8 @@
   "block.villagersplus.mangrove_horticulturist_table": "红树木花盆",
   "block.villagersplus.crimson_horticulturist_table": "绯红木花盆",
   "block.villagersplus.warped_horticulturist_table": "诡异木花盆",
-  "block.villagersplus.cherry_horticulturist_table": "Cherry Flower Tub",
-  "block.villagersplus.bamboo_horticulturist_table": "Bamboo Flower Tub",
+  "block.villagersplus.cherry_horticulturist_table": "樱花木花盆",
+  "block.villagersplus.bamboo_horticulturist_table": "竹花盆",
 
   "entity.minecraft.villager.alchemist": "炼金术士",
   "entity.minecraft.villager.occultist": "神秘学家",
@@ -26,5 +26,5 @@
   "entity.minecraft.villager.villagersplus.oceanographer": "海洋学家",
   "entity.minecraft.villager.villagersplus.horticulturist": "园艺家",
 
-  "itemGroup.villagersplus.group": "VillagersPlus"
+  "itemGroup.villagersplus.group": "村民扩充"
 }
