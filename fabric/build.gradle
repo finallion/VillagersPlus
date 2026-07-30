@@ -32,6 +32,8 @@ dependencies {
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+	modImplementation "lion.villagertradingplus:villagertradingplus-fabric:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}"
 }
 
 processResources {

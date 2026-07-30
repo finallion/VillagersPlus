@@ -3,183 +3,330 @@
   "trades": {
     "novice": [
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "coal", "count": 15 },
-        "reward": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "coal",
+          "count": 15
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 16,
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "cobblestone", "count": 20 },
-        "reward": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "cobblestone",
+          "count": 20
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 16,
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "torch", "count": 8 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "torch",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 16,
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "ladder", "count": 6 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "ladder",
+          "count": 6
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 16,
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "rail", "count": 4 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "rail",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 16,
         "villager_experience": 1
       }
     ],
     "apprentice": [
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "raw_iron", "count": 4 },
-        "reward": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "raw_iron",
+          "count": 4
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:process_item",
-        "sell": { "item": "iron_ingot", "count": 1 },
-        "convertible": { "item": "raw_iron", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:process_item",
+        "sell": {
+          "item": "iron_ingot",
+          "count": 1
+        },
+        "convertible": {
+          "item": "raw_iron",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "lantern", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 3 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "lantern",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
         "max_uses": 12,
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "minecart", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 4 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "minecart",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
         "max_uses": 12,
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "iron_bars", "count": 8 },
-        "priceIn": { "item": "emerald", "count": 2 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "iron_bars",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
         "max_uses": 12,
         "villager_experience": 3
       }
     ],
     "journeyman": [
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "raw_copper", "count": 6 },
-        "reward": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "raw_copper",
+          "count": 6
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 10
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "cobbled_deepslate", "count": 8 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "cobbled_deepslate",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "tuff", "count": 8 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "tuff",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "powered_rail", "count": 2 },
-        "priceIn": { "item": "emerald", "count": 3 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "powered_rail",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "chain", "count": 4 },
-        "priceIn": { "item": "emerald", "count": 2 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "chain",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
         "max_uses": 12,
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_specific_enchanted_tool",
-        "sell": { "item": "iron_pickaxe", "count": 1 },
+        "type": "villagertradingplus:sell_specific_enchanted_tool",
+        "sell": {
+          "item": "iron_pickaxe",
+          "count": 1
+        },
         "enchantment": "minecraft:efficiency",
         "level": 2,
-        "basePriceIn": { "item": "emerald", "count": 9 },
+        "basePriceIn": {
+          "item": "emerald",
+          "count": 9
+        },
         "max_uses": 4,
         "villager_experience": 10
       }
     ],
     "expert": [
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "raw_gold", "count": 4 },
-        "reward": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "raw_gold",
+          "count": 4
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 15
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "glowstone", "count": 4 },
-        "priceIn": { "item": "emerald", "count": 3 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "glowstone",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
         "max_uses": 12,
         "villager_experience": 15
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "tnt", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 8 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "tnt",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 8
+        },
         "max_uses": 12,
         "villager_experience": 15
       }
     ],
     "master": [
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "diamond", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 10 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "diamond",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 10
+        },
         "max_uses": 6,
         "villager_experience": 30
       },
       {
-        "type": "villagersplus:sell_specific_enchanted_tool",
-        "sell": { "item": "diamond_pickaxe", "count": 1 },
+        "type": "villagertradingplus:sell_specific_enchanted_tool",
+        "sell": {
+          "item": "diamond_pickaxe",
+          "count": 1
+        },
         "enchantment": "minecraft:efficiency",
         "level": 4,
-        "basePriceIn": { "item": "emerald", "count": 32 },
+        "basePriceIn": {
+          "item": "emerald",
+          "count": 32
+        },
         "max_uses": 1,
         "villager_experience": 30
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "amethyst_shard", "count": 1 },
-        "priceIn": { "item": "emerald", "count": 1 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "amethyst_shard",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
         "max_uses": 12,
         "villager_experience": 30
       },
       {
-        "type": "villagersplus:sell_item",
-        "sell": { "item": "obsidian", "count": 2 },
-        "priceIn": { "item": "emerald", "count": 3 },
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "obsidian",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
         "max_uses": 6,
         "villager_experience": 30
       },
       {
-        "type": "villagersplus:buy_item",
-        "buy": { "item": "ancient_debris", "count": 1 },
-        "reward": { "item": "emerald", "count": 8 },
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "ancient_debris",
+          "count": 1
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 8
+        },
         "max_uses": 12,
         "villager_experience": 30
       }

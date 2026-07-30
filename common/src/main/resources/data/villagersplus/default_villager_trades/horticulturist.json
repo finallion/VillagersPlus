@@ -3,7 +3,7 @@
   "trades": {
     "novice": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "oxeye_daisy",
           "count": 1
@@ -16,7 +16,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "poppy",
           "count": 1
@@ -29,7 +29,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "allium",
           "count": 1
@@ -42,7 +42,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "azure_bluet",
           "count": 1
@@ -55,7 +55,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "cornflower",
           "count": 1
@@ -68,7 +68,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "lily_of_the_valley",
           "count": 1
@@ -81,7 +81,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "dandelion",
           "count": 1
@@ -94,7 +94,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "wheat_seeds",
           "count": 4
@@ -107,7 +107,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "beetroot_seeds",
           "count": 2
@@ -120,7 +120,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "melon_seeds",
           "count": 2
@@ -133,7 +133,7 @@
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "pumpkin_seeds",
           "count": 2
@@ -148,7 +148,7 @@
     ],
     "apprentice": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "spruce_leaves",
           "count": 2
@@ -161,7 +161,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "birch_leaves",
           "count": 2
@@ -174,7 +174,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "acacia_leaves",
           "count": 2
@@ -187,7 +187,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "azalea_leaves",
           "count": 2
@@ -200,7 +200,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "dark_oak_leaves",
           "count": 2
@@ -213,7 +213,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "jungle_leaves",
           "count": 2
@@ -226,7 +226,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "mangrove_leaves",
           "count": 2
@@ -239,7 +239,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "oak_leaves",
           "count": 2
@@ -252,7 +252,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "cherry_leaves",
           "count": 2
@@ -265,7 +265,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:process_item",
+        "type": "villagertradingplus:process_item",
         "sell": {
           "item": "dead_bush",
           "count": 1
@@ -282,7 +282,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "grass",
           "count": 4
@@ -295,7 +295,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "fern",
           "count": 2
@@ -310,7 +310,7 @@
     ],
     "journeyman": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "orange_tulip",
           "count": 1
@@ -323,7 +323,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "red_tulip",
           "count": 1
@@ -336,7 +336,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "white_tulip",
           "count": 1
@@ -349,7 +349,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "pink_tulip",
           "count": 1
@@ -362,7 +362,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "flower_pot",
           "count": 1
@@ -375,7 +375,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "spruce_sapling",
           "count": 1
@@ -388,7 +388,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "acacia_sapling",
           "count": 1
@@ -401,7 +401,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "birch_sapling",
           "count": 1
@@ -414,7 +414,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "dark_oak_sapling",
           "count": 1
@@ -427,7 +427,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "jungle_sapling",
           "count": 1
@@ -440,7 +440,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "cherry_sapling",
           "count": 1
@@ -453,7 +453,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "oak_sapling",
           "count": 1
@@ -468,7 +468,7 @@
     ],
     "expert": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "sunflower",
           "count": 1
@@ -481,7 +481,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "rose_bush",
           "count": 1
@@ -494,7 +494,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "lilac",
           "count": 1
@@ -507,7 +507,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "peony",
           "count": 1
@@ -520,7 +520,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "rooted_dirt",
           "count": 2
@@ -533,7 +533,7 @@
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "podzol",
           "count": 2
@@ -548,7 +548,7 @@
     ],
     "master": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "pink_petals",
           "count": 1
@@ -561,7 +561,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "blue_orchid",
           "count": 1
@@ -574,7 +574,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "wither_rose",
           "count": 1
@@ -587,7 +587,7 @@
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "flowering_azalea_leaves",
           "count": 2
@@ -600,7 +600,7 @@
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "spore_blossom",
           "count": 1
@@ -613,7 +613,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "moss_block",
           "count": 2
@@ -626,7 +626,7 @@
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "bone_meal",
           "count": 4

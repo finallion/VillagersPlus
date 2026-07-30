@@ -3,7 +3,7 @@
   "trades": {
     "novice": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "sugar",
           "count": 1
@@ -16,7 +16,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "brown_mushroom",
           "count": 1
@@ -29,7 +29,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "red_mushroom",
           "count": 1
@@ -42,7 +42,7 @@
         "villager_experience": 1
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "nether_wart",
           "count": 1
@@ -55,7 +55,7 @@
         "villager_experience": 2
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "glass_bottle",
           "count": 3
@@ -70,7 +70,7 @@
     ],
     "apprentice": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "magma_cream",
           "count": 1
@@ -83,7 +83,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "pufferfish",
           "count": 1
@@ -96,7 +96,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "fermented_spider_eye",
           "count": 1
@@ -109,7 +109,7 @@
         "villager_experience": 3
       },
       {
-        "type": "villagersplus:sell_potion",
+        "type": "villagertradingplus:sell_potion",
         "sell": {
           "item": "potion",
           "count": 1
@@ -128,7 +128,7 @@
     ],
     "journeyman": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "blaze_powder",
           "count": 1
@@ -141,7 +141,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "ghast_tear",
           "count": 1
@@ -154,7 +154,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "phantom_membrane",
           "count": 1
@@ -167,7 +167,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "gunpowder",
           "count": 1
@@ -180,7 +180,7 @@
         "villager_experience": 4
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "blaze_rod",
           "count": 1
@@ -193,7 +193,7 @@
         "villager_experience": 5
       },
       {
-        "type": "villagersplus:buy_item",
+        "type": "villagertradingplus:buy_item",
         "buy": {
           "item": "ender_pearl",
           "count": 1
@@ -208,7 +208,7 @@
     ],
     "expert": [
       {
-        "type": "villagersplus:sell_potion",
+        "type": "villagertradingplus:sell_potion",
         "sell": {
           "item": "splash_potion",
           "count": 1
@@ -227,7 +227,7 @@
     ],
     "master": [
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "dragon_breath",
           "count": 1
@@ -240,7 +240,7 @@
         "villager_experience": 7
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "glistering_melon_slice",
           "count": 1
@@ -253,7 +253,7 @@
         "villager_experience": 6
       },
       {
-        "type": "villagersplus:sell_item",
+        "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "rabbit_foot",
           "count": 1
