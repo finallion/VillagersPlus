@@ -25,3 +25,10 @@ mandatory = true
 versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.villagersplus]]
+modId = "villagertradingplus"
+mandatory = true
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"

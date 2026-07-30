@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "villagersplus",
-  "version": "4.0",
+  "version": "${version}",
   "name": "Villagers Plus",
   "description": "New villagers, new trades and new beautiful and useful workstations.",
   "authors": [
@@ -32,6 +32,7 @@
   "depends": {
     "fabricloader": ">=0.14.21",
     "fabric-api": "*",
+    "villagertradingplus": ">=1.0.0",
     "minecraft": ">=1.20",
     "java": ">=17"
   }

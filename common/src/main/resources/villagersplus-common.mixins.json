@@ -6,19 +6,13 @@
   "mixins": [
     "EntityAccessorMixin",
     "JigsawStructureMixin",
-    "MerchantScreenHandlerAccessor",
-    "MerchantScreenHandlerMixin",
     "SinglePoolElementAccessor",
     "StructurePieceMixin",
     "StructurePiecesCollectorAccessor",
     "StructurePoolAccessor",
-    "VillagerEntityMixin",
-    "WanderingTraderMixin",
     "TropicalFishEntityInvoker"
   ],
   "client": [
-    "HandledScreenAccessor",
-    "MerchantScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

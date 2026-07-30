@@ -2,15 +2,11 @@ package com.lion.villagersplus.forge;
 
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.VillagersPlusClient;
-import com.lion.villagersplus.platform.forge.DefaultTradeOfferResourceListener;
 import com.lion.villagersplus.platform.forge.RegistryHelperImpl;
-import com.lion.villagersplus.platform.forge.TradeOfferResourceListener;
-import com.lion.villagersplus.platform.forge.WanderingTraderTradeOfferResourceListener;
 import com.lion.villagersplus.util.StructurePoolAddition;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -47,7 +43,6 @@ public class VillagersPlusForge {
         bus.addListener(VillagersPlusForge::addItemsToTabs);
 
         forgeBus.register(this);
-        forgeBus.addListener(VillagersPlusForge::registerResourceReloader);
     }
 
     private static void init(final FMLCommonSetupEvent event) {
@@ -57,13 +52,6 @@ public class VillagersPlusForge {
     @SubscribeEvent
     public void onServerAboutToStartEvent(ServerAboutToStartEvent event) {
         StructurePoolAddition.registerJigsaws(event.getServer());
-    }
-
-    @SubscribeEvent
-    public static void registerResourceReloader(AddReloadListenerEvent event) {
-        event.addListener(new DefaultTradeOfferResourceListener());
-        event.addListener(new TradeOfferResourceListener());
-        event.addListener(new WanderingTraderTradeOfferResourceListener());
     }
 
     @SubscribeEvent

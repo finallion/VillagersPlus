@@ -3,8 +3,6 @@ package com.lion.villagersplus;
 import com.lion.villagersplus.config.OmegaConfig;
 import com.lion.villagersplus.config.VPConfig;
 import com.lion.villagersplus.init.*;
-import com.lion.villagersplus.platform.NetworkHelper;
-import com.lion.villagersplus.tradeoffers.TradeOfferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +25,6 @@ public class VillagersPlus {
 		VPPointOfInterestTypes.init();
 		VPVillagerProfessions.init();
 		VPStructures.init();
-
-		NetworkHelper.init();
-
-		TradeOfferManager.registerTradeOffers();
 	}
 
 	public static void postInit() {
