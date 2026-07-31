@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.MathHelper;
 
 public class ExperienceParticle extends SpriteBillboardParticle {
@@ -25,14 +25,14 @@ public class ExperienceParticle extends SpriteBillboardParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class ExperienceParticleFactory implements ParticleFactory<DefaultParticleType> {
+    public static class ExperienceParticleFactory implements ParticleFactory<SimpleParticleType> {
         private final SpriteProvider spriteProvider;
 
         public ExperienceParticleFactory(SpriteProvider spriteProvider) {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             ExperienceParticle waterSuspendParticle = new ExperienceParticle(clientWorld, this.spriteProvider, d, e, f, 0.0D, -0.800000011920929D, 0.0D);
             waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);
             waterSuspendParticle.gravityStrength = 0.01F;

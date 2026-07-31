@@ -284,7 +284,7 @@
       {
         "type": "villagertradingplus:buy_item",
         "buy": {
-          "item": "grass",
+          "item": "short_grass",
           "count": 4
         },
         "reward": {

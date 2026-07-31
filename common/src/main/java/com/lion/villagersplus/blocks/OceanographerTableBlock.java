@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.lion.villagersplus.init.VPBlockEntities;
 import com.lion.villagersplus.init.VPItems;
@@ -10,6 +11,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.sound.SoundCategory;
@@ -18,6 +20,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -42,6 +45,14 @@ public class OceanographerTableBlock extends WorkstationBlock {
     public static final BooleanProperty DOWN;
     // Sneak-placed aquariums never connect (in either direction).
     public static final BooleanProperty STANDALONE;
+
+    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
+    public static final MapCodec<OceanographerTableBlock> CODEC = createCodec(OceanographerTableBlock::new);
+
+    @Override
+    protected MapCodec<? extends OceanographerTableBlock> getCodec() {
+        return CODEC;
+    }
 
     public OceanographerTableBlock(Settings settings) {
         super(settings);
@@ -77,7 +88,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         if (!world.isClient) {
             return null;
         }
-        return checkType(type, VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(),
+        return validateTicker(type, VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(),
                 OceanographerTableBlockEntity::clientTick);
     }
 
@@ -93,8 +104,8 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity blockEntity) {
                 boolean isFishFood = itemStack.isOf(VPItems.FISH_FOOD.get());
@@ -112,7 +123,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     } else {
                         world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, isFishFood ? 1.2F : 0.6F, false);
                     }
-                    return ActionResult.success(world.isClient);
+                    return ItemActionResult.success(world.isClient);
                 }
 
                 // Bone meal grows the corals, shears trim them back down (mirrors the fish foods).
@@ -128,14 +139,14 @@ public class OceanographerTableBlock extends WorkstationBlock {
                                     itemStack.decrement(1);
                                 }
                             } else {
-                                itemStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                                itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
                             }
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
                     } else {
                         world.playSoundAtBlockCenter(pos, isBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
                     }
-                    return ActionResult.success(world.isClient);
+                    return ItemActionResult.success(world.isClient);
                 }
 
                 if (itemStack.isOf(VPItems.CALM_FOOD.get()) && state.get(FISH) >= 1) {
@@ -148,7 +159,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     } else {
                         world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, 0.9F, false);
                     }
-                    return ActionResult.success(world.isClient);
+                    return ItemActionResult.success(world.isClient);
                 }
 
                 // No planting in stacked upper blocks - they have no floor for the corals.
@@ -164,12 +175,12 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_CORAL_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
                     }
 
-                    return ActionResult.success(world.isClient);
+                    return ItemActionResult.success(world.isClient);
                 } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
                     // Only consume the bucket and set FISH if the slot was actually free;
                     // otherwise a desynced slot would eat the state change without a fish.
                     if (!blockEntity.insertCoral(itemStack, OceanographerTableBlockEntity.FISH_SLOT)) {
-                        return ActionResult.PASS;
+                        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                     }
 
                     if (!world.isClient()) {
@@ -177,9 +188,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
-                    if (world.isClient) player.playSound(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    if (world.isClient) player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-                    return ActionResult.success(world.isClient);
+                    return ItemActionResult.success(world.isClient);
                 } else if (itemStack.isOf(Items.WATER_BUCKET) && state.get(FISH) >= 1) {
                     ItemStack fish = blockEntity.getStack(OceanographerTableBlockEntity.FISH_SLOT);
                     if (!fish.isEmpty()) {
@@ -191,16 +202,17 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             world.setBlockState(pos, state.with(FISH, 0), 3);
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         } else {
-                            player.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                            player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
                         }
 
-                        return ActionResult.success(world.isClient);
+                        return ItemActionResult.success(world.isClient);
                     }
                 }
         }
-        return ActionResult.PASS;
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -212,10 +224,12 @@ public class OceanographerTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(CORALS, FISH, IS_FILLED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, STANDALONE);
     }
 
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         boolean standalone = ctx.getPlayer() != null && ctx.getPlayer().isSneaking();
         BlockState state = this.getDefaultState()
@@ -247,6 +261,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         BlockState result = state.with(FACING, rotation.rotate(state.get(FACING)));
         return switch (rotation) {
@@ -257,6 +272,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         };
     }
 
+    @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         Direction facing = state.get(FACING);
         return switch (mirror) {
@@ -268,10 +284,12 @@ public class OceanographerTableBlock extends WorkstationBlock {
         };
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
+    @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return (Integer)state.get(FISH) + state.get(CORALS);
     }

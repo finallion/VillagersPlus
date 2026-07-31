@@ -9,7 +9,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.village.VillagerProfession;
@@ -45,7 +45,7 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void registerParticleType(String name, DefaultParticleType particleType) {
+    public static void registerParticleType(String name, SimpleParticleType particleType) {
         throw new AssertionError();
     }
 

@@ -1,0 +1,45 @@
+modLoader = "javafml"
+# NeoForge's javafml, not Forge's — it declares [3,] for itself, so [3,) accepts it and anything
+# newer. The old Forge numbering ([37,)) matches nothing here and refuses to load.
+loaderVersion = "[3,)"
+license = "CC0-1.0"
+
+[[mods]]
+modId = "villagersplus"
+version = "${version}"
+displayName = "VillagersPlus"
+authors = "Lion"
+description = '''
+New villagers, new trades and new beautiful and useful workstations.
+'''
+logoFile = "villagersplus_logo.png"
+
+[[mixins]]
+config = "villagersplus.mixins.json"
+
+[[mixins]]
+config = "villagersplus-common.mixins.json"
+
+[[dependencies.villagersplus]]
+modId = "neoforge"
+# "mandatory" was replaced by "type" in the 1.20.5 loader generation.
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.villagersplus]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+# The trade system lives in the sister library; VillagersPlus only ships JSON for it, so this is a
+# load-order dependency rather than a compile-time one.
+[[dependencies.villagersplus]]
+modId = "villagertradingplus"
+type = "required"
+versionRange = "[1.0.0,)"
+ordering = "AFTER"
+side = "BOTH"

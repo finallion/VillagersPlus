@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -38,9 +39,9 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return this.inventory.size();
     }
 
-    public NbtCompound toInitialChunkDataNbt() {
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound nbtCompound = new NbtCompound();
-        Inventories.writeNbt(nbtCompound, this.inventory, true);
+        Inventories.writeNbt(nbtCompound, this.inventory, true, registryLookup);
         nbtCompound.putFloat("PlantScale", this.plantScale);
         return nbtCompound;
     }
@@ -119,16 +120,16 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
         this.plantScale = nbt.contains("PlantScale") ? nbt.getFloat("PlantScale") : 1.0F;
     }
 
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        Inventories.writeNbt(nbt, this.inventory);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
         nbt.putFloat("PlantScale", this.plantScale);
     }
 

@@ -1,6 +1,6 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.1-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
 }
 
 architectury {
@@ -16,7 +16,12 @@ subprojects {
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+		// Plain yarn collides with NeoForge on remap ("Mapping target name conflicts" for
+		// getInventory/renderHotbar); the patch layer resolves those names.
+		mappings loom.layered {
+			mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+			mappings "dev.architectury:yarn-mappings-patch-neoforge:${rootProject.yarn_mappings_patch_neoforge_version}"
+		}
 	}
 }
 
@@ -25,18 +30,21 @@ allprojects {
 	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 
-	archivesBaseName = rootProject.archives_base_name
+	base {
+		archivesName = rootProject.archives_base_name
+	}
 	version = "${rootProject.mod_version}+mc${rootProject.minecraft_version}"
 	group = rootProject.maven_group
 
 	repositories {
 		mavenLocal()
+		maven { url 'https://maven.neoforged.net/releases' }
 		maven { url 'https://jitpack.io' }
 	}
 
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
-		options.release = 17
+		options.release = 21
 	}
 
 	java {

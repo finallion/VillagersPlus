@@ -1,9 +1,11 @@
 package com.lion.villagersplus.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.blockentities.HorticulturistTableBlockEntity;
 import com.lion.villagersplus.init.VPTags;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -12,6 +14,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -24,6 +27,14 @@ import net.minecraft.world.event.GameEvent;
 public class HorticulturistTableBlock extends WorkstationBlock {
     public static final IntProperty FLOWERS;
     public static final BooleanProperty IS_TALL_FLOWER;
+
+    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
+    public static final MapCodec<HorticulturistTableBlock> CODEC = createCodec(HorticulturistTableBlock::new);
+
+    @Override
+    protected MapCodec<? extends HorticulturistTableBlock> getCodec() {
+        return CODEC;
+    }
 
     public HorticulturistTableBlock(Settings settings) {
         super(settings);
@@ -40,11 +51,11 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         return false;
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (!(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
-            return ActionResult.PASS;
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         boolean holdingTall = itemStack.isIn(VPTags.TALL_PLANTABLE_ITEMS);
@@ -67,14 +78,14 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                             itemStack.decrement(1);
                         }
                     } else {
-                        itemStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                        itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
                     }
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
             } else {
                 world.playSoundAtBlockCenter(pos, holdingBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
             }
-            return ActionResult.success(world.isClient);
+            return ItemActionResult.success(world.isClient);
         }
 
         if (state.get(FLOWERS) < 4) {
@@ -90,7 +101,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                     world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
                 }
 
-                return ActionResult.success(world.isClient);
+                return ItemActionResult.success(world.isClient);
             } else if (holdingSmall) {
                 blockEntity.insertFlower(itemStack, state.get(FLOWERS));
 
@@ -102,7 +113,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 if (world.isClient) {
                     world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
                 }
-                return ActionResult.success(world.isClient);
+                return ItemActionResult.success(world.isClient);
             }
         }
 
@@ -114,7 +125,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
             if (!world.isClient()) {
                 ItemStack removed = blockEntity.removeFlower(topSlot);
                 if (removed.isEmpty()) {
-                    return ActionResult.PASS;
+                    return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 }
                 player.getInventory().offerOrDrop(removed);
                 int remaining = tall ? 0 : state.get(FLOWERS) - 1;
@@ -125,12 +136,13 @@ public class HorticulturistTableBlock extends WorkstationBlock {
             if (world.isClient) {
                 world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
             }
-            return ActionResult.success(world.isClient);
+            return ItemActionResult.success(world.isClient);
         }
 
-        return ActionResult.PASS;
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -142,14 +154,17 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
+    @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return state.get(FLOWERS);
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FLOWERS, IS_TALL_FLOWER);
     }

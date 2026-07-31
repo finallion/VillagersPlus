@@ -79,6 +79,6 @@ public class VPPointOfInterestTypes {
 
     private static void fillMissingPointOfInterestMapValueForBlock(String name, Block pointOfInterestBlock) {
         var blockStates = PointOfInterestTypes.getStatesOfBlock(pointOfInterestBlock);
-        blockStates.forEach((state) -> PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, new Identifier(VillagersPlus.MOD_ID, name))).get()));
+        blockStates.forEach((state) -> PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, Identifier.of(VillagersPlus.MOD_ID, name))).get()));
     }
 }

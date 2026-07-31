@@ -580,7 +580,7 @@
       {
         "type": "villagertradingplus:buy_item",
         "buy": {
-          "item": "scute",
+          "item": "turtle_scute",
           "count": 1
         },
         "reward": {

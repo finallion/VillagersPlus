@@ -1,0 +1,83 @@
+plugins {
+	id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+loom {
+	accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
+architectury {
+	platformSetupLoomIde()
+	neoForge()
+}
+
+configurations {
+	common
+	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+	compileClasspath.extendsFrom common
+	runtimeClasspath.extendsFrom common
+	developmentNeoForge.extendsFrom common
+}
+
+dependencies {
+	neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
+
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
+	shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
+
+	// Comes from mavenLocal — run `./gradlew publishToMavenLocal` in VillagerTradingPlus first.
+	// Artifact is -neoforge now, not -forge.
+	modImplementation "lion.villagertradingplus:villagertradingplus-neoforge:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}"
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("META-INF/neoforge.mods.toml") {
+		expand "version": project.version
+	}
+}
+
+shadowJar {
+	exclude "fabric.mod.json"
+	exclude "architectury.common.json"
+
+	configurations = [project.configurations.shadowCommon]
+	archiveClassifier.set("dev-shadow")
+}
+
+remapJar {
+	input.set shadowJar.archiveFile
+	dependsOn shadowJar
+	archiveClassifier.set(null)
+	archiveFileName = "${rootProject.mod_id}-${project.name}-mc${rootProject.minecraft_version}-${rootProject.mod_version}.jar"
+}
+
+jar {
+	archiveClassifier.set("dev")
+}
+
+sourcesJar {
+	def commonSources = project(":common").sourcesJar
+	dependsOn commonSources
+	from commonSources.archiveFile.map { zipTree(it) }
+	duplicatesStrategy 'exclude'
+}
+
+components.java {
+	withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+		skip()
+	}
+}
+
+publishing {
+	publications {
+		mavenNeoForge(MavenPublication) {
+			artifactId = rootProject.archives_base_name + "-" + project.name
+			from components.java
+		}
+	}
+
+	repositories {
+	}
+}

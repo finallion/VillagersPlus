@@ -20,7 +20,10 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
@@ -105,9 +108,9 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     }
 
 
-    public NbtCompound toInitialChunkDataNbt() {
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound nbtCompound = new NbtCompound();
-        Inventories.writeNbt(nbtCompound, this.inventory, true);
+        Inventories.writeNbt(nbtCompound, this.inventory, true, registryLookup);
         nbtCompound.putFloat("FishScale", this.fishScale);
         nbtCompound.putFloat("CoralScale", this.coralScale);
         nbtCompound.putBoolean("Stationary", this.stationary);
@@ -231,10 +234,10 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
         this.fishScale = nbt.contains("FishScale") ? nbt.getFloat("FishScale") : 1.0F;
         this.coralScale = nbt.contains("CoralScale") ? nbt.getFloat("CoralScale") : 1.0F;
         this.stationary = nbt.getBoolean("Stationary");
@@ -242,9 +245,9 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         this.displayFishItem = null;
     }
 
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        Inventories.writeNbt(nbt, this.inventory);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
         nbt.putFloat("FishScale", this.fishScale);
         nbt.putFloat("CoralScale", this.coralScale);
         nbt.putBoolean("Stationary", this.stationary);
@@ -614,13 +617,17 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (fish == null) {
             return null;
         }
-        if (stack.getNbt() != null) {
-            if (fish instanceof AxolotlEntity axolotl && stack.getNbt().contains("Variant")) {
-                axolotl.setVariant(AxolotlEntity.Variant.byId(stack.getNbt().getInt("Variant")));
+        // A bucket's entity data is its own component now; ItemStack has no tag any more. The keys
+        // inside it ("Variant", "BucketVariantTag") are unchanged, so only the way in differs.
+        NbtComponent bucketData = stack.get(DataComponentTypes.BUCKET_ENTITY_DATA);
+        if (bucketData != null) {
+            NbtCompound entityNbt = bucketData.copyNbt();
+            if (fish instanceof AxolotlEntity axolotl && entityNbt.contains("Variant")) {
+                axolotl.setVariant(AxolotlEntity.Variant.byId(entityNbt.getInt("Variant")));
             }
-            if (fish instanceof TropicalFishEntity && stack.getNbt().contains("BucketVariantTag")) {
-                fish.readNbt(stack.getOrCreateNbt());
-                int id = stack.getNbt().getInt("BucketVariantTag");
+            if (fish instanceof TropicalFishEntity && entityNbt.contains("BucketVariantTag")) {
+                fish.readNbt(entityNbt);
+                int id = entityNbt.getInt("BucketVariantTag");
                 DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
                 DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
                 TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);

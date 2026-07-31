@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.blockentities.AlchemistTableBlockEntity;
 import com.lion.villagersplus.init.VPBlockEntities;
 import net.minecraft.block.*;
@@ -33,6 +34,18 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public static final DirectionProperty FACING;
     protected static final VoxelShape SHAPE;
 
+    // The onPlaced override that copied a named block item's name onto the block entity is gone:
+    // LockableContainerBlockEntity reads minecraft:custom_name out of the item's components itself now
+    // (see its readComponents), so doing it here would only duplicate vanilla.
+
+    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
+    public static final MapCodec<AlchemistTableBlock> CODEC = createCodec(AlchemistTableBlock::new);
+
+    @Override
+    protected MapCodec<? extends AlchemistTableBlock> getCodec() {
+        return CODEC;
+    }
+
     public AlchemistTableBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(BOTTLE_PROPERTIES[0], false).with(BOTTLE_PROPERTIES[1], false).with(BOTTLE_PROPERTIES[2], false).with(BOTTLE_PROPERTIES[3], false).with(IS_BREWING, false).with(HAS_FUEL, false).with(FACING, Direction.NORTH));
@@ -43,6 +56,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
         return new AlchemistTableBlockEntity(pos, state);
     }
 
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
@@ -54,10 +68,11 @@ public class AlchemistTableBlock extends WorkstationBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : checkType(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
+        return world.isClient ? null : validateTicker(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
@@ -70,15 +85,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
         }
     }
 
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof AlchemistTableBlockEntity) {
-                ((AlchemistTableBlockEntity)blockEntity).setCustomName(itemStack.getName());
-            }
-        }
-    }
-
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         double d, f;
         double e = (double)pos.getY() + 0.125D + (double)random.nextFloat() * 0.15D;
@@ -116,6 +123,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
         return false;
     }
 
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -127,26 +135,32 @@ public class AlchemistTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
+    @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(BOTTLE_PROPERTIES[0], BOTTLE_PROPERTIES[1], BOTTLE_PROPERTIES[2], BOTTLE_PROPERTIES[3], HAS_FUEL, IS_BREWING, FACING);
     }
 
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
+    @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return (BlockState)state.with(FACING, rotation.rotate((Direction)state.get(FACING)));
     }
 
+    @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation((Direction)state.get(FACING)));
     }

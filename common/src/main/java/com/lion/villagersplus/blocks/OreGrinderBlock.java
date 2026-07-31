@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.blockentities.OreGrinderBlockEntity;
 import com.lion.villagersplus.init.VPBlockEntities;
 import net.minecraft.block.*;
@@ -31,6 +32,18 @@ public class OreGrinderBlock extends WorkstationBlock {
     public static final DirectionProperty FACING;
     public static final BooleanProperty LIT;
 
+    // The onPlaced override that copied a named block item's name onto the block entity is gone:
+    // LockableContainerBlockEntity reads minecraft:custom_name out of the item's components itself now
+    // (see its readComponents), so doing it here would only duplicate vanilla.
+
+    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
+    public static final MapCodec<OreGrinderBlock> CODEC = createCodec(OreGrinderBlock::new);
+
+    @Override
+    protected MapCodec<? extends OreGrinderBlock> getCodec() {
+        return CODEC;
+    }
+
     public OreGrinderBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, false));
@@ -43,10 +56,11 @@ public class OreGrinderBlock extends WorkstationBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : checkType(type, VPBlockEntities.ORE_GRINDER_BLOCK_ENTITY.get(), OreGrinderBlockEntity::tick);
+        return world.isClient ? null : validateTicker(type, VPBlockEntities.ORE_GRINDER_BLOCK_ENTITY.get(), OreGrinderBlockEntity::tick);
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
@@ -59,15 +73,7 @@ public class OreGrinderBlock extends WorkstationBlock {
         }
     }
 
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof OreGrinderBlockEntity) {
-                ((OreGrinderBlockEntity) blockEntity).setCustomName(itemStack.getName());
-            }
-        }
-    }
-
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!state.get(LIT)) {
             return;
@@ -84,6 +90,7 @@ public class OreGrinderBlock extends WorkstationBlock {
         world.addParticle(ParticleTypes.SMOKE, d + (random.nextDouble() - 0.5D) * 0.3D, e, f + (random.nextDouble() - 0.5D) * 0.3D, 0.0D, 0.02D, 0.0D);
     }
 
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -95,26 +102,32 @@ public class OreGrinderBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
+    @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, LIT);
     }
 
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
+    @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
+    @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }

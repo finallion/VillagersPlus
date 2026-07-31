@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.lion.villagersplus.mixin.neoforge",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+    "EntityBucketItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,10 +1,11 @@
 accessWidener v2 named
 
-accessible method net/minecraft/particle/DefaultParticleType <init> (Z)V
-accessible field net/minecraft/world/poi/PointOfInterestType blockStates Ljava/util/Set;
-mutable field net/minecraft/world/poi/PointOfInterestType blockStates Ljava/util/Set;
-accessible field net/minecraft/world/poi/PointOfInterestType ticketCount I
-mutable field net/minecraft/world/poi/PointOfInterestType ticketCount I
+# DefaultParticleType is called SimpleParticleType as of 1.21; its constructor is protected.
+accessible method net/minecraft/particle/SimpleParticleType <init> (Z)V
+
+# PointOfInterestType became a record in 1.21. The old "accessible/mutable field blockStates" and
+# "ticketCount" lines are gone on purpose: a record component cannot be made mutable, and nothing
+# here ever needed it — VPPointOfInterestTypes only reads blockStates() (a public record accessor)
+# and puts into the map below. Widening them would have been a hard startup crash for no gain.
 accessible field net/minecraft/world/poi/PointOfInterestTypes POI_STATES_TO_TYPE Ljava/util/Map;
-mutable field net/minecraft/world/poi/PointOfInterestTypes POI_STATES_TO_TYPE Ljava/util/Map;
 accessible method net/minecraft/world/poi/PointOfInterestTypes getStatesOfBlock (Lnet/minecraft/block/Block;)Ljava/util/Set;

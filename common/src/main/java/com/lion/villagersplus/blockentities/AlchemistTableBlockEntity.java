@@ -14,9 +14,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -198,7 +201,8 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
     private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
         // ingredient slot
         ItemStack itemStack = slots.get(3);
-        List<Potion> potions = Registries.POTION.getEntrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+        // A potion is a registry entry now, not a bare value: PotionContentsComponent holds the entry.
+        List<RegistryEntry<Potion>> potions = Registries.POTION.streamEntries().collect(Collectors.toList());
 
         int explosionChance = 0;
         if (VillagersPlus.CONFIG.can_explode) {
@@ -208,9 +212,10 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         if (explosionChance == 0) {
             for (int i = 0; i < 3; ++i) {
                 if (!slots.get(i).isEmpty()) {
-                    slots.set(i, world.random.nextBoolean() ?
-                            PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potions.get(world.random.nextInt(potions.size()))) :
-                            PotionUtil.setPotion(new ItemStack(Items.POTION), potions.get(world.random.nextInt(potions.size()))));
+                    ItemStack brewed = new ItemStack(world.random.nextBoolean() ? Items.SPLASH_POTION : Items.POTION);
+                    brewed.set(DataComponentTypes.POTION_CONTENTS,
+                            new PotionContentsComponent(potions.get(world.random.nextInt(potions.size()))));
+                    slots.set(i, brewed);
                 }
             }
         } else {
@@ -227,18 +232,32 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         world.syncWorldEvent(1035, pos, 0);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    /**
+     * LockableContainerBlockEntity declares these abstract as of 1.20.5 so it can move the whole
+     * inventory in and out of the {@code container} item component.
+     */
+    @Override
+    protected DefaultedList<ItemStack> getHeldStacks() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+        this.inventory = inventory;
+    }
+
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
         this.brewTime = nbt.getShort("BrewTime");
         this.fuel = nbt.getByte("Fuel");
     }
 
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
         nbt.putShort("BrewTime", (short) this.brewTime);
-        Inventories.writeNbt(nbt, this.inventory);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
         nbt.putByte("Fuel", (byte) this.fuel);
     }
 

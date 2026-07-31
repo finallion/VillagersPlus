@@ -9,7 +9,7 @@ import com.lion.villagersplus.init.VPParticles;
 import com.lion.villagersplus.init.VPScreens;
 import com.lion.villagersplus.particles.BubbleParticle;
 import com.lion.villagersplus.particles.ExperienceParticle;
-import net.fabricmc.api.ClientModInitializer;;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;

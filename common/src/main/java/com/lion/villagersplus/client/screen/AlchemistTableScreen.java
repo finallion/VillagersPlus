@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AlchemistTableScreen extends HandledScreen<AlchemistTableScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(VillagersPlus.MOD_ID, "textures/gui/container/alchemist_table.png");
+    private static final Identifier TEXTURE = Identifier.of(VillagersPlus.MOD_ID, "textures/gui/container/alchemist_table.png");
     private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
     public AlchemistTableScreen(AlchemistTableScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -25,7 +25,7 @@ public class AlchemistTableScreen extends HandledScreen<AlchemistTableScreenHand
     }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }

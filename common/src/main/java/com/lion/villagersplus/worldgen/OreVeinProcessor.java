@@ -2,6 +2,7 @@ package com.lion.villagersplus.worldgen;
 
 import com.lion.villagersplus.init.VPStructures;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,7 +33,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class OreVeinProcessor extends StructureProcessor {
 
-    public static final Codec<OreVeinProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    // StructureProcessorType.codec() returns a MapCodec since 1.20.5, so build one directly.
+    public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Registries.BLOCK.getCodec().fieldOf("target").forGetter(processor -> processor.target),
             DataPool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
     ).apply(instance, OreVeinProcessor::new));

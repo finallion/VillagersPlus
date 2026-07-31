@@ -2,10 +2,14 @@ package com.lion.villagersplus.mixin;
 
 import com.lion.villagersplus.util.VanillaMineshaftAttachment;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ProtoChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -30,6 +34,32 @@ public class StructurePieceMixin {
     private void villagersplus$skipTerrainAdaptation(ChunkPos pos, int offset, CallbackInfoReturnable<Boolean> cir) {
         if (VanillaMineshaftAttachment.isBeardExempt((StructurePiece) (Object) this)) {
             cir.setReturnValue(false);
+        }
+    }
+
+    /**
+     * Silences the "Trying to mark a block for PostProcessing … but this operation is not supported"
+     * flood that the miner's mineshaft produces.
+     * <p>
+     * {@code addBlock} marks every block from {@code BLOCKS_NEEDING_POST_PROCESSING} - fences,
+     * torches, ladders, rails, i.e. most of a mineshaft corridor - for post-processing. That list
+     * only exists while a chunk is still being generated: {@link ProtoChunk} keeps it,
+     * {@code WrapperProtoChunk} deliberately drops it, and the base {@link Chunk} implementation
+     * does nothing but log a warning. Our mineshaft hangs off a <em>village</em> start, so it reaches
+     * chunks that have already left the generation pipeline and are plain {@code WorldChunk}s by the
+     * time the village places - one warning per fence post, thousands per village.
+     * <p>
+     * Skipping the call there is the same outcome vanilla already produces (the mark is discarded
+     * either way, the block is placed regardless), minus the log noise. Anything still in the
+     * pipeline is passed through untouched, so no real post-processing is lost.
+     */
+    @Redirect(
+            method = "addBlock",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/chunk/Chunk;markBlockForPostProcessing(Lnet/minecraft/util/math/BlockPos;)V"))
+    private void villagersplus$onlyPostProcessUnfinishedChunks(Chunk chunk, BlockPos pos) {
+        if (chunk instanceof ProtoChunk) {
+            chunk.markBlockForPostProcessing(pos);
         }
     }
 }

@@ -18,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StructurePoolAddition {
-    private static final RegistryKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier("minecraft", "empty"));
+    private static final RegistryKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of("minecraft", "empty"));
     /** Turns the miner house's chiseled stone into ores - see {@link com.lion.villagersplus.worldgen.OreVeinProcessor}. */
-    private static final RegistryKey<StructureProcessorList> MINER_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier(VillagersPlus.MOD_ID, "miner_ores"));
-    private static final Identifier plainsPoolLocation = new Identifier("minecraft:village/plains/houses");
-    private static final Identifier desertPoolLocation = new Identifier("minecraft:village/desert/houses");
-    private static final Identifier savannaPoolLocation = new Identifier("minecraft:village/savanna/houses");
-    private static final Identifier snowyPoolLocation = new Identifier("minecraft:village/snowy/houses");
-    private static final Identifier taigaPoolLocation = new Identifier("minecraft:village/taiga/houses");
+    private static final RegistryKey<StructureProcessorList> MINER_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of(VillagersPlus.MOD_ID, "miner_ores"));
+    private static final Identifier plainsPoolLocation = Identifier.of("minecraft:village/plains/houses");
+    private static final Identifier desertPoolLocation = Identifier.of("minecraft:village/desert/houses");
+    private static final Identifier savannaPoolLocation = Identifier.of("minecraft:village/savanna/houses");
+    private static final Identifier snowyPoolLocation = Identifier.of("minecraft:village/snowy/houses");
+    private static final Identifier taigaPoolLocation = Identifier.of("minecraft:village/taiga/houses");
 
     public static void registerJigsaws(MinecraftServer server) {
         Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().get(RegistryKeys.TEMPLATE_POOL);

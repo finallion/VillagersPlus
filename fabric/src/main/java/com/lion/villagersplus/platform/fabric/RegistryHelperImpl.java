@@ -13,7 +13,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -30,12 +30,12 @@ import java.util.function.Supplier;
 public class RegistryHelperImpl {
 
     public static <T extends Block> Supplier<T> registerBlock(String name, Supplier<T> block) {
-        var registry = Registry.register(Registries.BLOCK, new Identifier(VillagersPlus.MOD_ID, name), block.get());
+        var registry = Registry.register(Registries.BLOCK, Identifier.of(VillagersPlus.MOD_ID, name), block.get());
         return () -> registry;
     }
 
     public static <T extends Item> Supplier<T> registerItem(String name, Supplier<T> item) {
-        var registry = Registry.register(Registries.ITEM, new Identifier(VillagersPlus.MOD_ID, name), item.get());
+        var registry = Registry.register(Registries.ITEM, Identifier.of(VillagersPlus.MOD_ID, name), item.get());
         return () -> registry;
     }
 
@@ -51,17 +51,17 @@ public class RegistryHelperImpl {
     }
 
     public static <T extends BlockEntityType<?>> Supplier<T> registerBlockEntity(String name, Supplier<T> blockEntity) {
-        var registry = Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(VillagersPlus.MOD_ID, name), blockEntity.get());
+        var registry = Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(VillagersPlus.MOD_ID, name), blockEntity.get());
         return () -> registry;
     }
 
-    public static void registerParticleType(String name, DefaultParticleType particleType) {
+    public static void registerParticleType(String name, SimpleParticleType particleType) {
         Registry.register(Registries.PARTICLE_TYPE, VillagersPlus.createStringID(name), particleType);
     }
 
 
     public static void registerScreenHandlerType(String name, ScreenHandlerType<?> screenHandlerType) {
-        Registry.register(Registries.SCREEN_HANDLER, new Identifier(VillagersPlus.MOD_ID, name), screenHandlerType);
+        Registry.register(Registries.SCREEN_HANDLER, Identifier.of(VillagersPlus.MOD_ID, name), screenHandlerType);
     }
 
     public static void registerRenderType(RenderLayer type, Block... blocks) {
@@ -69,7 +69,7 @@ public class RegistryHelperImpl {
     }
 
     public static <T extends SoundEvent> Supplier<T> registerSoundEvent(String name, Supplier<T> soundEvent) {
-        var registry = Registry.register(Registries.SOUND_EVENT, new Identifier(VillagersPlus.MOD_ID, name), soundEvent.get());
+        var registry = Registry.register(Registries.SOUND_EVENT, Identifier.of(VillagersPlus.MOD_ID, name), soundEvent.get());
         return () -> registry;
     }
 
@@ -78,17 +78,17 @@ public class RegistryHelperImpl {
     }
 
     public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
-        var registry = Registry.register(Registries.POINT_OF_INTEREST_TYPE, new Identifier(VillagersPlus.MOD_ID, name), pointOfInterestType.get());
+        var registry = Registry.register(Registries.POINT_OF_INTEREST_TYPE, Identifier.of(VillagersPlus.MOD_ID, name), pointOfInterestType.get());
         return () -> registry;
     }
 
     public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
-        var registry = Registry.register(Registries.VILLAGER_PROFESSION, new Identifier(VillagersPlus.MOD_ID, name), villagerProfession.get());
+        var registry = Registry.register(Registries.VILLAGER_PROFESSION, Identifier.of(VillagersPlus.MOD_ID, name), villagerProfession.get());
         return () -> registry;
     }
 
     public static void registerStructureProcessorType(String name, StructureProcessorType<?> structureProcessorType) {
-        Registry.register(Registries.STRUCTURE_PROCESSOR, new Identifier(VillagersPlus.MOD_ID, name), structureProcessorType);
+        Registry.register(Registries.STRUCTURE_PROCESSOR, Identifier.of(VillagersPlus.MOD_ID, name), structureProcessorType);
     }
 
 

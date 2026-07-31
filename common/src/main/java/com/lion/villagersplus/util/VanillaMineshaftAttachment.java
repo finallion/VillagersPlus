@@ -7,6 +7,7 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.structure.StructureLiquidSettings;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
@@ -81,7 +82,7 @@ public final class VanillaMineshaftAttachment {
     }
 
     private static Identifier id(String path) {
-        return new Identifier(VillagersPlus.MOD_ID, path);
+        return Identifier.of(VillagersPlus.MOD_ID, path);
     }
 
     /**
@@ -273,7 +274,9 @@ public final class VanillaMineshaftAttachment {
 
         BlockPos pos = connect.subtract(top);
         BlockBox box = element.getBoundingBox(templates, pos, rotation);
-        return new PoolStructurePiece(templates, element, pos, 0, rotation, box);
+        // Jigsaw pieces carry their liquid handling explicitly since 1.21. APPLY_WATERLOGGING is what
+        // JigsawStructure defaults to, so this keeps the pre-1.21 behaviour.
+        return new PoolStructurePiece(templates, element, pos, 0, rotation, box, StructureLiquidSettings.APPLY_WATERLOGGING);
     }
 
     /** World position of the jigsaw block called {@code name} that points in {@code facing}, or null. */
@@ -292,7 +295,7 @@ public final class VanillaMineshaftAttachment {
     private static SinglePoolElement element(Structure.Context context, Identifier location) {
         RegistryEntry<StructureProcessorList> processors = context.dynamicRegistryManager()
                 .get(RegistryKeys.PROCESSOR_LIST)
-                .entryOf(RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier("minecraft", "empty")));
+                .entryOf(RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of("minecraft", "empty")));
 
         return StructurePoolElement.ofProcessedSingle(location.toString(), processors).apply(StructurePool.Projection.RIGID);
     }

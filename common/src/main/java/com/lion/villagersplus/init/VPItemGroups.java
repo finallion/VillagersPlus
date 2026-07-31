@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public class VPItemGroups {
 
-    public static final RegistryKey<ItemGroup> ITEM_GROUP = RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier(VillagersPlus.MOD_ID, "group"));
+    public static final RegistryKey<ItemGroup> ITEM_GROUP = RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of(VillagersPlus.MOD_ID, "group"));
 
     public static void init() {
         RegistryHelper.registerItemGroup(ITEM_GROUP, "group", "VillagersPlus", VPItems.MANGROVE_HORTICULTURIST_TABLE_BLOCK);

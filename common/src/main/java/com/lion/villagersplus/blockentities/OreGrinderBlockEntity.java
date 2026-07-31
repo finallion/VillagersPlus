@@ -7,8 +7,11 @@ import com.lion.villagersplus.init.VPBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -19,6 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -145,18 +149,35 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
      * No pickaxe is the slowest. Efficiency adds to the effective speed using the vanilla
      * mining bonus (level^2 + 1), so a higher Efficiency level noticeably speeds things up.
      */
-    private static int getGrindTime(ItemStack pickaxe) {
+    private static int getGrindTime(@Nullable World world, ItemStack pickaxe) {
         if (!isPickaxe(pickaxe)) {
             return GRIND_TIME_NO_PICKAXE;
         }
         float speed = ((ToolItem) pickaxe.getItem()).getMaterial().getMiningSpeedMultiplier();
-        int efficiency = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, pickaxe);
+        int efficiency = enchantmentLevel(world, Enchantments.EFFICIENCY, pickaxe);
         if (efficiency > 0) {
             speed += (float) (efficiency * efficiency + 1);
         }
         // Base material: wood ~2 -> 600, stone ~4 -> 300, iron ~6 -> 200, diamond ~8 -> 150, gold ~12 -> 100.
         // Efficiency V on diamond ~34 -> clamps to the 40-tick floor.
         return MathHelper.clamp((int) (1200.0F / speed), 40, 600);
+    }
+
+    /**
+     * Enchantments moved into a dynamic registry in 1.21, so {@link Enchantments} only holds keys and
+     * a level lookup has to go through the world's registries. A missing world (during
+     * {@code readNbt}, before the block entity is placed) simply counts as no enchantment — the tick
+     * recomputes the grind time every tick anyway, so it corrects itself immediately.
+     */
+    private static int enchantmentLevel(@Nullable World world, RegistryKey<Enchantment> enchantment, ItemStack stack) {
+        if (world == null || stack.isEmpty()) {
+            return 0;
+        }
+        return world.getRegistryManager()
+                .get(RegistryKeys.ENCHANTMENT)
+                .getEntry(enchantment)
+                .map(entry -> EnchantmentHelper.getLevel(entry, stack))
+                .orElse(0);
     }
 
     protected Text getContainerName() {
@@ -200,7 +221,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         boolean hasInput = !inputStack.isEmpty();
         boolean hasFuel = !fuelStack.isEmpty();
 
-        blockEntity.grindTimeTotal = getGrindTime(pickaxeStack);
+        blockEntity.grindTimeTotal = getGrindTime(world, pickaxeStack);
 
         if (!disabled && (blockEntity.isBurning() || hasFuel && hasInput)) {
             ItemStack result = getGrindResult(inputStack);
@@ -276,7 +297,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         float multiplier = Math.max(0.0F, VillagersPlus.CONFIG.ore_grinder_output_multiplier);
         int count = Math.max(1, Math.round(baseResult.getCount() * multiplier));
         int fortune = VillagersPlus.CONFIG.ore_grinder_fortune_enabled
-                ? EnchantmentHelper.getLevel(Enchantments.FORTUNE, pickaxeStack) : 0;
+                ? enchantmentLevel(this.world, Enchantments.FORTUNE, pickaxeStack) : 0;
         if (fortune > 0) {
             int bonus = this.world.random.nextInt(fortune + 2) - 1;
             if (bonus < 0) {
@@ -305,7 +326,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         }
         // Configurable wear per ground ore; honour Unbreaking per durability point with the
         // vanilla probability (like ItemStack#damage does).
-        int unbreaking = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, pickaxe);
+        int unbreaking = enchantmentLevel(this.world, Enchantments.UNBREAKING, pickaxe);
         int damage = Math.max(0, VillagersPlus.CONFIG.ore_grinder_pickaxe_damage);
         for (int i = 0; i < damage; i++) {
             if (unbreaking > 0 && this.world.random.nextInt(unbreaking + 1) != 0) {
@@ -332,24 +353,38 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         return AbstractFurnaceBlockEntity.createFuelTimeMap().containsKey(stack.getItem());
     }
 
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    /**
+     * LockableContainerBlockEntity declares these abstract as of 1.20.5 so it can move the whole
+     * inventory in and out of the {@code container} item component.
+     */
+    @Override
+    protected DefaultedList<ItemStack> getHeldStacks() {
+        return this.inventory;
+    }
+
+    @Override
+    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+        this.inventory = inventory;
+    }
+
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory);
+        Inventories.readNbt(nbt, this.inventory, registryLookup);
         this.burnTime = nbt.getShort("BurnTime");
         this.grindProgress = nbt.getShort("GrindTime");
-        this.grindTimeTotal = getGrindTime(this.inventory.get(PICKAXE_SLOT));
+        this.grindTimeTotal = getGrindTime(this.world, this.inventory.get(PICKAXE_SLOT));
         this.fuelTime = nbt.contains("FuelTime")
                 ? nbt.getShort("FuelTime")
                 : getFuelTime(this.inventory.get(FUEL_SLOT));
     }
 
-    protected void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
         nbt.putShort("BurnTime", (short) this.burnTime);
         nbt.putShort("GrindTime", (short) this.grindProgress);
         nbt.putShort("FuelTime", (short) this.fuelTime);
-        Inventories.writeNbt(nbt, this.inventory);
+        Inventories.writeNbt(nbt, this.inventory, registryLookup);
     }
 
     public ItemStack getStack(int slot) {
@@ -367,7 +402,8 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     public void setStack(int slot, ItemStack stack) {
         if (slot >= 0 && slot < this.inventory.size()) {
             ItemStack existing = this.inventory.get(slot);
-            boolean sameItem = !stack.isEmpty() && ItemStack.canCombine(stack, existing);
+            // canCombine is gone; the equivalent check is item plus components.
+            boolean sameItem = !stack.isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, existing);
             this.inventory.set(slot, stack);
             if (stack.getCount() > this.getMaxCountPerStack()) {
                 stack.setCount(this.getMaxCountPerStack());

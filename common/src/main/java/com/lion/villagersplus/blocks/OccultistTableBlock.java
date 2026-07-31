@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blocks;
 
+import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blockentities.OccultistTableBlockEntity;
 import com.lion.villagersplus.init.VPParticles;
@@ -27,6 +28,14 @@ import net.minecraft.world.World;
 public class OccultistTableBlock extends WorkstationBlock {
     public static final IntProperty FILLING;
 
+    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
+    public static final MapCodec<OccultistTableBlock> CODEC = createCodec(OccultistTableBlock::new);
+
+    @Override
+    protected MapCodec<? extends OccultistTableBlock> getCodec() {
+        return CODEC;
+    }
+
     public OccultistTableBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.stateManager.getDefaultState().with(FILLING, 0));
@@ -42,14 +51,15 @@ public class OccultistTableBlock extends WorkstationBlock {
         return new OccultistTableBlockEntity(pos, state);
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    @Override
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof OccultistTableBlockEntity tile && !player.isCreative()) {
             tile.interact(world, player);
 
             if (world.isClient) {
                 if (player.isSneaking()) {
                     createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, ParticleTypes.SOUL, world.random);
-                    world.playSound(player, pos, SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.BLOCKS, 3.0F, 0.0F);
+                    world.playSound(player, pos, SoundEvents.PARTICLE_SOUL_ESCAPE.value(), SoundCategory.BLOCKS, 3.0F, 0.0F);
                 } else {
                     createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, VPParticles.EXPERIENCE_PARTICLE, world.random);
                     world.playSound(player, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 3.0F, 1.0F);
@@ -103,12 +113,14 @@ public class OccultistTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(FILLING) > 0 && random.nextInt(3) == 0) {
             world.addParticle(VPParticles.EXPERIENCE_PARTICLE, pos.getX() + 0.5D + random.nextDouble() - random.nextDouble(), pos.getY() + 1.0D + random.nextDouble(), pos.getZ() + 0.5D + random.nextDouble() - random.nextDouble(), 0.0D, 0.05D, 0.0D);
         }
     }
 
+    @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -120,14 +132,17 @@ public class OccultistTableBlock extends WorkstationBlock {
         }
     }
 
+    @Override
     public boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
+    @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FILLING);
     }

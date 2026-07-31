@@ -7,7 +7,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtil;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.potion.Potions;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
@@ -138,7 +139,8 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
          */
 
         public static boolean matches(ItemStack stack) {
-            return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER).getItem());
+            // The old form built a water potion just to read its item back — that item is Items.POTION.
+            return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.POTION);
         }
     }
 
@@ -156,7 +158,10 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
         }
 
         public static boolean matches(ItemStack stack) {
-            if (PotionUtil.getPotion(stack) == PotionUtil.getPotion(PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER))) {
+            // A water bottle is the base being brewed, not an ingredient. The potion lives in a
+            // component now; an item with none at all (a plain glass bottle) is not water either.
+            PotionContentsComponent contents = stack.get(DataComponentTypes.POTION_CONTENTS);
+            if (contents != null && contents.matches(Potions.WATER)) {
                 return false;
             }
             return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION);

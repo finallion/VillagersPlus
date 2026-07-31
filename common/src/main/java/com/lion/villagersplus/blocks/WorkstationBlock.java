@@ -15,24 +15,32 @@ public abstract class WorkstationBlock extends BlockWithEntity {
         super(settings);
     }
 
-    public BlockRenderType getRenderType(BlockState state) {
+    @Override
+    protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    /**
+     * Two parameters since 1.20.5, not four. The old form silently overrode nothing, which would have
+     * let villagers path straight through their own workstation.
+     */
+    @Override
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 
     @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 1.0F;
     }
 
-    public boolean hasComparatorOutput(BlockState state) {
+    @Override
+    protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 

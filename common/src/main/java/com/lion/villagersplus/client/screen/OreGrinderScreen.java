@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class OreGrinderScreen extends HandledScreen<OreGrinderScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(VillagersPlus.MOD_ID, "textures/gui/container/ore_grinder.png");
+    private static final Identifier TEXTURE = Identifier.of(VillagersPlus.MOD_ID, "textures/gui/container/ore_grinder.png");
 
     public OreGrinderScreen(OreGrinderScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -23,7 +23,7 @@ public class OreGrinderScreen extends HandledScreen<OreGrinderScreenHandler> {
     }
 
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context);
+        this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
