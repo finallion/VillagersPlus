@@ -1,9 +1,8 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
-	// Pinned to the 1.x line on purpose: mod-publish-plugin 2.0 raised its minimum to Gradle 9,
-	// and the wrapper here is stuck at 8.8 because Loom 1.7 needs >= 8.8 and breaks from 8.12
-	// (Problems.forNamespace was removed). Only bump this past 1.x together with Loom and Gradle.
+	id "dev.architectury.loom" version "1.11-SNAPSHOT" apply false
+	// Pinned to the 1.x line on purpose: mod-publish-plugin 2.0 requires Gradle 9, and the wrapper
+	// is on 8.14 for Loom 1.11. Only bump this past 1.x together with Loom and Gradle.
 	id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
