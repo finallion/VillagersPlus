@@ -1,6 +1,10 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+	// Pinned to the 1.x line on purpose: mod-publish-plugin 2.0 raised its minimum to Gradle 9,
+	// and the wrapper here is stuck at 8.8 because Loom 1.7 needs >= 8.8 and breaks from 8.12
+	// (Problems.forNamespace was removed). Only bump this past 1.x together with Loom and Gradle.
+	id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
 architectury {
@@ -49,5 +53,102 @@ allprojects {
 
 	java {
 		withSourcesJar()
+	}
+}
+
+// ---------------------------------------------------------------------------------------------
+// Release publishing.
+//
+// NOT ARMED. Every task runs in dry-run mode unless PUBLISH_LIVE=true is set, in which case it
+// only writes the release assets to build/mod-publish-plugin/ instead of uploading anything.
+// To go live you need, in this order:
+//   1. real project ids in ~/.gradle/gradle.properties (never in this repo's gradle.properties,
+//      that file is tracked): villagersplusModrinthId, villagersplusCurseforgeId
+//   2. tokens, either as env vars (MODRINTH_TOKEN / CURSEFORGE_TOKEN / GITHUB_TOKEN) or as
+//      gradle properties (modrinthToken / curseforgeToken)
+//   3. PUBLISH_LIVE=true
+//
+// Note that the version string carries the Minecraft version (4.0.0+mc1.21.1). The mod version
+// itself does not change between Minecraft versions, so without that suffix the second release
+// would collide with the first on Modrinth, which requires version numbers to be unique.
+// ---------------------------------------------------------------------------------------------
+publishMods {
+	dryRun = providers.environmentVariable("PUBLISH_LIVE").getOrElse("false") != "true"
+
+	version = project.version
+	type = STABLE
+	// Without this the release is titled after the Gradle artifact name ("villagersplus
+	// 4.0.0+mc1.21.1"), which is what players see on the store page.
+	displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version}"
+	changelog = providers.environmentVariable("CHANGELOG")
+			.getOrElse("See the GitHub release for the changelog.")
+
+	def token = { String env, String property ->
+		// Empty rather than absent: an absent Provider makes the task fail during configuration,
+		// which would break dry runs too. A live run with an empty token fails at the API with 401,
+		// which is the clearer error.
+		providers.environmentVariable(env).orElse(providers.gradleProperty(property)).orElse("")
+	}
+
+	def cfOptions = curseforgeOptions {
+		accessToken = token("CURSEFORGE_TOKEN", "curseforgeToken")
+		projectId = providers.gradleProperty("villagersplusCurseforgeId").getOrElse("000000")
+		minecraftVersions.add(rootProject.minecraft_version)
+		// CurseForge rejects uploads that declare neither. On the 1.x plugin line these are called
+		// clientRequired/serverRequired; 2.0 renamed them to client/server.
+		clientRequired = true
+		serverRequired = true
+	}
+
+	def mrOptions = modrinthOptions {
+		accessToken = token("MODRINTH_TOKEN", "modrinthToken")
+		projectId = providers.gradleProperty("villagersplusModrinthId").getOrElse("000000")
+		minecraftVersions.add(rootProject.minecraft_version)
+	}
+
+	curseforge("curseforgeFabric") {
+		from cfOptions
+		file project(":fabric")
+		modLoaders.add("fabric")
+		requires { slug = "fabric-api" }
+		requires { slug = "villagertradingplus" }
+	}
+
+	curseforge("curseforgeNeoForge") {
+		from cfOptions
+		file project(":neoforge")
+		modLoaders.add("neoforge")
+		requires { slug = "villagertradingplus" }
+	}
+
+	// One Modrinth version per loader, so the loader has to be part of the version number as well.
+	modrinth("modrinthFabric") {
+		from mrOptions
+		file project(":fabric")
+		version = "${project.version}-fabric"
+		displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version} (Fabric)"
+		modLoaders.add("fabric")
+		requires { slug = "fabric-api" }
+		requires { slug = "villagertradingplus" }
+	}
+
+	modrinth("modrinthNeoForge") {
+		from mrOptions
+		file project(":neoforge")
+		version = "${project.version}-neoforge"
+		displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version} (NeoForge)"
+		modLoaders.add("neoforge")
+		requires { slug = "villagertradingplus" }
+	}
+
+	// A single GitHub release carrying both jars.
+	github {
+		accessToken = providers.environmentVariable("GITHUB_TOKEN").getOrElse("")
+		repository = "finallion/VillagersPlus_-FABRIC-"
+		commitish = providers.environmentVariable("GITHUB_SHA").getOrElse(rootProject.minecraft_version)
+		file project(":fabric")
+		additionalFiles.from(project(":neoforge").tasks.named("remapJar").flatMap { it.archiveFile })
+		modLoaders.add("fabric")
+		modLoaders.add("neoforge")
 	}
 }
