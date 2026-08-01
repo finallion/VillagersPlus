@@ -4,9 +4,14 @@ import com.lion.villagersplus.config.annotations.Description;
 
 public class VPConfig implements Config {
 
+    /**
+     * The file name carries the feature line, so it changes with {@code mod_version}. Bumping it
+     * means 4.0 writes a fresh file next to the old 3.0 one instead of silently reading a layout that
+     * no longer matches - the ten trade settings moved to VillagerTradingPlus in this very release.
+     */
     @Override
     public String getName() {
-        return "villagersplus-3.0-config";
+        return "villagersplus-4.0-config";
     }
 
     @Override

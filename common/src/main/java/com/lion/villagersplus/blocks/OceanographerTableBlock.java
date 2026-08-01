@@ -1,5 +1,8 @@
 package com.lion.villagersplus.blocks;
 
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Set;
 import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.lion.villagersplus.init.VPBlockEntities;
@@ -28,6 +31,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class OceanographerTableBlock extends WorkstationBlock {
@@ -74,6 +78,47 @@ public class OceanographerTableBlock extends WorkstationBlock {
     /** Mutual consent: both blocks must be non-standalone aquariums to connect. */
     private boolean connectsTo(BlockState state, BlockState neighborState) {
         return !state.get(STANDALONE) && neighborState.isOf(this) && !neighborState.get(STANDALONE);
+    }
+
+    /**
+     * {@return how many aquariums the tank would hold if a block were placed at {@code pos}}
+     *
+     * <p>Counts the block itself plus every tank it would join - placing between two separate tanks
+     * merges them, so they are walked as one. Follows the same connection properties as the block
+     * entity's own scan, so both agree on what "one tank" means. The walk stops once the count is
+     * past {@code limit}, which keeps it cheap and bounded even next to an oversized structure built
+     * before this cap existed.
+     */
+    private int mergedTankSize(WorldView world, BlockPos pos, int limit) {
+        Set<BlockPos> seen = new HashSet<>();
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        seen.add(pos);
+
+        // The new block has no connection properties yet; it would connect to every adjacent
+        // non-standalone aquarium, so those are the roots of the walk.
+        for (Direction direction : Direction.values()) {
+            BlockPos neighbor = pos.offset(direction);
+            BlockState neighborState = world.getBlockState(neighbor);
+            if (neighborState.isOf(this) && !neighborState.get(STANDALONE) && seen.add(neighbor)) {
+                queue.add(neighbor);
+            }
+        }
+
+        while (!queue.isEmpty() && seen.size() <= limit) {
+            BlockPos current = queue.poll();
+            BlockState currentState = world.getBlockState(current);
+            for (Direction direction : Direction.values()) {
+                if (!currentState.get(connectionProperty(direction))) {
+                    continue;
+                }
+                BlockPos next = current.offset(direction);
+                BlockState nextState = world.getBlockState(next);
+                if (nextState.isOf(this) && !nextState.get(STANDALONE) && seen.add(next)) {
+                    queue.add(next);
+                }
+            }
+        }
+        return seen.size();
     }
 
     @Override
@@ -176,28 +221,34 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
 
                     return ItemActionResult.success(world.isClient);
-                } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
-                    // Only consume the bucket and set FISH if the slot was actually free;
-                    // otherwise a desynced slot would eat the state change without a fish.
-                    if (!blockEntity.insertCoral(itemStack, OceanographerTableBlockEntity.FISH_SLOT)) {
+                } else if (itemStack.getItem() instanceof EntityBucketItem && state.get(FISH) < 1) {
+                    // Only set FISH if the slot was actually free; otherwise a desynced slot
+                    // would eat the state change without a fish. The tank is handed a copy, so
+                    // the stack in hand survives and can be exchanged for an empty bucket below -
+                    // the same trade vanilla's fish bucket makes when you release the fish.
+                    if (!blockEntity.insertCoral(itemStack.copy(), OceanographerTableBlockEntity.FISH_SLOT)) {
                         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                     }
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(FISH, state.get(FISH) + 1), 3);
+                        player.setStackInHand(hand, ItemUsage.exchangeStack(itemStack, player, new ItemStack(Items.BUCKET)));
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
                     if (world.isClient) player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                     return ItemActionResult.success(world.isClient);
-                } else if (itemStack.isOf(Items.WATER_BUCKET) && state.get(FISH) >= 1) {
+                    // Either bucket works: the tank holds its own water, so the empty one handed
+                    // back when the fish went in is enough to get it out again.
+                } else if ((itemStack.isOf(Items.WATER_BUCKET) || itemStack.isOf(Items.BUCKET)) && state.get(FISH) >= 1) {
                     ItemStack fish = blockEntity.getStack(OceanographerTableBlockEntity.FISH_SLOT);
                     if (!fish.isEmpty()) {
                         if (!world.isClient()) {
                             ItemStack fishBucket = blockEntity.extractFish();
-                            // The water bucket is stack size 1, so exchangeStack returns the fish
-                            // bucket to be placed in the hand instead of inserting it.
+                            // exchangeStack spends one bucket and hands back the fish bucket - into
+                            // the hand when that emptied the stack, into the inventory otherwise
+                            // (empty buckets stack, water buckets do not).
                             player.setStackInHand(hand, ItemUsage.exchangeStack(itemStack, player, fishBucket));
                             world.setBlockState(pos, state.with(FISH, 0), 3);
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -232,6 +283,18 @@ public class OceanographerTableBlock extends WorkstationBlock {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         boolean standalone = ctx.getPlayer() != null && ctx.getPlayer().isSneaking();
+
+        // A tank may not grow past MAX_TANK_BLOCKS. Beyond that the block entity's flood fill would
+        // stop early and the rest of the structure - still physically connected - would never be
+        // scanned, leaving the fish's swimmable area ending in the middle of open water. Rather than
+        // refuse the placement, the block is kept standalone: it still gets placed, just with its
+        // glass intact, which is immediate visual feedback that it did not join.
+        if (!standalone
+                && mergedTankSize(ctx.getWorld(), ctx.getBlockPos(), OceanographerTableBlockEntity.MAX_TANK_BLOCKS)
+                        > OceanographerTableBlockEntity.MAX_TANK_BLOCKS) {
+            standalone = true;
+        }
+
         BlockState state = this.getDefaultState()
                 .with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
                 .with(STANDALONE, standalone);
