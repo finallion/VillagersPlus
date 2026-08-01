@@ -165,28 +165,34 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
 
                     return ActionResult.success(world.isClient);
-                } else if (itemStack.getItem() instanceof EntityBucketItem bucketItem && state.get(FISH) < 1) {
-                    // Only consume the bucket and set FISH if the slot was actually free;
-                    // otherwise a desynced slot would eat the state change without a fish.
-                    if (!blockEntity.insertCoral(itemStack, OceanographerTableBlockEntity.FISH_SLOT)) {
+                } else if (itemStack.getItem() instanceof EntityBucketItem && state.get(FISH) < 1) {
+                    // Only set FISH if the slot was actually free; otherwise a desynced slot
+                    // would eat the state change without a fish. The tank is handed a copy, so
+                    // the stack in hand survives and can be exchanged for an empty bucket below -
+                    // the same trade vanilla's fish bucket makes when you release the fish.
+                    if (!blockEntity.insertCoral(itemStack.copy(), OceanographerTableBlockEntity.FISH_SLOT)) {
                         return ActionResult.PASS;
                     }
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(FISH, state.get(FISH) + 1), 3);
+                        player.setStackInHand(hand, ItemUsage.exchangeStack(itemStack, player, new ItemStack(Items.BUCKET)));
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
                     if (world.isClient) player.playSound(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                     return ActionResult.success(world.isClient);
-                } else if (itemStack.isOf(Items.WATER_BUCKET) && state.get(FISH) >= 1) {
+                    // Either bucket works: the tank holds its own water, so the empty one handed
+                    // back when the fish went in is enough to get it out again.
+                } else if ((itemStack.isOf(Items.WATER_BUCKET) || itemStack.isOf(Items.BUCKET)) && state.get(FISH) >= 1) {
                     ItemStack fish = blockEntity.getStack(OceanographerTableBlockEntity.FISH_SLOT);
                     if (!fish.isEmpty()) {
                         if (!world.isClient()) {
                             ItemStack fishBucket = blockEntity.extractFish();
-                            // The water bucket is stack size 1, so exchangeStack returns the fish
-                            // bucket to be placed in the hand instead of inserting it.
+                            // exchangeStack spends one bucket and hands back the fish bucket - into
+                            // the hand when that emptied the stack, into the inventory otherwise
+                            // (empty buckets stack, water buckets do not).
                             player.setStackInHand(hand, ItemUsage.exchangeStack(itemStack, player, fishBucket));
                             world.setBlockState(pos, state.with(FISH, 0), 3);
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);

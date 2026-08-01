@@ -33,7 +33,9 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class OceanographerTableBlockEntity extends BlockEntity implements Inventory, SidedInventory {
     public static final int FISH_SLOT = 4;
@@ -94,6 +96,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     private float wanderPitch;
     private float prevWanderPitch;
     private net.minecraft.util.math.random.Random wanderRandom;
+
+    /** Block entities whose fish currently swims inside this block; see {@link #handOffFishToHost}. */
+    private final List<OceanographerTableBlockEntity> guestFish = new ArrayList<>();
+    /** Set while another aquarium of the tank has taken over drawing this block's fish. */
+    private boolean fishHandedOff;
 
     public OceanographerTableBlockEntity(BlockPos pos, BlockState state) {
         super(VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(), pos, state);
@@ -255,6 +262,9 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     // ------------------------------------------------------------------
 
     public static void clientTick(World world, BlockPos pos, BlockState state, OceanographerTableBlockEntity be) {
+        // Guests are dropped before they get a chance to re-register this tick, so an owner whose
+        // fish has swum on does not keep being drawn by the block it left.
+        be.guestFish.removeIf(guest -> guest.isRemoved() || !guest.isFishInBlock(be.pos));
         be.animateFish(world);
     }
 
@@ -263,6 +273,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (!(stack.getItem() instanceof EntityBucketItem)) {
             this.displayFish = null;
             this.displayFishItem = null;
+            this.fishHandedOff = false;
             return;
         }
 
@@ -355,6 +366,56 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
                 }
             }
         }
+
+        this.handOffFishToHost(world);
+    }
+
+    /**
+     * Hands the fish to the aquarium block it is currently swimming in.
+     *
+     * <p>The fish is animated in tank-local coordinates, so in a connected tank it travels several
+     * blocks - and with them across chunk section borders - away from the block entity that owns it.
+     * Drawing it from the owner made its visibility depend on whether the *owner's* section survived
+     * culling rather than the one the fish is actually in, so it blinked out while the glass around
+     * it stayed on screen. Handing it over ties it to the section the player is looking at.
+     *
+     * <p>If the target block is not an aquarium after all (a stale scan, a half-loaded chunk), the
+     * hand-over is skipped and the owner keeps drawing it - a fish in the wrong section beats no
+     * fish at all.
+     */
+    private void handOffFishToHost(World world) {
+        this.fishHandedOff = false;
+        int bx = MathHelper.floor(this.fishX);
+        int by = MathHelper.floor(this.fishY);
+        int bz = MathHelper.floor(this.fishZ);
+        if (bx == 0 && by == 0 && bz == 0) {
+            return; // still in its own block
+        }
+        if (world.getBlockEntity(this.pos.add(bx, by, bz)) instanceof OceanographerTableBlockEntity host
+                && host != this) {
+            if (!host.guestFish.contains(this)) {
+                host.guestFish.add(this);
+            }
+            this.fishHandedOff = true;
+        }
+    }
+
+    /** {@return whether this block's fish currently sits in the aquarium at {@code blockPos}} */
+    public boolean isFishInBlock(BlockPos blockPos) {
+        return this.displayFish != null
+                && this.pos.getX() + MathHelper.floor(this.fishX) == blockPos.getX()
+                && this.pos.getY() + MathHelper.floor(this.fishY) == blockPos.getY()
+                && this.pos.getZ() + MathHelper.floor(this.fishZ) == blockPos.getZ();
+    }
+
+    /** {@return whether this block entity still draws its own fish} */
+    public boolean drawsOwnFish() {
+        return this.displayFish != null && !this.fishHandedOff;
+    }
+
+    /** {@return the owners whose fish this block currently draws on their behalf} */
+    public List<OceanographerTableBlockEntity> getGuestFish() {
+        return this.guestFish;
     }
 
     private static void setFishYaw(Entity fish, float yawDeg, boolean snap) {
