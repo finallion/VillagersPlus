@@ -12,11 +12,11 @@ import java.util.List;
 
 @Mixin(StructurePool.class)
 public interface StructurePoolAccessor {
-    @Accessor("elementCounts")
+    @Accessor("elementWeights")
     List<Pair<StructurePoolElement, Integer>> getRawTemplates();
 
     @Mutable
-    @Accessor("elementCounts")
+    @Accessor("elementWeights")
     void setRawTemplates(List<Pair<StructurePoolElement, Integer>> elementCounts);
 
     @Accessor("elements")
