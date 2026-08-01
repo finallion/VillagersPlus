@@ -1,8 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "item": "minecraft:bone_meal" },
-    { "item": "minecraft:sea_pickle" }
+    "minecraft:bone_meal",
+    "minecraft:sea_pickle"
   ],
   "result": {
     "id": "villagersplus:calm_food",

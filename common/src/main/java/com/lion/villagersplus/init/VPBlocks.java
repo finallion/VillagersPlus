@@ -5,29 +5,43 @@ import com.lion.villagersplus.blocks.HorticulturistTableBlock;
 import com.lion.villagersplus.blocks.OccultistTableBlock;
 import com.lion.villagersplus.blocks.OceanographerTableBlock;
 import com.lion.villagersplus.blocks.OreGrinderBlock;
+import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.platform.RegistryHelper;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Supplier;
 
 public class VPBlocks {
 
-    public static final Supplier<Block> ALCHEMIST_TABLE_BLOCK = RegistryHelper.registerBlock("alchemist_table", () -> new AlchemistTableBlock(AbstractBlock.Settings.create().strength(0.5F).luminance((state) -> 1).nonOpaque()));
-    public static final Supplier<Block> OCEANOGRAPHER_TABLE_BLOCK = RegistryHelper.registerBlock("oceanographer_table", () -> new OceanographerTableBlock(AbstractBlock.Settings.create().strength(0.5F).luminance((state) -> 12).nonOpaque().solidBlock((state, world, pos) -> false).suffocates((state, world, pos) -> false)));
-    public static final Supplier<Block> OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("oak_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> DARK_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("dark_oak_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> ACACIA_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("acacia_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> JUNGLE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("jungle_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> SPRUCE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("spruce_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> BIRCH_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("birch_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> MANGROVE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("mangrove_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> CRIMSON_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("crimson_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> WARPED_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("warped_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> CHERRY_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("cherry_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> BAMBOO_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("bamboo_horticulturist_table", () -> new HorticulturistTableBlock(AbstractBlock.Settings.create().strength(0.5F).nonOpaque().burnable()));
-    public static final Supplier<Block> OCCULTIST_TABLE_BLOCK = RegistryHelper.registerBlock("occultist_table", () -> new OccultistTableBlock(AbstractBlock.Settings.create().strength(0.5F).luminance((state) -> state.get(OccultistTableBlock.FILLING) * 2).nonOpaque()));
-    public static final Supplier<Block> ORE_GRINDER_BLOCK = RegistryHelper.registerBlock("ore_grinder", () -> new OreGrinderBlock(AbstractBlock.Settings.create().strength(1.5F).requiresTool().luminance((state) -> state.get(OreGrinderBlock.LIT) ? 13 : 0).nonOpaque()));
+    /**
+     * Blocks must carry their own RegistryKey since 1.21.2: AbstractBlock derives the loot table and
+     * translation key from it and throws "Block id not set" without one. This compiles fine and only
+     * fails at registration, so every block goes through here instead of calling Settings.create().
+     */
+    private static AbstractBlock.Settings settings(String name) {
+        return AbstractBlock.Settings.create()
+                .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(VillagersPlus.MOD_ID, name)));
+    }
+
+    public static final Supplier<Block> ALCHEMIST_TABLE_BLOCK = RegistryHelper.registerBlock("alchemist_table", () -> new AlchemistTableBlock(settings("alchemist_table").strength(0.5F).luminance((state) -> 1).nonOpaque()));
+    public static final Supplier<Block> OCEANOGRAPHER_TABLE_BLOCK = RegistryHelper.registerBlock("oceanographer_table", () -> new OceanographerTableBlock(settings("oceanographer_table").strength(0.5F).luminance((state) -> 12).nonOpaque().solidBlock((state, world, pos) -> false).suffocates((state, world, pos) -> false)));
+    public static final Supplier<Block> OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("oak_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> DARK_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("dark_oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("dark_oak_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> ACACIA_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("acacia_horticulturist_table", () -> new HorticulturistTableBlock(settings("acacia_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> JUNGLE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("jungle_horticulturist_table", () -> new HorticulturistTableBlock(settings("jungle_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> SPRUCE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("spruce_horticulturist_table", () -> new HorticulturistTableBlock(settings("spruce_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> BIRCH_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("birch_horticulturist_table", () -> new HorticulturistTableBlock(settings("birch_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> MANGROVE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("mangrove_horticulturist_table", () -> new HorticulturistTableBlock(settings("mangrove_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> CRIMSON_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("crimson_horticulturist_table", () -> new HorticulturistTableBlock(settings("crimson_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> WARPED_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("warped_horticulturist_table", () -> new HorticulturistTableBlock(settings("warped_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> CHERRY_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("cherry_horticulturist_table", () -> new HorticulturistTableBlock(settings("cherry_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> BAMBOO_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("bamboo_horticulturist_table", () -> new HorticulturistTableBlock(settings("bamboo_horticulturist_table").strength(0.5F).nonOpaque().burnable()));
+    public static final Supplier<Block> OCCULTIST_TABLE_BLOCK = RegistryHelper.registerBlock("occultist_table", () -> new OccultistTableBlock(settings("occultist_table").strength(0.5F).luminance((state) -> state.get(OccultistTableBlock.FILLING) * 2).nonOpaque()));
+    public static final Supplier<Block> ORE_GRINDER_BLOCK = RegistryHelper.registerBlock("ore_grinder", () -> new OreGrinderBlock(settings("ore_grinder").strength(1.5F).requiresTool().luminance((state) -> state.get(OreGrinderBlock.LIT) ? 13 : 0).nonOpaque()));
 
     public static void init() {
 

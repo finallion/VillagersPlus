@@ -1,8 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "item": "minecraft:bone_meal" },
-    { "item": "minecraft:seagrass" }
+    "minecraft:bone_meal",
+    "minecraft:seagrass"
   ],
   "result": {
     "id": "villagersplus:fish_food",

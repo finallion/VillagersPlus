@@ -1,15 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "G": {
-      "item": "minecraft:grindstone"
-    },
-    "I": {
-      "item": "minecraft:iron_ingot"
-    },
-    "#": {
-      "item": "minecraft:stone"
-    }
+    "G": "minecraft:grindstone",
+    "I": "minecraft:iron_ingot",
+    "#": "minecraft:stone"
   },
   "pattern": [
     "III",

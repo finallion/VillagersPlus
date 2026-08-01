@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "X": {
-      "item": "minecraft:glass"
-    },
-    "#": {
-      "item": "minecraft:cobbled_deepslate"
-    }
+    "X": "minecraft:glass",
+    "#": "minecraft:cobbled_deepslate"
   },
   "pattern": [
     " X ",

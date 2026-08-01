@@ -1,8 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "item": "minecraft:bone_meal" },
-    { "item": "minecraft:dried_kelp" }
+    "minecraft:bone_meal",
+    "minecraft:dried_kelp"
   ],
   "result": {
     "id": "villagersplus:diet_food",
