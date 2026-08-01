@@ -33,7 +33,7 @@
     "fabricloader": ">=0.16.0",
     "fabric-api": "*",
     "villagertradingplus": ">=1.0.0",
-    "minecraft": ">=1.21.1 <1.22",
+    "minecraft": ">=1.21.8 <1.22",
     "java": ">=21"
   }
 }

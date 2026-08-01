@@ -197,7 +197,7 @@ public final class VanillaMineshaftAttachment {
         // put even if the number of shaft segments above it ever changes.
         Random random = randomFor(context, anchor);
 
-        Direction direction = Direction.fromHorizontal(random.nextInt(4));
+        Direction direction = Direction.fromHorizontalQuarterTurns(random.nextInt(4));
         int y = anchor.getMinY() + 1;
 
         // MineshaftCorridor#getBoundingBox reads the position as the corner the corridor grows away
@@ -281,8 +281,11 @@ public final class VanillaMineshaftAttachment {
 
     /** World position of the jigsaw block called {@code name} that points in {@code facing}, or null. */
     private static BlockPos jigsawPos(StructurePoolElement element, StructureTemplateManager templates, BlockPos pos, BlockRotation rotation, Random random, String name, Direction facing) {
-        for (StructureTemplate.StructureBlockInfo info : element.getStructureBlockInfos(templates, pos, rotation, random)) {
-            if (info.nbt() == null || !name.equals(info.nbt().getString("name"))) {
+        // getStructureBlockInfos returns JigsawBlockInfo since 1.21.6, which parses the jigsaw NBT
+        // for us - the name is a typed Identifier now instead of a raw string dug out of the tag.
+        for (StructureTemplate.JigsawBlockInfo jigsaw : element.getStructureBlockInfos(templates, pos, rotation, random)) {
+            StructureTemplate.StructureBlockInfo info = jigsaw.info();
+            if (jigsaw.name() == null || !name.equals(jigsaw.name().toString())) {
                 continue;
             }
             if (JigsawBlock.getFacing(info.state()) == facing) {
@@ -294,8 +297,8 @@ public final class VanillaMineshaftAttachment {
 
     private static SinglePoolElement element(Structure.Context context, Identifier location) {
         RegistryEntry<StructureProcessorList> processors = context.dynamicRegistryManager()
-                .get(RegistryKeys.PROCESSOR_LIST)
-                .entryOf(RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of("minecraft", "empty")));
+                .getOrThrow(RegistryKeys.PROCESSOR_LIST)
+                .getOrThrow(RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of("minecraft", "empty")));
 
         return StructurePoolElement.ofProcessedSingle(location.toString(), processors).apply(StructurePool.Projection.RIGID);
     }

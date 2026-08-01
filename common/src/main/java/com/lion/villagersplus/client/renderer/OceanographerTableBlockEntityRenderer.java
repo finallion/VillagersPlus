@@ -61,7 +61,8 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
     }
 
-    public void render(OceanographerTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    @Override
+    public void render(OceanographerTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, net.minecraft.util.math.Vec3d cameraPos) {
         BlockState blockState = blockEntity.getCachedState();
         BlockPos pos = blockEntity.getPos();
         World world = blockEntity.getWorld();
@@ -102,7 +103,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                 }
                 matrixStack.push();
                 Block coral = Block.getBlockFromItem(defaultedList.get(it).getItem());
-                Vec3d offset = coral.getDefaultState().getModelOffset(world, pos);
+                Vec3d offset = coral.getDefaultState().getModelOffset(pos);
                 matrixStack.scale(0.4F, 0.4F, 0.4F);
                 if (coral instanceof CoralFanBlock) {
                     matrixStack.translate(-offset.x + xOffsetFan[it], -offset.y + yOffset[it], -offset.z + zOffsetFan[it]);
@@ -114,7 +115,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                     matrixStack.translate(0.5F * (1.0F - coralScale), 0.0F, 0.5F * (1.0F - coralScale));
                     matrixStack.scale(coralScale, coralScale, coralScale);
                 }
-                renderCoral(coral, world, pos, matrixStack, vertexConsumerProvider, j);
+                renderCoral(coral, world, pos, matrixStack, vertexConsumerProvider, i, j);
                 matrixStack.pop();
             }
 
@@ -176,7 +177,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         // axis (conjugate by the body yaw, which the entity renderer applies itself).
         float pitch = owner.getFishPitch(f);
         if (pitch != 0.0F && fish instanceof LivingEntity fishLiving) {
-            float bodyYaw = MathHelper.lerpAngleDegrees(f, fishLiving.prevBodyYaw, fishLiving.bodyYaw);
+            float bodyYaw = MathHelper.lerpAngleDegrees(f, fishLiving.lastBodyYaw, fishLiving.bodyYaw);
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-bodyYaw));
             matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch));
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(bodyYaw));
@@ -202,7 +203,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         // position, and the display fish is never placed, so it sits at (0, 0, 0). Near
         // spawn that stacked a shadow blob at the origin for every aquarium in range.
         this.entityRenderDispatcher.setRenderShadows(false);
-        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, 0.0F, f, matrixStack, vertexConsumerProvider, light);
+        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, f, matrixStack, vertexConsumerProvider, light);
         this.entityRenderDispatcher.setRenderShadows(true);
 
         matrixStack.pop();
@@ -220,29 +221,21 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         return 128;
     }
 
+    /**
+     * In a multi-block tank the fish may swim into neighbouring blocks, so per-section culling has
+     * to be skipped or it vanishes at chunk section borders.
+     *
+     * <p>Since 1.21.6 this no longer receives the block entity, so the previous refinement — only
+     * opting out for aquariums that actually hold a fish, which kept the always-drawn set small in
+     * a large tank — is no longer expressible here. Returning true unconditionally is the correct
+     * side to err on: the alternative makes fish disappear.
+     */
     @Override
-    public boolean rendersOutsideBoundingBox(OceanographerTableBlockEntity blockEntity) {
-        // In a multi-block tank the fish may swim into neighbouring blocks; skip
-        // per-section culling so it doesn't vanish at chunk section borders.
-        // Read the connections from the block state, not the BE's lazily rescanned
-        // flag: this is evaluated at chunk-rebuild time, where the state is fresh
-        // but the flag can lag behind by up to a rescan interval.
-        BlockState state = blockEntity.getCachedState();
-        if (!(state.getBlock() instanceof OceanographerTableBlock)) {
-            return false;
-        }
-        // Only a fish leaves its own block. Corals stay inside theirs, so an aquarium without a
-        // fish gains nothing from being drawn every frame - and in a large tank most blocks are
-        // empty, which is what keeps the always-drawn set small at the render distance above.
-        if (state.get(OceanographerTableBlock.FISH) < 1) {
-            return false;
-        }
-        return state.get(OceanographerTableBlock.NORTH) || state.get(OceanographerTableBlock.EAST)
-                || state.get(OceanographerTableBlock.SOUTH) || state.get(OceanographerTableBlock.WEST)
-                || state.get(OceanographerTableBlock.UP) || state.get(OceanographerTableBlock.DOWN);
+    public boolean rendersOutsideBoundingBox() {
+        return true;
     }
 
-    private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
-        this.manager.getModelRenderer().render(world, this.manager.getModel(coral.getDefaultState()), coral.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, this.renderRandom, coral.getDefaultState().getRenderingSeed(pos), overlay);
+    private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+        this.manager.renderBlockAsEntity(coral.getDefaultState(), matrixStack, vertexConsumerProvider, light, overlay);
     }
 }

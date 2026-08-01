@@ -19,9 +19,11 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.PickaxeItem;
-import net.minecraft.item.ToolItem;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ToolComponent;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
@@ -135,8 +137,10 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         return result == null ? null : result.copy();
     }
 
+    // PickaxeItem is gone since 1.21.2 - tools are data-driven, so a pickaxe is whatever the
+    // #minecraft:pickaxes tag says, which also picks up modded pickaxes for free.
     public static boolean isPickaxe(ItemStack stack) {
-        return stack.getItem() instanceof PickaxeItem;
+        return stack.isIn(ItemTags.PICKAXES);
     }
 
     /** True only for ores that have a grinding recipe. Used to restrict the input slot. */
@@ -153,7 +157,14 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (!isPickaxe(pickaxe)) {
             return GRIND_TIME_NO_PICKAXE;
         }
-        float speed = ((ToolItem) pickaxe.getItem()).getMaterial().getMiningSpeedMultiplier();
+        // ToolItem and its ToolMaterial lookup are gone since 1.21.2; the mining speed now lives in
+        // the item's TOOL component. defaultMiningSpeed carries the same numbers the material used
+        // to (wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12).
+        ToolComponent tool = pickaxe.get(DataComponentTypes.TOOL);
+        if (tool == null) {
+            return GRIND_TIME_NO_PICKAXE;
+        }
+        float speed = tool.defaultMiningSpeed();
         int efficiency = enchantmentLevel(world, Enchantments.EFFICIENCY, pickaxe);
         if (efficiency > 0) {
             speed += (float) (efficiency * efficiency + 1);
@@ -174,8 +185,8 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             return 0;
         }
         return world.getRegistryManager()
-                .get(RegistryKeys.ENCHANTMENT)
-                .getEntry(enchantment)
+                .getOrThrow(RegistryKeys.ENCHANTMENT)
+                .getOptional(enchantment)
                 .map(entry -> EnchantmentHelper.getLevel(entry, stack))
                 .orElse(0);
     }
@@ -189,7 +200,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     }
 
     public boolean isEmpty() {
-        Iterator<ItemStack> iterator = this.inventory.iterator();
+        java.util.Iterator<ItemStack> iterator = this.inventory.iterator();
 
         ItemStack itemStack;
         do {
@@ -228,15 +239,15 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             boolean canAccept = blockEntity.canAcceptOutput(result);
 
             if (!blockEntity.isBurning() && canAccept && hasFuel) {
-                blockEntity.burnTime = getFuelTime(fuelStack);
+                blockEntity.burnTime = getFuelTime(world, fuelStack);
                 blockEntity.fuelTime = blockEntity.burnTime;
                 if (blockEntity.isBurning()) {
                     dirty = true;
                     Item fuelItem = fuelStack.getItem();
                     fuelStack.decrement(1);
                     if (fuelStack.isEmpty()) {
-                        Item remainder = fuelItem.getRecipeRemainder();
-                        blockEntity.inventory.set(FUEL_SLOT, remainder == null ? ItemStack.EMPTY : new ItemStack(remainder));
+                        // getRecipeRemainder returns an ItemStack now, empty instead of a null Item.
+                        blockEntity.inventory.set(FUEL_SLOT, fuelItem.getRecipeRemainder().copy());
                     }
                 }
             }
@@ -335,22 +346,25 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             pickaxe.setDamage(pickaxe.getDamage() + 1);
             if (pickaxe.getDamage() >= pickaxe.getMaxDamage()) {
                 this.inventory.set(PICKAXE_SLOT, ItemStack.EMPTY);
-                this.world.playSound(null, this.pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.world.playSound(null, this.pos, SoundEvents.ENTITY_ITEM_BREAK.value(), SoundCategory.BLOCKS, 1.0F, 1.0F);
                 return;
             }
         }
     }
 
-    private static int getFuelTime(ItemStack fuel) {
-        if (fuel.isEmpty()) {
+
+    // AbstractFurnaceBlockEntity.createFuelTimeMap() was removed in 1.21.2; burn times are a
+    // per-world FuelRegistry now, because a datapack can change them. Both helpers therefore need a
+    // world, and without one they answer conservatively rather than guessing a vanilla default.
+    private static int getFuelTime(@Nullable World world, ItemStack fuel) {
+        if (world == null || fuel.isEmpty()) {
             return 0;
         }
-        Item item = fuel.getItem();
-        return AbstractFurnaceBlockEntity.createFuelTimeMap().getOrDefault(item, 0);
+        return world.getFuelRegistry().getFuelTicks(fuel);
     }
 
-    public static boolean canUseAsFuel(ItemStack stack) {
-        return AbstractFurnaceBlockEntity.createFuelTimeMap().containsKey(stack.getItem());
+    public static boolean canUseAsFuel(@Nullable World world, ItemStack stack) {
+        return world != null && world.getFuelRegistry().isFuel(stack);
     }
 
     /**
@@ -367,24 +381,27 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         this.inventory = inventory;
     }
 
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    @Override
+    protected void readData(ReadView view) {
+        super.readData(view);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
-        this.burnTime = nbt.getShort("BurnTime");
-        this.grindProgress = nbt.getShort("GrindTime");
+        Inventories.readData(view, this.inventory);
+        this.burnTime = view.getShort("BurnTime", (short) 0);
+        this.grindProgress = view.getShort("GrindTime", (short) 0);
         this.grindTimeTotal = getGrindTime(this.world, this.inventory.get(PICKAXE_SLOT));
-        this.fuelTime = nbt.contains("FuelTime")
-                ? nbt.getShort("FuelTime")
-                : getFuelTime(this.inventory.get(FUEL_SLOT));
+        // ReadView has no contains(); a missing key and a stored 0 are indistinguishable now. Both
+        // mean "no burn in progress", so falling back to the fuel slot is right either way.
+        int storedFuelTime = view.getShort("FuelTime", (short) 0);
+        this.fuelTime = storedFuelTime > 0 ? storedFuelTime : getFuelTime(this.world, this.inventory.get(FUEL_SLOT));
     }
 
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        nbt.putShort("BurnTime", (short) this.burnTime);
-        nbt.putShort("GrindTime", (short) this.grindProgress);
-        nbt.putShort("FuelTime", (short) this.fuelTime);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
+    @Override
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putShort("BurnTime", (short) this.burnTime);
+        view.putShort("GrindTime", (short) this.grindProgress);
+        view.putShort("FuelTime", (short) this.fuelTime);
+        Inventories.writeData(view, this.inventory);
     }
 
     public ItemStack getStack(int slot) {
@@ -427,7 +444,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (slot == OUTPUT_SLOT) {
             return false;
         } else if (slot == FUEL_SLOT) {
-            return canUseAsFuel(stack);
+            return canUseAsFuel(this.world, stack);
         } else if (slot == PICKAXE_SLOT) {
             return isPickaxe(stack);
         } else {
@@ -448,7 +465,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     }
 
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return slot == OUTPUT_SLOT || slot == FUEL_SLOT && !canUseAsFuel(stack);
+        return slot == OUTPUT_SLOT || slot == FUEL_SLOT && !canUseAsFuel(this.world, stack);
     }
 
     public void clear() {

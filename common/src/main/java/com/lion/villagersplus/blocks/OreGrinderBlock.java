@@ -17,10 +17,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -29,7 +30,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class OreGrinderBlock extends WorkstationBlock {
-    public static final DirectionProperty FACING;
+    public static final EnumProperty<Direction> FACING;
     public static final BooleanProperty LIT;
 
     // The onPlaced override that copied a named block item's name onto the block entity is gone:
@@ -84,22 +85,22 @@ public class OreGrinderBlock extends WorkstationBlock {
         double f = (double) pos.getZ() + 0.5D;
 
         if (random.nextDouble() < 0.1D) {
-            world.playSound(d, e, f, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+            world.playSoundClient(d, e, f, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
         }
 
-        world.addParticle(ParticleTypes.SMOKE, d + (random.nextDouble() - 0.5D) * 0.3D, e, f + (random.nextDouble() - 0.5D) * 0.3D, 0.0D, 0.02D, 0.0D);
+        world.addParticleClient(ParticleTypes.SMOKE, d + (random.nextDouble() - 0.5D) * 0.3D, e, f + (random.nextDouble() - 0.5D) * 0.3D, 0.0D, 0.02D, 0.0D);
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof OreGrinderBlockEntity) {
-                ItemScatterer.spawn(world, pos, (OreGrinderBlockEntity) blockEntity);
-            }
-
-            super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        // Since 1.21.6 this only fires when the block really changed and only on the server, so
+        // the old isOf(newState) guard is gone along with the newState parameter.
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof OreGrinderBlockEntity) {
+            ItemScatterer.spawn(world, pos, (OreGrinderBlockEntity) blockEntity);
         }
+
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override

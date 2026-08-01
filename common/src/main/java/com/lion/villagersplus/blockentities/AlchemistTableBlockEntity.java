@@ -13,7 +13,8 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -83,7 +84,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
     }
 
     public boolean isEmpty() {
-        Iterator<ItemStack> var1 = this.inventory.iterator();
+        java.util.Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
         do {
@@ -246,11 +247,12 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         this.inventory = inventory;
     }
 
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    @Override
+    protected void readData(ReadView view) {
+        super.readData(view);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
-        this.brewTime = nbt.getShort("BrewTime");
+        Inventories.readData(view, this.inventory);
+        this.brewTime = view.getShort("BrewTime", (short) 0);
         // itemBrewing is deliberately not serialized - it is only there to notice that the
         // ingredient was swapped mid-brew. Without restoring it from the ingredient slot, a
         // reloaded table wakes up with itemBrewing == null, tick() reads that as "the ingredient
@@ -259,14 +261,15 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         if (this.brewTime > 0) {
             this.itemBrewing = this.inventory.get(3).getItem();
         }
-        this.fuel = nbt.getByte("Fuel");
+        this.fuel = view.getByte("Fuel", (byte) 0);
     }
 
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        nbt.putShort("BrewTime", (short) this.brewTime);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
-        nbt.putByte("Fuel", (byte) this.fuel);
+    @Override
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        view.putShort("BrewTime", (short) this.brewTime);
+        Inventories.writeData(view, this.inventory);
+        view.putByte("Fuel", (byte) this.fuel);
     }
 
     public ItemStack getStack(int slot) {

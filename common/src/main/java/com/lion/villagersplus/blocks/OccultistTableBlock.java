@@ -86,14 +86,14 @@ public class OccultistTableBlock extends WorkstationBlock {
 
                 world.setBlockState(pos, state, 2);
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
 
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    protected boolean isTransparent(BlockState state) {
         return true;
     }
 
@@ -108,7 +108,7 @@ public class OccultistTableBlock extends WorkstationBlock {
             yCoord += 0.0075;
             double zCoord = z + MathHelper.cos(densityFactor) / 3;
             if (random.nextInt(7) == 0) {
-                world.addParticle(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
+                world.addParticleClient(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
             }
         }
     }
@@ -116,20 +116,20 @@ public class OccultistTableBlock extends WorkstationBlock {
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(FILLING) > 0 && random.nextInt(3) == 0) {
-            world.addParticle(VPParticles.EXPERIENCE_PARTICLE, pos.getX() + 0.5D + random.nextDouble() - random.nextDouble(), pos.getY() + 1.0D + random.nextDouble(), pos.getZ() + 0.5D + random.nextDouble() - random.nextDouble(), 0.0D, 0.05D, 0.0D);
+            world.addParticleClient(VPParticles.EXPERIENCE_PARTICLE, pos.getX() + 0.5D + random.nextDouble() - random.nextDouble(), pos.getY() + 1.0D + random.nextDouble(), pos.getZ() + 0.5D + random.nextDouble() - random.nextDouble(), 0.0D, 0.05D, 0.0D);
         }
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
-                this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
-            }
-
-            super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        // Since 1.21.6 this only fires when the block really changed and only on the server, so
+        // the old isOf(newState) guard is gone along with the newState parameter.
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
+            this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
         }
+
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override

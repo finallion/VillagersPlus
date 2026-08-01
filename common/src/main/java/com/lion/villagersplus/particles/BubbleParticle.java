@@ -24,7 +24,7 @@ public class BubbleParticle extends SpriteBillboardParticle {
 
     public void tick() {
         super.tick();
-        if (!this.dead && y - prevPosY > 0.0325) {
+        if (!this.dead && y - this.lastY > 0.0325) {
             this.markDead();
         }
 

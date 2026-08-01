@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blockentities;
 
+import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blocks.OceanographerTableBlock;
 import com.lion.villagersplus.init.VPBlockEntities;
 import com.lion.villagersplus.mixin.EntityAccessorMixin;
@@ -9,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.PufferfishEntity;
@@ -23,9 +25,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -123,13 +129,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     }
 
 
+    @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound nbtCompound = new NbtCompound();
-        Inventories.writeNbt(nbtCompound, this.inventory, true, registryLookup);
-        nbtCompound.putFloat("FishScale", this.fishScale);
-        nbtCompound.putFloat("CoralScale", this.coralScale);
-        nbtCompound.putBoolean("Stationary", this.stationary);
-        return nbtCompound;
+        // Inventories.writeNbt with the raw NbtCompound is gone; createNbt runs writeData, which
+        // already serialises exactly what this used to assemble by hand.
+        return createNbt(registryLookup);
     }
 
     public float getFishScale() {
@@ -226,7 +230,8 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     }
 
     public boolean isEmpty() {
-        Iterator var1 = this.inventory.iterator();
+        // Inventory now has a nested Iterator type, so the bare name no longer means java.util.Iterator.
+        java.util.Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
         do {
@@ -249,23 +254,25 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    @Override
+    protected void readData(ReadView view) {
+        super.readData(view);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
-        this.fishScale = nbt.contains("FishScale") ? nbt.getFloat("FishScale") : 1.0F;
-        this.coralScale = nbt.contains("CoralScale") ? nbt.getFloat("CoralScale") : 1.0F;
-        this.stationary = nbt.getBoolean("Stationary");
+        Inventories.readData(view, this.inventory);
+        this.fishScale = view.getFloat("FishScale", 1.0F);
+        this.coralScale = view.getFloat("CoralScale", 1.0F);
+        this.stationary = view.getBoolean("Stationary", false);
         // The fish stack may have changed (e.g. structure placement / initial sync); rebuild lazily.
         this.displayFishItem = null;
     }
 
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
-        nbt.putFloat("FishScale", this.fishScale);
-        nbt.putFloat("CoralScale", this.coralScale);
-        nbt.putBoolean("Stationary", this.stationary);
+    @Override
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        Inventories.writeData(view, this.inventory);
+        view.putFloat("FishScale", this.fishScale);
+        view.putFloat("CoralScale", this.coralScale);
+        view.putBoolean("Stationary", this.stationary);
     }
 
     // ------------------------------------------------------------------
@@ -314,7 +321,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
         // Fin/limb animation always runs so the fish stays "alive" even when hovering in place.
         if (fish instanceof LivingEntity living) {
-            living.limbAnimator.updateLimbs(1.0F, 0.4F);
+            living.limbAnimator.updateLimbs(1.0F, 0.4F, 1.0F);
         }
 
         this.prevFishX = this.fishX;
@@ -431,11 +438,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
     private static void setFishYaw(Entity fish, float yawDeg, boolean snap) {
         if (fish instanceof LivingEntity living) {
-            living.prevBodyYaw = snap ? yawDeg : living.bodyYaw;
+            living.lastBodyYaw = snap ? yawDeg : living.bodyYaw;
             living.bodyYaw = yawDeg;
-            living.prevHeadYaw = snap ? yawDeg : living.headYaw;
+            living.lastHeadYaw = snap ? yawDeg : living.headYaw;
             living.headYaw = yawDeg;
-            living.prevYaw = snap ? yawDeg : living.getYaw();
+            living.lastYaw = snap ? yawDeg : living.getYaw();
             living.setYaw(yawDeg);
         }
     }
@@ -682,7 +689,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (type == null) {
             return null;
         }
-        Entity fish = type.create(world);
+        Entity fish = type.create(world, SpawnReason.LOAD);
         if (fish == null) {
             return null;
         }
@@ -691,14 +698,17 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         NbtComponent bucketData = stack.get(DataComponentTypes.BUCKET_ENTITY_DATA);
         if (bucketData != null) {
             NbtCompound entityNbt = bucketData.copyNbt();
-            if (fish instanceof AxolotlEntity axolotl && entityNbt.contains("Variant")) {
-                axolotl.setVariant(AxolotlEntity.Variant.byId(entityNbt.getInt("Variant")));
+            // Entity NBT goes through ReadView since 1.21.6, and AxolotlEntity.setVariant is private
+            // now. Handing the whole bucket tag to the entity restores the variant for every species
+            // at once, which is what the per-species branches used to do by hand.
+            try (ErrorReporter.Logging reporter =
+                         new ErrorReporter.Logging(fish.getErrorReporterContext(), VillagersPlus.LOGGER)) {
+                fish.readData(NbtReadView.create(reporter, world.getRegistryManager(), entityNbt));
             }
             if (fish instanceof TropicalFishEntity && entityNbt.contains("BucketVariantTag")) {
-                fish.readNbt(entityNbt);
-                int id = entityNbt.getInt("BucketVariantTag");
-                DyeColor pattern = TropicalFishEntity.getPatternDyeColor(id);
-                DyeColor base = TropicalFishEntity.getBaseDyeColor(id);
+                int id = entityNbt.getInt("BucketVariantTag", 0);
+                DyeColor pattern = TropicalFishEntity.getPatternColor(id);
+                DyeColor base = TropicalFishEntity.getBaseColor(id);
                 TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
                 ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
             }

@@ -9,3 +9,11 @@ accessible method net/minecraft/particle/SimpleParticleType <init> (Z)V
 # and puts into the map below. Widening them would have been a hard startup crash for no gain.
 accessible field net/minecraft/world/poi/PointOfInterestTypes POI_STATES_TO_TYPE Ljava/util/Map;
 accessible method net/minecraft/world/poi/PointOfInterestTypes getStatesOfBlock (Lnet/minecraft/block/Block;)Ljava/util/Set;
+
+# BlockEntityType.Builder was removed in 1.21.6 and the constructor is private. Fabric API has a
+# builder for this, but :common only sees the loader and Architectury, not Fabric API.
+accessible method net/minecraft/block/entity/BlockEntityType <init> (Lnet/minecraft/block/entity/BlockEntityType$BlockEntityFactory;Ljava/util/Set;)V
+
+# Fabric API dropped blockrenderlayer-v1 for 1.21.6+; RenderLayers.BLOCKS is the map it used to
+# write into, and it is still the only way to give a block a non-solid chunk render layer.
+accessible field net/minecraft/client/render/RenderLayers BLOCKS Ljava/util/Map;

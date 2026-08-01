@@ -11,7 +11,7 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -36,13 +36,13 @@ public class OreVeinProcessor extends StructureProcessor {
     // StructureProcessorType.codec() returns a MapCodec since 1.20.5, so build one directly.
     public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Registries.BLOCK.getCodec().fieldOf("target").forGetter(processor -> processor.target),
-            DataPool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
+            Pool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
     ).apply(instance, OreVeinProcessor::new));
 
     private final Block target;
-    private final DataPool<BlockState> ores;
+    private final Pool<BlockState> ores;
 
-    public OreVeinProcessor(Block target, DataPool<BlockState> ores) {
+    public OreVeinProcessor(Block target, Pool<BlockState> ores) {
         this.target = target;
         this.ores = ores;
     }
@@ -60,7 +60,7 @@ public class OreVeinProcessor extends StructureProcessor {
         Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos()));
         // An empty pool cannot happen through the codec, but a draw that comes back empty has to leave
         // the marker alone rather than delete it.
-        return this.ores.getDataOrEmpty(random)
+        return this.ores.getOrEmpty(random)
                 .map(state -> new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos(), state, null))
                 .orElse(currentBlockInfo);
     }

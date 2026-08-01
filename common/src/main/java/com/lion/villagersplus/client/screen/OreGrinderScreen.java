@@ -3,6 +3,7 @@ package com.lion.villagersplus.client.screen;
 import com.lion.villagersplus.VillagersPlus;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -31,14 +32,14 @@ public class OreGrinderScreen extends HandledScreen<OreGrinderScreenHandler> {
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) (0), (float) (0), this.backgroundWidth, this.backgroundHeight, 256, 256);
 
         if (this.handler.isGrinding()) {
             int k = this.handler.getFuelProgress();
-            context.drawTexture(TEXTURE, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 56, j + 36 + 12 - k, (float) (176), (float) (12 - k), 14, k + 1, 256, 256);
         }
 
         int l = this.handler.getGrindProgress();
-        context.drawTexture(TEXTURE, i + 79, j + 34, 176, 14, l + 1, 16);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 79, j + 34, (float) (176), (float) (14), l + 1, 16, 256, 256);
     }
 }

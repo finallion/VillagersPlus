@@ -21,6 +21,8 @@ public class OreGrinderScreenHandler extends ScreenHandler {
 
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
+    /** Fuel is a per-world FuelRegistry since 1.21.2, so the handler has to remember its world. */
+    private final net.minecraft.world.World world;
 
     public OreGrinderScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, new SimpleInventory(OreGrinderBlockEntity.INVENTORY_SIZE), new ArrayPropertyDelegate(4));
@@ -32,9 +34,10 @@ public class OreGrinderScreenHandler extends ScreenHandler {
         checkDataCount(propertyDelegate, 4);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
+        this.world = playerInventory.player.getWorld();
 
         this.addSlot(new InputSlot(inventory, OreGrinderBlockEntity.INPUT_SLOT, 56, 17));
-        this.addSlot(new FuelSlot(inventory, OreGrinderBlockEntity.FUEL_SLOT, 56, 53));
+        this.addSlot(new FuelSlot(inventory, OreGrinderBlockEntity.FUEL_SLOT, 56, 53, this.world));
         this.addSlot(new OutputSlot(inventory, OreGrinderBlockEntity.OUTPUT_SLOT, 116, 35));
         this.addSlot(new PickaxeSlot(inventory, OreGrinderBlockEntity.PICKAXE_SLOT, 22, 36));
         this.addProperties(propertyDelegate);
@@ -69,7 +72,7 @@ public class OreGrinderScreenHandler extends ScreenHandler {
                 slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index >= INV_START) {
                 // From player inventory into the machine.
-                if (OreGrinderBlockEntity.canUseAsFuel(itemStack2)) {
+                if (OreGrinderBlockEntity.canUseAsFuel(this.world, itemStack2)) {
                     if (!this.insertItem(itemStack2, OreGrinderBlockEntity.FUEL_SLOT, OreGrinderBlockEntity.FUEL_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -141,12 +144,15 @@ public class OreGrinderScreenHandler extends ScreenHandler {
     }
 
     private static class FuelSlot extends Slot {
-        public FuelSlot(Inventory inventory, int index, int x, int y) {
+        private final net.minecraft.world.World world;
+
+        public FuelSlot(Inventory inventory, int index, int x, int y, net.minecraft.world.World world) {
             super(inventory, index, x, y);
+            this.world = world;
         }
 
         public boolean canInsert(ItemStack stack) {
-            return OreGrinderBlockEntity.canUseAsFuel(stack);
+            return OreGrinderBlockEntity.canUseAsFuel(this.world, stack);
         }
     }
 

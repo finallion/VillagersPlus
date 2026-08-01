@@ -21,12 +21,13 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -37,7 +38,7 @@ import net.minecraft.world.event.GameEvent;
 public class OceanographerTableBlock extends WorkstationBlock {
     public static final IntProperty CORALS;
     public static final IntProperty FISH;
-    public static final DirectionProperty FACING;
+    public static final EnumProperty<Direction> FACING;
     public static final BooleanProperty IS_FILLED;
     // Connections to adjacent aquariums; a connected side loses its glass wall (or lid/floor
     // for vertical connections) so several blocks merge into one larger tank.
@@ -144,13 +145,13 @@ public class OceanographerTableBlock extends WorkstationBlock {
             double y = pos.getY() + 0.1D + (pos.getY() + 0.4D - (pos.getY() + 0.1D)) * random.nextDouble();
             double z = pos.getZ() + 0.1D + (pos.getZ() + 0.9D - (pos.getZ() + 0.1D)) * random.nextDouble();
 
-            world.addParticle(VPParticles.BUBBLE_PARTICLE, x, y, z, 0.0D, 0.000001D, 0.0D);
+            world.addParticleClient(VPParticles.BUBBLE_PARTICLE, x, y, z, 0.0D, 0.000001D, 0.0D);
         }
 
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity blockEntity) {
                 boolean isFishFood = itemStack.isOf(VPItems.FISH_FOOD.get());
@@ -166,9 +167,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
                     } else {
-                        world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, isFishFood ? 1.2F : 0.6F, false);
+                        world.playSound(null, pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, isFishFood ? 1.2F : 0.6F);
                     }
-                    return ItemActionResult.success(world.isClient);
+                    return ActionResult.SUCCESS;
                 }
 
                 // Bone meal grows the corals, shears trim them back down (mirrors the fish foods).
@@ -189,9 +190,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
                     } else {
-                        world.playSoundAtBlockCenter(pos, isBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+                        world.playSound(null, pos, isBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
-                    return ItemActionResult.success(world.isClient);
+                    return ActionResult.SUCCESS;
                 }
 
                 if (itemStack.isOf(VPItems.CALM_FOOD.get()) && state.get(FISH) >= 1) {
@@ -202,9 +203,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         }
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     } else {
-                        world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, 0.9F, false);
+                        world.playSound(null, pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, 0.9F);
                     }
-                    return ItemActionResult.success(world.isClient);
+                    return ActionResult.SUCCESS;
                 }
 
                 // No planting in stacked upper blocks - they have no floor for the corals.
@@ -217,17 +218,17 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
 
                     if (world.isClient) {
-                        world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_CORAL_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+                        world.playSound(null, pos, SoundEvents.BLOCK_CORAL_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
 
-                    return ItemActionResult.success(world.isClient);
+                    return ActionResult.SUCCESS;
                 } else if (itemStack.getItem() instanceof EntityBucketItem && state.get(FISH) < 1) {
                     // Only set FISH if the slot was actually free; otherwise a desynced slot
                     // would eat the state change without a fish. The tank is handed a copy, so
                     // the stack in hand survives and can be exchanged for an empty bucket below -
                     // the same trade vanilla's fish bucket makes when you release the fish.
                     if (!blockEntity.insertCoral(itemStack.copy(), OceanographerTableBlockEntity.FISH_SLOT)) {
-                        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
                     }
 
                     if (!world.isClient()) {
@@ -238,7 +239,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
                     if (world.isClient) player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-                    return ItemActionResult.success(world.isClient);
+                    return ActionResult.SUCCESS;
                     // Either bucket works: the tank holds its own water, so the empty one handed
                     // back when the fish went in is enough to get it out again.
                 } else if ((itemStack.isOf(Items.WATER_BUCKET) || itemStack.isOf(Items.BUCKET)) && state.get(FISH) >= 1) {
@@ -256,23 +257,23 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
                         }
 
-                        return ItemActionResult.success(world.isClient);
+                        return ActionResult.SUCCESS;
                     }
                 }
         }
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof OceanographerTableBlockEntity) {
-                ItemScatterer.spawn(world, pos, (OceanographerTableBlockEntity)blockEntity);
-            }
-
-            super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        // Since 1.21.6 this only fires when the block really changed and only on the server, so
+        // the old isOf(newState) guard is gone along with the newState parameter.
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof OceanographerTableBlockEntity) {
+            ItemScatterer.spawn(world, pos, (OceanographerTableBlockEntity)blockEntity);
         }
+
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override
@@ -305,7 +306,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, net.minecraft.world.WorldView world, net.minecraft.world.tick.ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, net.minecraft.util.math.random.Random random) {
         return state.with(connectionProperty(direction), this.connectsTo(state, neighborState));
     }
 

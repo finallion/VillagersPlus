@@ -15,10 +15,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -31,7 +32,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public static final BooleanProperty[] BOTTLE_PROPERTIES;
     public static final BooleanProperty HAS_FUEL;
     public static final BooleanProperty IS_BREWING;
-    public static final DirectionProperty FACING;
+    public static final EnumProperty<Direction> FACING;
     protected static final VoxelShape SHAPE;
 
     // The onPlaced override that copied a named block item's name onto the block entity is gone:
@@ -110,11 +111,11 @@ public class AlchemistTableBlock extends WorkstationBlock {
         }
 
         if (state.get(IS_BREWING) && random.nextInt(3) == 0) {
-            world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0D, 0.0D, 0.0D);
+            world.addParticleClient(ParticleTypes.FLAME, d, e, f, 0.0D, 0.0D, 0.0D);
         }
 
         if (state.get(HAS_FUEL) || state.get(IS_BREWING)) {
-            world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0D, 0.05D, 0.0D);
+            world.addParticleClient(ParticleTypes.SMOKE, d, e, f, 0.0D, 0.05D, 0.0D);
         }
     }
 
@@ -124,15 +125,15 @@ public class AlchemistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof AlchemistTableBlockEntity) {
-                ItemScatterer.spawn(world, pos, (AlchemistTableBlockEntity)blockEntity);
-            }
-
-            super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        // Since 1.21.6 this only fires when the block really changed and only on the server, so
+        // the old isOf(newState) guard is gone along with the newState parameter.
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof AlchemistTableBlockEntity) {
+            ItemScatterer.spawn(world, pos, (AlchemistTableBlockEntity)blockEntity);
         }
+
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override

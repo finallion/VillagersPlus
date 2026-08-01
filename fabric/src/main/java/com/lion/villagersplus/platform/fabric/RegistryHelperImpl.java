@@ -1,7 +1,6 @@
 package com.lion.villagersplus.platform.fabric;
 
 import com.lion.villagersplus.VillagersPlus;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -64,8 +63,12 @@ public class RegistryHelperImpl {
         Registry.register(Registries.SCREEN_HANDLER, Identifier.of(VillagersPlus.MOD_ID, name), screenHandlerType);
     }
 
+    /**
+     * Fabric API dropped blockrenderlayer-v1 for 1.21.6+, and nothing ever called this: the client
+     * initialiser sets the three cutout blocks itself. Kept as a no-op only because the platform
+     * helper's signature is shared with NeoForge.
+     */
     public static void registerRenderType(RenderLayer type, Block... blocks) {
-        BlockRenderLayerMap.INSTANCE.putBlocks(type, blocks);
     }
 
     public static <T extends SoundEvent> Supplier<T> registerSoundEvent(String name, Supplier<T> soundEvent) {

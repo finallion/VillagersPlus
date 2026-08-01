@@ -28,8 +28,8 @@ public class StructurePoolAddition {
     private static final Identifier taigaPoolLocation = Identifier.of("minecraft:village/taiga/houses");
 
     public static void registerJigsaws(MinecraftServer server) {
-        Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().get(RegistryKeys.TEMPLATE_POOL);
-        Registry<StructureProcessorList> processorListRegistry = server.getRegistryManager().get(RegistryKeys.PROCESSOR_LIST);
+        Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().getOrThrow(RegistryKeys.TEMPLATE_POOL);
+        Registry<StructureProcessorList> processorListRegistry = server.getRegistryManager().getOrThrow(RegistryKeys.PROCESSOR_LIST);
         RegistryEntry<StructureProcessorList> minerProcessors = processorList(processorListRegistry, MINER_PROCESSOR_LIST_KEY);
 
         addBuildingToPool(templatePoolRegistry, processorListRegistry, plainsPoolLocation, "villagersplus:village/plains/plains_alchemist", VillagersPlus.CONFIG.plains_alchemist_weight);
@@ -62,7 +62,7 @@ public class StructurePoolAddition {
     }
 
     public static void addBuildingToPool(Registry<StructurePool> templatePoolRegistry, Registry<StructureProcessorList> processorListRegistry, Identifier poolRL, String nbtPieceRL, int weight) {
-        addBuildingToPool(templatePoolRegistry, poolRL, nbtPieceRL, weight, processorListRegistry.entryOf(EMPTY_PROCESSOR_LIST_KEY));
+        addBuildingToPool(templatePoolRegistry, poolRL, nbtPieceRL, weight, processorListRegistry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY));
     }
 
     /**
@@ -71,9 +71,9 @@ public class StructurePoolAddition {
      * start.
      */
     private static RegistryEntry<StructureProcessorList> processorList(Registry<StructureProcessorList> registry, RegistryKey<StructureProcessorList> key) {
-        return registry.getEntry(key).map(entry -> (RegistryEntry<StructureProcessorList>) entry).orElseGet(() -> {
+        return registry.getOptional(key).map(entry -> (RegistryEntry<StructureProcessorList>) entry).orElseGet(() -> {
             VillagersPlus.LOGGER.warn("Processor list {} is missing, placing that building unprocessed", key.getValue());
-            return registry.entryOf(EMPTY_PROCESSOR_LIST_KEY);
+            return registry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY);
         });
     }
 

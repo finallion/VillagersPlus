@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "villagersplus:ore_grinder"
+    "villagersplus:ore_grinder",
+    "villagersplus:occultist_table"
   ]
 }

@@ -9,6 +9,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.collection.DefaultedList;
@@ -39,11 +41,11 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return this.inventory.size();
     }
 
+    @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound nbtCompound = new NbtCompound();
-        Inventories.writeNbt(nbtCompound, this.inventory, true, registryLookup);
-        nbtCompound.putFloat("PlantScale", this.plantScale);
-        return nbtCompound;
+        // Inventories.writeNbt with the raw NbtCompound is gone; createNbt runs writeData, which
+        // already serialises exactly what this used to assemble by hand.
+        return createNbt(registryLookup);
     }
 
     public float getPlantScale() {
@@ -97,7 +99,8 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
     }
 
     public boolean isEmpty() {
-        Iterator var1 = this.inventory.iterator();
+        // Inventory now has a nested Iterator type, so the bare name no longer means java.util.Iterator.
+        java.util.Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
         do {
@@ -120,17 +123,19 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    @Override
+    protected void readData(ReadView view) {
+        super.readData(view);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
-        this.plantScale = nbt.contains("PlantScale") ? nbt.getFloat("PlantScale") : 1.0F;
+        Inventories.readData(view, this.inventory);
+        this.plantScale = view.getFloat("PlantScale", 1.0F);
     }
 
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
-        nbt.putFloat("PlantScale", this.plantScale);
+    @Override
+    protected void writeData(WriteView view) {
+        super.writeData(view);
+        Inventories.writeData(view, this.inventory);
+        view.putFloat("PlantScale", this.plantScale);
     }
 
     public ItemStack getStack(int slot) {
