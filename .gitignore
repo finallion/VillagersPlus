@@ -1,3 +1,7 @@
+# plan files
+*.md
+docs/
+
 # gradle
 
 .gradle/
