@@ -42,6 +42,7 @@ public class VPItems {
     public static final Supplier<Item> WARPED_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerItem("warped_horticulturist_table", () -> new BlockItem(VPBlocks.WARPED_HORTICULTURIST_TABLE_BLOCK.get(), blockItemSettings("warped_horticulturist_table")));
     public static final Supplier<Item> CHERRY_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerItem("cherry_horticulturist_table", () -> new BlockItem(VPBlocks.CHERRY_HORTICULTURIST_TABLE_BLOCK.get(), blockItemSettings("cherry_horticulturist_table")));
     public static final Supplier<Item> BAMBOO_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerItem("bamboo_horticulturist_table", () -> new BlockItem(VPBlocks.BAMBOO_HORTICULTURIST_TABLE_BLOCK.get(), blockItemSettings("bamboo_horticulturist_table")));
+    public static final Supplier<Item> PALE_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerItem("pale_oak_horticulturist_table", () -> new BlockItem(VPBlocks.PALE_OAK_HORTICULTURIST_TABLE_BLOCK.get(), blockItemSettings("pale_oak_horticulturist_table")));
 
     public static final Supplier<Item> OCCULTIST_TABLE_BLOCK = RegistryHelper.registerItem("occultist_table", () -> new BlockItem(VPBlocks.OCCULTIST_TABLE_BLOCK.get(), blockItemSettings("occultist_table")));
 
@@ -68,6 +69,7 @@ public class VPItems {
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, WARPED_HORTICULTURIST_TABLE_BLOCK.get());
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, CHERRY_HORTICULTURIST_TABLE_BLOCK.get());
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, BAMBOO_HORTICULTURIST_TABLE_BLOCK.get());
+        RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, PALE_OAK_HORTICULTURIST_TABLE_BLOCK.get());
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, OCEANOGRAPHER_TABLE_BLOCK.get());
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, ALCHEMIST_TABLE_BLOCK.get());
         RegistryHelper.addToItemGroup(VPItemGroups.ITEM_GROUP, OCCULTIST_TABLE_BLOCK.get());

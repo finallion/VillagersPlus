@@ -9,7 +9,7 @@ architectury {
 
 configurations {
 	common
-	shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+	shadowCommon
 	compileClasspath.extendsFrom common
 	runtimeClasspath.extendsFrom common
 	developmentFabric.extendsFrom common
@@ -28,8 +28,15 @@ dependencies {
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-	// Comes from mavenLocal — run `./gradlew publishToMavenLocal` in VillagerTradingPlus first.
-	modImplementation "lion.villagertradingplus:villagertradingplus-fabric:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}"
+	// changing = true: the library is consumed from mavenLocal under a fixed version, so without
+	// this Gradle keeps the first copy it ever resolved and a republish never reaches the run.
+	modImplementation("lion.villagertradingplus:villagertradingplus-fabric:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}") {
+		changing = true
+	}
+}
+
+configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, "seconds"
 }
 
 processResources {
@@ -80,8 +87,6 @@ publishing {
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
 	}
 }

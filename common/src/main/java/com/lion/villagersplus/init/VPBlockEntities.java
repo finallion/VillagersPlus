@@ -35,7 +35,8 @@ public class VPBlockEntities {
             VPBlocks.CRIMSON_HORTICULTURIST_TABLE_BLOCK.get(),
             VPBlocks.WARPED_HORTICULTURIST_TABLE_BLOCK.get(),
             VPBlocks.CHERRY_HORTICULTURIST_TABLE_BLOCK.get(),
-            VPBlocks.BAMBOO_HORTICULTURIST_TABLE_BLOCK.get()
+            VPBlocks.BAMBOO_HORTICULTURIST_TABLE_BLOCK.get(),
+            VPBlocks.PALE_OAK_HORTICULTURIST_TABLE_BLOCK.get()
             ))
     );
 

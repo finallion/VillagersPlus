@@ -159,6 +159,19 @@
         },
         "max_uses": 12,
         "villager_experience": 4
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "resin_clump",
+          "count": 2
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 3
       }
     ],
     "journeyman": [
@@ -410,6 +423,19 @@
         },
         "max_uses": 12,
         "villager_experience": 4
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "resin_brick",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 4
+        },
+        "max_uses": 12,
+        "villager_experience": 4
       }
     ],
     "master": [
@@ -438,6 +464,19 @@
         },
         "max_uses": 12,
         "villager_experience": 10
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "creaking_heart",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 24
+        },
+        "max_uses": 4,
+        "villager_experience": 5
       }
     ]
   }

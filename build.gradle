@@ -1,13 +1,26 @@
 plugins {
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.11-SNAPSHOT" apply false
-	// Pinned to the 1.x line on purpose: mod-publish-plugin 2.0 requires Gradle 9, and the wrapper
-	// is on 8.14 for Loom 1.11. Only bump this past 1.x together with Loom and Gradle.
 	id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
 architectury {
 	minecraft = rootProject.minecraft_version
+}
+
+// VillagerTradingPlus is consumed from mavenLocal under a fixed version, and Loom keys its remapped
+// copy of a dependency by that version - so a republished library never reaches the run without
+// dropping that copy first. Run this on its own, then build:
+//
+//     gradlew dropLibraryCache
+//     gradlew :neoforge:build
+//
+// Chaining both into one invocation fails: nothing orders the delete against the compile classpath,
+// so the jar can be removed while a task is still resolving against it.
+tasks.register("dropLibraryCache", Delete) {
+	description = "Removes the cached remap of VillagerTradingPlus so a fresh publishToMavenLocal is picked up. Run on its own, before the build."
+	group = "build"
+	delete "${rootDir}/.gradle/loom-cache/remapped_mods/remapped/lion/villagertradingplus"
 }
 
 subprojects {
@@ -19,8 +32,6 @@ subprojects {
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		// Plain yarn collides with NeoForge on remap ("Mapping target name conflicts" for
-		// getInventory/renderHotbar); the patch layer resolves those names.
 		mappings loom.layered {
 			mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
 			mappings "dev.architectury:yarn-mappings-patch-neoforge:${rootProject.yarn_mappings_patch_neoforge_version}"
@@ -55,37 +66,17 @@ allprojects {
 	}
 }
 
-// ---------------------------------------------------------------------------------------------
-// Release publishing.
-//
-// NOT ARMED. Every task runs in dry-run mode unless PUBLISH_LIVE=true is set, in which case it
-// only writes the release assets to build/mod-publish-plugin/ instead of uploading anything.
-// To go live you need, in this order:
-//   1. real project ids in ~/.gradle/gradle.properties (never in this repo's gradle.properties,
-//      that file is tracked): villagersplusModrinthId, villagersplusCurseforgeId
-//   2. tokens, either as env vars (MODRINTH_TOKEN / CURSEFORGE_TOKEN / GITHUB_TOKEN) or as
-//      gradle properties (modrinthToken / curseforgeToken)
-//   3. PUBLISH_LIVE=true
-//
-// Note that the version string carries the Minecraft version (4.0.0+mc1.21.1). The mod version
-// itself does not change between Minecraft versions, so without that suffix the second release
-// would collide with the first on Modrinth, which requires version numbers to be unique.
-// ---------------------------------------------------------------------------------------------
+
 publishMods {
 	dryRun = providers.environmentVariable("PUBLISH_LIVE").getOrElse("false") != "true"
 
 	version = project.version
 	type = STABLE
-	// Without this the release is titled after the Gradle artifact name ("villagersplus
-	// 4.0.0+mc1.21.1"), which is what players see on the store page.
 	displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version}"
 	changelog = providers.environmentVariable("CHANGELOG")
 			.getOrElse("See the GitHub release for the changelog.")
 
 	def token = { String env, String property ->
-		// Empty rather than absent: an absent Provider makes the task fail during configuration,
-		// which would break dry runs too. A live run with an empty token fails at the API with 401,
-		// which is the clearer error.
 		providers.environmentVariable(env).orElse(providers.gradleProperty(property)).orElse("")
 	}
 
@@ -93,8 +84,7 @@ publishMods {
 		accessToken = token("CURSEFORGE_TOKEN", "curseforgeToken")
 		projectId = providers.gradleProperty("villagersplusCurseforgeId").getOrElse("000000")
 		minecraftVersions.add(rootProject.minecraft_version)
-		// CurseForge rejects uploads that declare neither. On the 1.x plugin line these are called
-		// clientRequired/serverRequired; 2.0 renamed them to client/server.
+		// CurseForge rejects uploads that declare neither.
 		clientRequired = true
 		serverRequired = true
 	}
@@ -120,7 +110,6 @@ publishMods {
 		requires { slug = "villagertradingplus" }
 	}
 
-	// One Modrinth version per loader, so the loader has to be part of the version number as well.
 	modrinth("modrinthFabric") {
 		from mrOptions
 		file project(":fabric")
@@ -140,7 +129,6 @@ publishMods {
 		requires { slug = "villagertradingplus" }
 	}
 
-	// A single GitHub release carrying both jars.
 	github {
 		accessToken = providers.environmentVariable("GITHUB_TOKEN").getOrElse("")
 		repository = "finallion/VillagersPlus_-FABRIC-"

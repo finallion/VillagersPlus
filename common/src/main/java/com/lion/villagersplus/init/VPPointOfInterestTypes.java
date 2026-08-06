@@ -34,6 +34,7 @@ public class VPPointOfInterestTypes {
     public final static Supplier<PointOfInterestType> HORTICULTURIST_CHERRY_POI;
     public final static Supplier<PointOfInterestType> HORTICULTURIST_BAMBOO_POI;
     public final static Supplier<PointOfInterestType> HORTICULTURIST_MANGROVE_POI;
+    public final static Supplier<PointOfInterestType> HORTICULTURIST_PALE_OAK_POI;
     public final static Supplier<PointOfInterestType> OCCULTIST_POI;
     public final static Supplier<PointOfInterestType> OCEANOGRAPHER_POI;
     public final static Supplier<PointOfInterestType> ALCHEMIST_POI;
@@ -54,6 +55,7 @@ public class VPPointOfInterestTypes {
         HORTICULTURIST_CHERRY_POI = registerPointOfInterest("horticulturist_cherry", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.CHERRY_HORTICULTURIST_TABLE_BLOCK.get()), 1, 1));
         HORTICULTURIST_BAMBOO_POI = registerPointOfInterest("horticulturist_bamboo", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.BAMBOO_HORTICULTURIST_TABLE_BLOCK.get()), 1, 1));
         HORTICULTURIST_MANGROVE_POI = registerPointOfInterest("horticulturist_mangrove", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.MANGROVE_HORTICULTURIST_TABLE_BLOCK.get()), 1, 1));
+        HORTICULTURIST_PALE_OAK_POI = registerPointOfInterest("horticulturist_pale_oak", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.PALE_OAK_HORTICULTURIST_TABLE_BLOCK.get()), 1, 1));
 
         OCCULTIST_POI = registerPointOfInterest("occultist", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.OCCULTIST_TABLE_BLOCK.get()), 1, 1));
         OCEANOGRAPHER_POI = registerPointOfInterest("oceanographer", () -> new PointOfInterestType(PointOfInterestTypes.getStatesOfBlock(VPBlocks.OCEANOGRAPHER_TABLE_BLOCK.get()), 1, 1));

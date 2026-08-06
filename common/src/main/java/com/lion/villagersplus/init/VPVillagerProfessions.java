@@ -40,6 +40,7 @@ public class VPVillagerProfessions {
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_JUNGLE_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_MANGROVE_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_SPRUCE_POI.get()
+                    || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_PALE_OAK_POI.get()
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_WARPED_POI.get();
 
     static {

@@ -1,8 +1,6 @@
 package com.lion.villagersplus.client.screen;
 
 import com.lion.villagersplus.VillagersPlus;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -10,7 +8,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-@Environment(EnvType.CLIENT)
 public class OreGrinderScreen extends HandledScreen<OreGrinderScreenHandler> {
     private static final Identifier TEXTURE = Identifier.of(VillagersPlus.MOD_ID, "textures/gui/container/ore_grinder.png");
 

@@ -14,15 +14,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
 
-    // Absolute X/Z positions per plant (offset from the block origin). Applied independently per
-    // flower - each plant is rendered inside its own push()/pop() so the per-plant random model
-    // offset does NOT accumulate across plants (which previously drifted 4 flowers up to ~1 block).
+    // Absolute X/Z positions per plant, measured from the block origin. Each plant renders inside
+    // its own push()/pop(), so these never accumulate across plants.
     public static float[] twoFlowerXOffset = new float[]{
                 VillagersPlus.CONFIG.first_flower_in_two_X,
                 VillagersPlus.CONFIG.second_flower_in_two_X};
@@ -81,13 +79,12 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
             matrixStack.push();
             Block flower = Block.getBlockFromItem(defaultedList.get(0).getItem());
             if (flower instanceof TallPlantBlock) {
-                Vec3d offset = flower.getDefaultState().getModelOffset(pos);
-                matrixStack.translate(-offset.x, -offset.y + 0.95D, -offset.z);
+                matrixStack.translate(0.0D, 0.95D, 0.0D);
                 // Scale once before BOTH halves so the upper half's translate happens in
                 // scaled space and the two halves stay attached.
                 applyPlantScale(matrixStack, scale);
                 renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, true, i, j);
-                matrixStack.translate(-offset.x, -offset.y + 1.0D, -offset.z);
+                matrixStack.translate(0.0D, 1.0D, 0.0D);
                 renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, false, i, j);
             } else {
                 Block flowerOne = Block.getBlockFromItem(defaultedList.get(0).getItem());
@@ -96,8 +93,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                     matrixStack.translate(0.15D, 0.15D, 0.15D);
                 }
 
-                Vec3d offset = flowerOne.getDefaultState().getModelOffset(pos);
-                matrixStack.translate(-offset.x, -offset.y + 0.95D, -offset.z);
+                matrixStack.translate(0.0D, 0.95D, 0.0D);
                 applyPlantScale(matrixStack, scale);
                 renderFlower(flowerOne, world, pos, matrixStack, vertexConsumerProvider, i, j);
             }
@@ -136,9 +132,8 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     /** Renders one plant at an absolute X/Y/Z position, isolated in its own matrix so offsets never accumulate. */
     private void renderFlowerAt(DefaultedList<ItemStack> list, int slot, float x, float y, float z, float scale, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
         Block flower = Block.getBlockFromItem(list.get(slot).getItem());
-        Vec3d offset = flower.getDefaultState().getModelOffset(pos);
         matrixStack.push();
-        matrixStack.translate(-offset.x + x, -offset.y + y, -offset.z + z);
+        matrixStack.translate(x, y, z);
         applyPlantScale(matrixStack, scale);
         renderFlower(flower, world, pos, matrixStack, vertexConsumerProvider, light, overlay);
         matrixStack.pop();

@@ -13,7 +13,7 @@ architectury {
 
 configurations {
 	common
-	shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+	shadowCommon
 	compileClasspath.extendsFrom common
 	runtimeClasspath.extendsFrom common
 	developmentNeoForge.extendsFrom common
@@ -25,9 +25,15 @@ dependencies {
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
 	shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
-	// Comes from mavenLocal — run `./gradlew publishToMavenLocal` in VillagerTradingPlus first.
-	// Artifact is -neoforge now, not -forge.
-	modImplementation "lion.villagertradingplus:villagertradingplus-neoforge:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}"
+	// changing = true: the library is consumed from mavenLocal under a fixed version, so without
+	// this Gradle keeps the first copy it ever resolved and a republish never reaches the run.
+	modImplementation("lion.villagertradingplus:villagertradingplus-neoforge:${rootProject.villagertradingplus_version}+mc${rootProject.minecraft_version}") {
+		changing = true
+	}
+}
+
+configurations.all {
+	resolutionStrategy.cacheChangingModulesFor 0, "seconds"
 }
 
 processResources {

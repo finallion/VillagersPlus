@@ -4,7 +4,6 @@ import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blocks.OceanographerTableBlock;
 import com.lion.villagersplus.init.VPBlockEntities;
 import com.lion.villagersplus.mixin.EntityAccessorMixin;
-import com.lion.villagersplus.mixin.TropicalFishEntityInvoker;
 import com.lion.villagersplus.util.DuckBucketable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -14,7 +13,6 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.PufferfishEntity;
-import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -30,7 +28,6 @@ import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -322,6 +319,16 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         // Fin/limb animation always runs so the fish stays "alive" even when hovering in place.
         if (fish instanceof LivingEntity living) {
             living.limbAnimator.updateLimbs(1.0F, 0.4F, 1.0F);
+        }
+
+        // The axolotl model blends its poses from four flip-flops rather than from age and the limb
+        // animator the way the fish models do, and nothing here runs the entity tick that advances
+        // them. Drive them for a tank animal: always swimming, never beached or playing dead.
+        if (fish instanceof AxolotlEntity axolotl) {
+            axolotl.playingDeadFf.tick(false);
+            axolotl.inWaterFf.tick(true);
+            axolotl.onGroundFf.tick(false);
+            axolotl.isMovingFf.tick(axolotl.limbAnimator.isLimbMoving());
         }
 
         this.prevFishX = this.fishX;
@@ -693,26 +700,17 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (fish == null) {
             return null;
         }
-        // A bucket's entity data is its own component now; ItemStack has no tag any more. The keys
-        // inside it ("Variant", "BucketVariantTag") are unchanged, so only the way in differs.
+
         NbtComponent bucketData = stack.get(DataComponentTypes.BUCKET_ENTITY_DATA);
         if (bucketData != null) {
             NbtCompound entityNbt = bucketData.copyNbt();
-            // Entity NBT goes through ReadView since 1.21.6, and AxolotlEntity.setVariant is private
-            // now. Handing the whole bucket tag to the entity restores the variant for every species
-            // at once, which is what the per-species branches used to do by hand.
             try (ErrorReporter.Logging reporter =
                          new ErrorReporter.Logging(fish.getErrorReporterContext(), VillagersPlus.LOGGER)) {
                 fish.readData(NbtReadView.create(reporter, world.getRegistryManager(), entityNbt));
             }
-            if (fish instanceof TropicalFishEntity && entityNbt.contains("BucketVariantTag")) {
-                int id = entityNbt.getInt("BucketVariantTag", 0);
-                DyeColor pattern = TropicalFishEntity.getPatternColor(id);
-                DyeColor base = TropicalFishEntity.getBaseColor(id);
-                TropicalFishEntity.Variant variant = new TropicalFishEntity.Variant(TropicalFishEntity.getVariety(id), base, pattern);
-                ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
-            }
         }
+
+        fish.copyComponentsFrom(stack);
         ((EntityAccessorMixin) fish).setTouchingWater(true);
         return fish;
     }
@@ -739,7 +737,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return (float) MathHelper.lerp((double) tickDelta, this.prevFishZ, this.fishZ);
     }
 
-    /** Interpolated nose-up/-down angle while wandering vertically (degrees, MC pitch convention). */
+    /** Interpolated nose-up/-down angle while wandering vertically. */
     public float getFishPitch(float tickDelta) {
         return MathHelper.lerpAngleDegrees(tickDelta, this.prevWanderPitch, this.wanderPitch);
     }
@@ -791,7 +789,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     @Override
     public boolean isValid(int slot, ItemStack stack) {
         // Corals and the fish only go in via right-click. Without this, hoppers could push
-        // arbitrary items into the display slots (invisible, and desyncing CORALS/FISH).
+        // arbitrary items into the display slots.
         return false;
     }
 

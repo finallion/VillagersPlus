@@ -27,6 +27,17 @@ import net.minecraft.world.event.GameEvent;
 public class HorticulturistTableBlock extends WorkstationBlock {
     public static final IntProperty FLOWERS;
     public static final BooleanProperty IS_TALL_FLOWER;
+    /** Light the tub gives off, driven by what is planted in it. Read by the block's luminance. */
+    public static final IntProperty LIGHT;
+
+    /**
+     * What one torchflower is worth in the tub. It gives off no light where it grows, and the tub
+     * holds four, so this is a quarter of the way to full brightness: 4, 8, 12, 15.
+     */
+    private static final int TORCHFLOWER_LIGHT = 4;
+
+    /** Brightest a tub can get, whatever is packed into it. */
+    private static final int MAX_LIGHT = 15;
 
     /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
     public static final MapCodec<HorticulturistTableBlock> CODEC = createCodec(HorticulturistTableBlock::new);
@@ -38,7 +49,53 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
     public HorticulturistTableBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FLOWERS, 0).with(IS_TALL_FLOWER, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(FLOWERS, 0).with(IS_TALL_FLOWER, false).with(LIGHT, 0));
+    }
+
+    /**
+     * Runs every planted block's own ambient effect - a firefly bush's fireflies, an eyeblossom's
+     * particles, whatever a future plant brings - so the tub does not have to know about any of
+     * them. Anchored one block up, where the plants are actually drawn.
+     */
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, net.minecraft.util.math.random.Random random) {
+        if (state.get(FLOWERS) == 0 || !(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
+            return;
+        }
+
+        BlockPos plantPos = pos.up();
+        for (ItemStack stack : blockEntity.getInventory()) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+            Block plant = Block.getBlockFromItem(stack.getItem());
+            if (plant != Blocks.AIR) {
+                plant.randomDisplayTick(plant.getDefaultState(), world, plantPos, random);
+            }
+        }
+    }
+
+    /** Every plant adds its own light, so a tub packed with them is brighter than one holding a single one. */
+    private static int lightFor(HorticulturistTableBlockEntity blockEntity) {
+        int light = 0;
+        for (ItemStack stack : blockEntity.getInventory()) {
+            if (!stack.isEmpty()) {
+                light += plantLight(Block.getBlockFromItem(stack.getItem()));
+            }
+        }
+        return Math.min(light, MAX_LIGHT);
+    }
+
+    /**
+     * What one plant contributes. A torchflower lights the tub even though it glows nowhere else;
+     * every other plant contributes whatever light it already emits as a block, so a glowing plant
+     * needs no entry here.
+     */
+    private static int plantLight(Block plant) {
+        if (plant == Blocks.TORCHFLOWER) {
+            return TORCHFLOWER_LIGHT;
+        }
+        return plant.getDefaultState().getLuminance();
     }
 
     @Override
@@ -93,7 +150,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 blockEntity.insertFlower(itemStack, state.get(FLOWERS));
 
                 if (!world.isClient()) {
-                    world.setBlockState(pos, state.with(FLOWERS, 4).with(IS_TALL_FLOWER, true), 3);
+                    world.setBlockState(pos, state.with(FLOWERS, 4).with(IS_TALL_FLOWER, true).with(LIGHT, lightFor(blockEntity)), 3);
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
@@ -106,7 +163,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 blockEntity.insertFlower(itemStack, state.get(FLOWERS));
 
                 if (!world.isClient()) {
-                    world.setBlockState(pos, state.with(FLOWERS, state.get(FLOWERS) + 1).with(IS_TALL_FLOWER, false), 3);
+                    world.setBlockState(pos, state.with(FLOWERS, state.get(FLOWERS) + 1).with(IS_TALL_FLOWER, false).with(LIGHT, lightFor(blockEntity)), 3);
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
@@ -129,7 +186,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 }
                 player.getInventory().offerOrDrop(removed);
                 int remaining = tall ? 0 : state.get(FLOWERS) - 1;
-                world.setBlockState(pos, state.with(FLOWERS, remaining).with(IS_TALL_FLOWER, false), 3);
+                world.setBlockState(pos, state.with(FLOWERS, remaining).with(IS_TALL_FLOWER, false).with(LIGHT, lightFor(blockEntity)), 3);
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             }
 
@@ -166,11 +223,12 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FLOWERS, IS_TALL_FLOWER);
+        builder.add(FLOWERS, IS_TALL_FLOWER, LIGHT);
     }
 
     static {
         IS_TALL_FLOWER = BooleanProperty.of("is_tall_flower");
         FLOWERS = IntProperty.of("flowers", 0, 4);
+        LIGHT = IntProperty.of("light", 0, 15);
     }
 }
