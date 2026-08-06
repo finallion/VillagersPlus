@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "workstation",
+  "key": {
+    "#": "minecraft:stripped_pale_oak_log",
+    "Y": "minecraft:dirt"
+  },
+  "pattern": [
+    "#Y#",
+    "###"
+  ],
+  "result": {
+    "id": "villagersplus:pale_oak_horticulturist_table"
+  }
+}
