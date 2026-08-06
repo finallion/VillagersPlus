@@ -59,8 +59,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         this.manager = ctx.getRenderManager();
     }
 
-    // BlockEntityRenderer.render gained a camera position in 1.21.6. Nothing here needs it, but the
-    // parameter has to be present or the class no longer implements the interface.
     @Override
     public void render(HorticulturistTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, net.minecraft.util.math.Vec3d cameraPos) {
         BlockState blockState = blockEntity.getCachedState();
@@ -121,7 +119,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /** Scales around the centre of the plant's base (block models render 0..1 from the corner). */
+    /// Scales around the centre of the plant's base (block models render 0..1 from the corner).
     private static void applyPlantScale(MatrixStack matrixStack, float scale) {
         if (scale != 1.0F) {
             matrixStack.translate(0.5F * (1.0F - scale), 0.0F, 0.5F * (1.0F - scale));
@@ -129,7 +127,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /** Renders one plant at an absolute X/Y/Z position, isolated in its own matrix so offsets never accumulate. */
+    /// Renders one plant at an absolute X/Y/Z position, isolated in its own matrix so offsets never accumulate.
     private void renderFlowerAt(DefaultedList<ItemStack> list, int slot, float x, float y, float z, float scale, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
         Block flower = Block.getBlockFromItem(list.get(slot).getItem());
         matrixStack.push();
@@ -140,9 +138,19 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     private void renderFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        // The model-renderer overload with an explicit model and seed is gone; renderBlockAsEntity
-        // picks the right render layer for the state itself, which is what a block entity wants.
-        this.manager.renderBlockAsEntity(flower.getDefaultState(), matrixStack, vertexConsumerProvider, light, overlay);
+        this.manager.renderBlockAsEntity(displayState(flower), matrixStack, vertexConsumerProvider, light, overlay);
+    }
+
+    /// The state a plant is drawn in while it sits in the tub.
+    ///
+    /// Segmented plants (pink petals, wildflowers, leaf litter) draw one quadrant of the block per
+    /// segment and leave the rest empty, so a single segment lands in a corner instead of on the
+    /// soil. Filling every segment covers the whole slot, like every other plant model does.
+    private static BlockState displayState(Block flower) {
+        if (flower instanceof Segmented segmented) {
+            return flower.getDefaultState().with(segmented.getAmountProperty(), Segmented.MAX_SEGMENTS);
+        }
+        return flower.getDefaultState();
     }
 
 
