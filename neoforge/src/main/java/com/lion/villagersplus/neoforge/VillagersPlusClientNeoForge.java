@@ -20,7 +20,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 /** {@code @Mod.EventBusSubscriber} became a top-level {@code @EventBusSubscriber} in NeoForge. */
-@EventBusSubscriber(modid = VillagersPlus.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = VillagersPlus.MOD_ID, value = Dist.CLIENT)
 public class VillagersPlusClientNeoForge {
 
     @SubscribeEvent
