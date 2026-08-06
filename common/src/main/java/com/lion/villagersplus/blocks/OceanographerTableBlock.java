@@ -80,31 +80,24 @@ public class OceanographerTableBlock extends WorkstationBlock {
         return !state.get(STANDALONE) && neighborState.isOf(this) && !neighborState.get(STANDALONE);
     }
 
-    /**
-     * {@return how many aquariums the tank would hold if a block were placed at {@code pos}}
-     *
-     * <p>Counts the block itself plus every tank it would join - placing between two separate tanks
-     * merges them, so they are walked as one. Follows the same connection properties as the block
-     * entity's own scan, so both agree on what "one tank" means. The walk stops once the count is
-     * past {@code limit}, which keeps it cheap and bounded even next to an oversized structure built
-     * before this cap existed.
-     */
-    private int mergedTankSize(WorldView world, BlockPos pos, int limit) {
-        Set<BlockPos> seen = new HashSet<>();
-        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
-        seen.add(pos);
+    /// Every aquarium that forms one tank with `start`, including `start` itself.
+    ///
+    /// Follows the same connection properties as the block entity's own scan, so both agree on what
+    /// "one tank" means. A position with no aquarium on it — the spot a block is about to be placed
+    /// in — is a tank of one. The walk stops once `budget` blocks are collected, which keeps it
+    /// bounded next to an oversized structure built before this cap existed.
+    private Set<BlockPos> collectTank(WorldView world, BlockPos start, int budget) {
+        Set<BlockPos> tank = new HashSet<>();
+        tank.add(start);
 
-        // The new block has no connection properties yet; it would connect to every adjacent
-        // non-standalone aquarium, so those are the roots of the walk.
-        for (Direction direction : Direction.values()) {
-            BlockPos neighbor = pos.offset(direction);
-            BlockState neighborState = world.getBlockState(neighbor);
-            if (neighborState.isOf(this) && !neighborState.get(STANDALONE) && seen.add(neighbor)) {
-                queue.add(neighbor);
-            }
+        BlockState startState = world.getBlockState(start);
+        if (!startState.isOf(this) || startState.get(STANDALONE)) {
+            return tank;
         }
 
-        while (!queue.isEmpty() && seen.size() <= limit) {
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        queue.add(start);
+        while (!queue.isEmpty() && tank.size() <= budget) {
             BlockPos current = queue.poll();
             BlockState currentState = world.getBlockState(current);
             for (Direction direction : Direction.values()) {
@@ -113,12 +106,29 @@ public class OceanographerTableBlock extends WorkstationBlock {
                 }
                 BlockPos next = current.offset(direction);
                 BlockState nextState = world.getBlockState(next);
-                if (nextState.isOf(this) && !nextState.get(STANDALONE) && seen.add(next)) {
+                if (nextState.isOf(this) && !nextState.get(STANDALONE) && tank.add(next)) {
                     queue.add(next);
                 }
             }
         }
-        return seen.size();
+        return tank;
+    }
+
+    /// Whether opening the seam between `pos` and `neighborPos` keeps the resulting tank within
+    /// [OceanographerTableBlockEntity#MAX_TANK_BLOCKS].
+    ///
+    /// Asked from both sides of a seam and answers the same either way, because it looks at the
+    /// union of the two tanks rather than at one side's view of it. That is what keeps a refused
+    /// connection from being re-opened by the neighbour's own update a tick later, which would leave
+    /// one block's glass gone and the other's intact.
+    private boolean joinStaysWithinLimit(WorldView world, BlockPos pos, BlockPos neighborPos) {
+        int limit = OceanographerTableBlockEntity.MAX_TANK_BLOCKS;
+        Set<BlockPos> tank = collectTank(world, pos, limit);
+        if (tank.contains(neighborPos)) {
+            return true;
+        }
+        tank.addAll(collectTank(world, neighborPos, limit));
+        return tank.size() <= limit;
     }
 
     @Override
@@ -284,29 +294,44 @@ public class OceanographerTableBlock extends WorkstationBlock {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         boolean standalone = ctx.getPlayer() != null && ctx.getPlayer().isSneaking();
 
-        // A tank may not grow past MAX_TANK_BLOCKS. Beyond that the block entity's flood fill would
-        // stop early and the rest of the structure - still physically connected - would never be
-        // scanned, leaving the fish's swimmable area ending in the middle of open water. Rather than
-        // refuse the placement, the block is kept standalone: it still gets placed, just with its
-        // glass intact, which is immediate visual feedback that it did not join.
-        if (!standalone
-                && mergedTankSize(ctx.getWorld(), ctx.getBlockPos(), OceanographerTableBlockEntity.MAX_TANK_BLOCKS)
-                        > OceanographerTableBlockEntity.MAX_TANK_BLOCKS) {
-            standalone = true;
-        }
-
         BlockState state = this.getDefaultState()
                 .with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
                 .with(STANDALONE, standalone);
+
+        // A tank may not grow past MAX_TANK_BLOCKS: beyond that the block entity's flood fill stops
+        // early and the rest of the structure - still physically connected - is never scanned, so
+        // the fish's swimmable area ends in the middle of open water. The cap is applied per side
+        // while the tank is built up, so a block wedged between a full tank and a fresh one joins
+        // the fresh one and simply keeps its glass towards the full one.
+        WorldView world = ctx.getWorld();
+        BlockPos pos = ctx.getBlockPos();
+        int limit = OceanographerTableBlockEntity.MAX_TANK_BLOCKS;
+        Set<BlockPos> tank = new HashSet<>();
+        tank.add(pos);
+
         for (Direction direction : Direction.values()) {
-            state = state.with(connectionProperty(direction), this.connectsTo(state, ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction))));
+            BlockPos neighborPos = pos.offset(direction);
+            boolean connect = this.connectsTo(state, world.getBlockState(neighborPos));
+            if (connect && !tank.contains(neighborPos)) {
+                Set<BlockPos> branch = collectTank(world, neighborPos, limit);
+                if (tank.size() + branch.size() > limit) {
+                    connect = false;
+                } else {
+                    tank.addAll(branch);
+                }
+            }
+            state = state.with(connectionProperty(direction), connect);
         }
         return state;
     }
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        return state.with(connectionProperty(direction), this.connectsTo(state, neighborState));
+        // An open seam stays open; only a new one has to fit the cap, so a tank never falls apart
+        // because of an unrelated update somewhere along its edge.
+        boolean connect = this.connectsTo(state, neighborState)
+                && (state.get(connectionProperty(direction)) || joinStaysWithinLimit(world, pos, neighborPos));
+        return state.with(connectionProperty(direction), connect);
     }
 
     @Override
