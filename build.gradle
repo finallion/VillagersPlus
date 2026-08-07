@@ -111,14 +111,15 @@ publishMods {
 		file project(":fabric")
 		modLoaders.add("fabric")
 		requires { slug = "fabric-api" }
-		requires { slug = "villagertradingplus" }
+		// CurseForge slug, not the mod id: the project is "villagerstradingplus".
+		requires { slug = "villagerstradingplus" }
 	}
 
 	curseforge("curseforgeNeoForge") {
 		from cfOptions
 		file project(":neoforge")
 		modLoaders.add("neoforge")
-		requires { slug = "villagertradingplus" }
+		requires { slug = "villagerstradingplus" }
 	}
 
 	// One Modrinth version per loader, so the loader has to be part of the version number as well.
