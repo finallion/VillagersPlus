@@ -94,9 +94,9 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
             float coralScale = blockEntity.getCoralScale();
             for (int it = 0; it < 4; it++) {
-                // An empty slot used to still walk the whole model path (model lookup, offset,
-                // matrix work and a full BlockModelRenderer pass over air's empty model) once per
-                // slot per aquarium per frame.
+                // Skipped before the model path: an empty slot would otherwise cost a lookup, an
+                // offset and a full render pass over air's empty model, per slot per aquarium per
+                // frame.
                 if (defaultedList.get(it).isEmpty()) {
                     continue;
                 }
