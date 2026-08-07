@@ -4,14 +4,14 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "mixins": [
-    "BlockEntityMixin",
     "EntityAccessorMixin",
     "JigsawStructureMixin",
     "SinglePoolElementAccessor",
     "StructurePieceMixin",
     "StructurePiecesCollectorAccessor",
     "StructurePoolAccessor",
-    "TropicalFishEntityInvoker"
+    "TropicalFishEntityInvoker",
+    "WorldChunkMixin"
   ],
   "client": [
   ],
