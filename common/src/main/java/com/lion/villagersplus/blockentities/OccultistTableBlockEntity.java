@@ -57,8 +57,6 @@ public class OccultistTableBlockEntity extends BlockEntity {
         }
     }
 
-
-
     @Override
     protected void readData(ReadView view) {
         super.readData(view);

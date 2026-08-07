@@ -253,11 +253,6 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readData(view, this.inventory);
         this.brewTime = view.getShort("BrewTime", (short) 0);
-        // itemBrewing is deliberately not serialized - it is only there to notice that the
-        // ingredient was swapped mid-brew. Without restoring it from the ingredient slot, a
-        // reloaded table wakes up with itemBrewing == null, tick() reads that as "the ingredient
-        // changed", aborts the running brew and starts a fresh one - which buys another gunpowder
-        // and restarts the 400 ticks. That is the gunpowder lost on every logout/login.
         if (this.brewTime > 0) {
             this.itemBrewing = this.inventory.get(3).getItem();
         }

@@ -98,7 +98,6 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
     }
 
     public boolean isEmpty() {
-        // Spelled out: Inventory has a nested Iterator type, so the bare name resolves to that one.
         java.util.Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
