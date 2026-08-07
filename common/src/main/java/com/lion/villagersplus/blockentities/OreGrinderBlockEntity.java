@@ -166,7 +166,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     /**
      * Enchantments moved into a dynamic registry in 1.21, so {@link Enchantments} only holds keys and
      * a level lookup has to go through the world's registries. A missing world (during
-     * {@code readNbt}, before the block entity is placed) simply counts as no enchantment — the tick
+     * {@code readNbt}, before the block entity is placed) simply counts as no enchantment; the tick
      * recomputes the grind time every tick anyway, so it corrects itself immediately.
      */
     private static int enchantmentLevel(@Nullable World world, RegistryKey<Enchantment> enchantment, ItemStack stack) {

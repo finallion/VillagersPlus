@@ -83,8 +83,8 @@ public class OceanographerTableBlock extends WorkstationBlock {
     /// Every aquarium that forms one tank with `start`, including `start` itself.
     ///
     /// Follows the same connection properties as the block entity's own scan, so both agree on what
-    /// "one tank" means. A position with no aquarium on it — the spot a block is about to be placed
-    /// in — is a tank of one. The walk stops once `budget` blocks are collected, which keeps it
+    /// "one tank" means. A position with no aquarium on it, the spot a block is about to be placed
+    /// in, is a tank of one. The walk stops once `budget` blocks are collected, which keeps it
     /// bounded next to an oversized structure built before this cap existed.
     private Set<BlockPos> collectTank(WorldView world, BlockPos start, int budget) {
         Set<BlockPos> tank = new HashSet<>();

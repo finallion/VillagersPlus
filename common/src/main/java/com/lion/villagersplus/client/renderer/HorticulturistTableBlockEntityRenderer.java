@@ -20,9 +20,8 @@ import net.minecraft.world.World;
 
 public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
 
-    // Absolute X/Z positions per plant (offset from the block origin). Applied independently per
-    // flower - each plant is rendered inside its own push()/pop() so the per-plant random model
-    // offset does NOT accumulate across plants (which previously drifted 4 flowers up to ~1 block).
+    // Absolute X/Z positions per plant, measured from the block origin. Each plant renders inside
+    // its own push()/pop(), so these never accumulate across plants.
     public static float[] twoFlowerXOffset = new float[]{
                 VillagersPlus.CONFIG.first_flower_in_two_X,
                 VillagersPlus.CONFIG.second_flower_in_two_X};

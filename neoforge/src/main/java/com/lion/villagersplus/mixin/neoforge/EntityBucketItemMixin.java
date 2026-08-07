@@ -7,12 +7,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * Identical to the Fabric copy now. Forge used to patch {@code EntityBucketItem} to hold a
- * {@code Supplier<? extends EntityType<?>>} called {@code entityTypeSupplier}; NeoForge 21.1 dropped
- * that patch, so the field is vanilla's {@code entityType} on both loaders. Shadowing the old name
- * would have failed at class load, not at build time.
- */
+/// Shadows vanilla's `entityType`. NeoForge 21.1 leaves that field alone rather than patching it
+/// into a `Supplier`, and a shadow of the wrong name fails at class load, not at build time.
 @Mixin(EntityBucketItem.class)
 public class EntityBucketItemMixin implements DuckBucketable {
 
