@@ -95,9 +95,9 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
             float coralScale = blockEntity.getCoralScale();
             for (int it = 0; it < 4; it++) {
-                // An empty slot used to still walk the whole model path (model lookup, offset,
-                // matrix work and a full BlockModelRenderer pass over air's empty model) once per
-                // slot per aquarium per frame.
+                // Skipped before the model path: an empty slot would otherwise cost a lookup, an
+                // offset and a full render pass over air's empty model, per slot per aquarium per
+                // frame.
                 if (defaultedList.get(it).isEmpty()) {
                     continue;
                 }
@@ -221,15 +221,12 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         return 128;
     }
 
-    /**
-     * In a multi-block tank the fish may swim into neighbouring blocks, so per-section culling has
-     * to be skipped or it vanishes at chunk section borders.
-     *
-     * <p>Since 1.21.6 this no longer receives the block entity, so the previous refinement — only
-     * opting out for aquariums that actually hold a fish, which kept the always-drawn set small in
-     * a large tank — is no longer expressible here. Returning true unconditionally is the correct
-     * side to err on: the alternative makes fish disappear.
-     */
+    /// In a multi-block tank the fish may swim into neighbouring blocks, so per-section culling has
+    /// to be skipped or it vanishes at chunk section borders.
+    ///
+    /// Unconditional, because the block entity is not passed in: opting out only for aquariums that
+    /// actually hold a fish cannot be expressed here. That errs on the right side, since the
+    /// alternative makes fish disappear.
     @Override
     public boolean rendersOutsideBoundingBox() {
         return true;

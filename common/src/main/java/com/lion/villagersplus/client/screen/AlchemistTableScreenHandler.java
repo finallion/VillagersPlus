@@ -139,7 +139,7 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
          */
 
         public static boolean matches(ItemStack stack) {
-            // The old form built a water potion just to read its item back — that item is Items.POTION.
+            // Items.POTION is the item every potion stack carries, water included.
             return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.POTION);
         }
     }

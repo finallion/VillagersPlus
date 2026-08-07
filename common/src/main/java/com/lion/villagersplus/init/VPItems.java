@@ -20,11 +20,8 @@ public class VPItems {
                 .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(VillagersPlus.MOD_ID, name)));
     }
 
-    /**
-     * A BlockItem no longer derives its translation key from its block on its own - it is decided by
-     * the settings now. Without this the lang keys would have to be duplicated under item.*, and the
-     * items would show up untranslated against the existing block.villagersplus.* entries.
-     */
+    /// A BlockItem takes its translation key from its settings, not from its block. Without this the
+    /// items read untranslated next to the existing `block.villagersplus.*` entries.
     private static Item.Settings blockItemSettings(String name) {
         return settings(name).useBlockPrefixedTranslationKey();
     }

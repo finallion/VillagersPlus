@@ -43,8 +43,7 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
 
     @Override
     public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        // Inventories.writeNbt with the raw NbtCompound is gone; createNbt runs writeData, which
-        // already serialises exactly what this used to assemble by hand.
+        // createNbt runs writeData, which already serialises the whole inventory.
         return createNbt(registryLookup);
     }
 
@@ -99,7 +98,7 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
     }
 
     public boolean isEmpty() {
-        // Inventory now has a nested Iterator type, so the bare name no longer means java.util.Iterator.
+        // Spelled out: Inventory has a nested Iterator type, so the bare name resolves to that one.
         java.util.Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
