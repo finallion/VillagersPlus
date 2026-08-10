@@ -46,3 +46,6 @@ replay_*.log
 
 # Sammelordner für den Upload, reine Build-Kopien
 curseforge-upload/
+
+# Log4j-Ausgabe der Tests, landet im Modulordner
+logs/
