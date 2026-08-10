@@ -1,5 +1,6 @@
 package com.lion.villagersplus.util;
 
+import com.lion.villagersplus.VillagersPlus;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
@@ -8,71 +9,106 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/// Brings stored inventory entries up to the current item format.
+/// Brings this mod's stored inventories up to the current item format when an older world is read.
 ///
-/// Vanilla's fixer walks only the block entities it has a schema for, so a modded one keeps whatever
-/// shape it was last written in. The entries then meet a codec that reads today's fields, ignores
-/// the ones that are actually there, and hands back something diminished: a stack of any size
-/// reduced to one, a bottle with no potion, a bucket with no fish variant.
+/// Vanilla's chunk fixer walks only the block entities it has a schema for and passes a modded one
+/// through untouched. Its `Items` then meet a codec that reads today's fields, ignores the ones that
+/// are actually there, and hands back something diminished: a stack of any size reduced to one, a
+/// bucket with no fish variant, a pickaxe with no enchantments.
 ///
-/// Two breaks matter so far. 1.20.5 moved item NBT into components, and 1.21.5 moved the bucket's
-/// entity variant out of that NBT into components of its own. Each is recognised by a key that
-/// cannot occur in anything written after it, so a current world is walked and left alone.
-///
-/// The conversion is Mojang's own fixer. Nothing here maps an old key onto a component by hand.
+/// The conversion is Mojang's own fixer, driven by the `DataVersion` the chunk file carries. Nothing
+/// here maps an old key onto a component by hand, and nothing infers the source version from the
+/// shape of the data.
 public final class LegacyItemStacks {
 
-    /// Written before 1.20.5, when a stack was `{id, Count, tag}`.
-    private static final int PRE_COMPONENTS = 3465;
+    private static final String BLOCK_ENTITIES = "block_entities";
+    private static final String ITEMS = "Items";
+    private static final String SLOT = "Slot";
+    private static final String ID = "id";
 
-    /// Written between 1.20.5 and 1.21.4: componentized, but a bucket still kept its variant as
-    /// `BucketVariantTag` inside `bucket_entity_data`. 3955 is 1.21.1.
-    private static final int PRE_VARIANT_COMPONENTS = 3955;
+    /// Own logger rather than the one on [VillagersPlus], whose static setup pulls in the config and
+    /// would drag a bare JVM into platform code this class does not need.
+    private static final Logger LOGGER = LoggerFactory.getLogger(VillagersPlus.MOD_ID);
 
-    private static final String BUCKET_ENTITY_DATA = "minecraft:bucket_entity_data";
+    /// Source version the log has already been told about. A duplicate line under a race costs
+    /// nothing, so this stays a plain field.
+    private static volatile int announcedVersion;
 
     private LegacyItemStacks() {
     }
 
-    /// Rewrites every outdated entry of an `Items` list in place.
-    public static void fixInventory(NbtCompound blockEntityNbt) {
-        NbtList items = blockEntityNbt.getListOrEmpty("Items");
+    /// Rewrites the stored items of every block entity of this mod in one chunk read from disk.
+    ///
+    /// `fromVersion` is the chunk's own `DataVersion`, so it is exactly what these entries were last
+    /// written by, and -1 means the file carried none. The guard is the same one vanilla applies to
+    /// the chunk a moment later, so a current world walks straight back out.
+    public static void migrateChunk(NbtCompound chunkNbt, int fromVersion) {
         int current = SharedConstants.getGameVersion().dataVersion().id();
+        if (fromVersion <= 0 || fromVersion >= current) {
+            return;
+        }
 
-        for (int i = 0; i < items.size(); i++) {
-            NbtCompound entry = items.getCompoundOrEmpty(i);
-            int from = legacyDataVersion(entry);
-            if (from < 0 || from >= current) {
-                continue;
+        NbtList blockEntities = chunkNbt.getListOrEmpty(BLOCK_ENTITIES);
+        for (int i = 0; i < blockEntities.size(); i++) {
+            NbtCompound blockEntity = blockEntities.getCompoundOrEmpty(i);
+            String id = blockEntity.getString(ID, "");
+            if (id.startsWith(VillagersPlus.MOD_ID + ":")) {
+                announce(fromVersion, current);
+                migrateInventory(blockEntity, id, fromVersion, current);
             }
-            items.set(i, update(entry, from, current));
         }
     }
 
-    /// The version an entry was written by, or -1 when it is already current.
-    ///
-    /// Both markers are positive identification rather than a guess: a capital `Count` is gone from
-    /// everything 1.20.5 wrote, and `BucketVariantTag` is gone from everything 1.21.5 wrote. An
-    /// entry that carries neither is left untouched, because running fixes over data that already
-    /// had them applied is not safe in general.
-    private static int legacyDataVersion(NbtCompound entry) {
-        if (entry.contains("Count")) {
-            return PRE_COMPONENTS;
+    private static void announce(int fromVersion, int current) {
+        if (announcedVersion != fromVersion) {
+            announcedVersion = fromVersion;
+            LOGGER.info("Migrating stored items from DataVersion {} to {}", fromVersion, current);
         }
-        boolean oldBucket = entry.getCompound("components")
-                .flatMap(components -> components.getCompound(BUCKET_ENTITY_DATA))
-                .map(bucket -> bucket.contains("BucketVariantTag"))
-                .orElse(false);
-        return oldBucket ? PRE_VARIANT_COMPONENTS : -1;
+    }
+
+    private static void migrateInventory(NbtCompound blockEntity, String id, int from, int to) {
+        NbtList items = blockEntity.getListOrEmpty(ITEMS);
+        StringBuilder changed = new StringBuilder();
+
+        for (int i = 0; i < items.size(); i++) {
+            NbtCompound before = items.getCompoundOrEmpty(i);
+            if (before.isEmpty()) {
+                continue;
+            }
+
+            NbtCompound after;
+            try {
+                after = update(before, from, to);
+            } catch (RuntimeException e) {
+                // One entry the fixer cannot read must not take the whole chunk down, but it may not
+                // disappear quietly either: without the line there is no way to tell this case apart
+                // from the migration never having run.
+                LOGGER.error("Could not migrate {} in {}", before, id, e);
+                continue;
+            }
+
+            items.set(i, after);
+            if (!changed.isEmpty()) {
+                changed.append(", ");
+            }
+            changed.append(describe(before, after));
+        }
+
+        if (!changed.isEmpty()) {
+            LOGGER.info("{} at {},{},{}: {}", id,
+                    blockEntity.getInt("x", 0), blockEntity.getInt("y", 0), blockEntity.getInt("z", 0), changed);
+        }
     }
 
     private static NbtCompound update(NbtCompound entry, int from, int to) {
         // The slot is the inventory's own bookkeeping and means nothing to an item fixer, so it is
         // lifted out and put back afterwards rather than fed through.
-        NbtElement slot = entry.get("Slot");
+        NbtElement slot = entry.get(SLOT);
         NbtCompound stack = entry.copy();
-        stack.remove("Slot");
+        stack.remove(SLOT);
 
         Dynamic<NbtElement> fixed = Schemas.getFixer().update(
                 TypeReferences.ITEM_STACK,
@@ -82,8 +118,30 @@ public final class LegacyItemStacks {
 
         NbtCompound result = (NbtCompound) fixed.getValue();
         if (slot != null) {
-            result.put("Slot", slot);
+            result.put(SLOT, slot);
         }
         return result;
+    }
+
+    /// One slot as `slot 3 minecraft:diamond_pickaxe 1 -> 1 [minecraft:enchantments]`, so a test run
+    /// shows what the fixer made of an entry rather than only that it touched one.
+    private static String describe(NbtCompound before, NbtCompound after) {
+        StringBuilder line = new StringBuilder()
+                .append("slot ").append(before.getInt(SLOT, -1))
+                .append(' ').append(after.getString(ID, before.getString(ID, "?")))
+                .append(' ').append(count(before)).append(" -> ").append(count(after));
+
+        NbtCompound components = after.getCompoundOrEmpty("components");
+        if (!components.isEmpty()) {
+            line.append(' ').append(components.getKeys());
+        }
+        return line.toString();
+    }
+
+    /// `Count` before 1.20.5, `count` after. A missing field reads as one, which is what the codec
+    /// would have defaulted to and exactly the loss being repaired here.
+    private static int count(NbtCompound stack) {
+        int componentised = stack.getInt("count", -1);
+        return componentised >= 0 ? componentised : stack.getInt("Count", 1);
     }
 }

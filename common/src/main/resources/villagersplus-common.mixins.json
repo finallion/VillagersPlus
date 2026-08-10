@@ -11,7 +11,7 @@
     "StructurePiecesCollectorAccessor",
     "StructurePoolAccessor",
     "TropicalFishEntityInvoker",
-    "WorldChunkMixin"
+    "VersionedChunkStorageMixin"
   ],
   "client": [
   ],

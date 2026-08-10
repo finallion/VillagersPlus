@@ -1,6 +1,23 @@
 dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 	modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+	testImplementation platform("org.junit:junit-bom:5.10.2")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+// Loom hangs the remapped Minecraft off the main source set only, so the tests have to be handed the
+// same classpath. Without this the data fixer is simply not on it.
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
+
+tasks.named("test") {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "failed"
+		showStandardStreams = true
+	}
 }
 
 architectury {
