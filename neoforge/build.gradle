@@ -4,6 +4,13 @@ plugins {
 
 loom {
 	accessWidenerPath = project(":common").loom.accessWidenerPath
+
+	/// The widener only reaches the compiler here. Loom wires its widener to transformer conversion
+	/// behind `isForge()`, so on NeoForge the shipped jar would keep every widened member private and
+	/// crash on first access. The transformer carries the same set for the runtime.
+	neoForge {
+		accessTransformer file("src/main/resources/META-INF/accesstransformer.cfg")
+	}
 }
 
 architectury {
