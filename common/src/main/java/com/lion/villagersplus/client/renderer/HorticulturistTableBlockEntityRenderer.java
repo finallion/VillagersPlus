@@ -141,7 +141,24 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     private void renderFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int overlay) {
-        this.manager.getModelRenderer().render(world, this.manager.getModel(flower.getDefaultState()), flower.getDefaultState(), pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), flower.getDefaultState().getRenderingSeed(pos), overlay);
+        BlockState state = displayState(flower);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(state), state, pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), state.getRenderingSeed(pos), overlay);
+    }
+
+    /**
+     * The state a plant is drawn in while it sits in the tub.
+     *
+     * <p>A flowerbed (pink petals) draws one quadrant of the block per segment and leaves the rest
+     * empty, so a single segment lands in a corner instead of on the soil. Filling every segment
+     * covers the whole slot, like every other plant model does. The maximum is read off the property
+     * rather than written as a literal, because Yarn does not name the constant.
+     */
+    private static BlockState displayState(Block flower) {
+        if (flower instanceof FlowerbedBlock) {
+            int max = FlowerbedBlock.FLOWER_AMOUNT.getValues().stream().max(Integer::compare).orElse(1);
+            return flower.getDefaultState().with(FlowerbedBlock.FLOWER_AMOUNT, max);
+        }
+        return flower.getDefaultState();
     }
 
 
