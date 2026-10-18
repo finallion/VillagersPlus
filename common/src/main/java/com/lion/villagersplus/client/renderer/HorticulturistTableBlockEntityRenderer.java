@@ -3,24 +3,48 @@ package com.lion.villagersplus.client.renderer;
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blockentities.HorticulturistTableBlockEntity;
 import com.lion.villagersplus.blocks.HorticulturistTableBlock;
-import net.minecraft.block.*;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.level.block.*;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.SegmentableBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.phys.Vec3;
 
-public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
+public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity, HorticulturistTableBlockEntityRenderer.State> {
 
-    // Absolute X/Z positions per plant, measured from the block origin. Each plant renders inside
-    // its own push()/pop(), so these never accumulate across plants.
+    private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
+    private static final int UPPER_HALF = 4;
+
+    public static class State extends BlockEntityRenderState {
+        final Block[] plants = new Block[4];
+        final BlockModelRenderState[] models = new BlockModelRenderState[5];
+        float plantScale = 1.0F;
+        boolean valid;
+        boolean tallFlower;
+        int flowers;
+
+        State() {
+            for (int n = 0; n < models.length; n++) {
+                models[n] = new BlockModelRenderState();
+            }
+        }
+    }
+
     public static float[] twoFlowerXOffset = new float[]{
                 VillagersPlus.CONFIG.first_flower_in_two_X,
                 VillagersPlus.CONFIG.second_flower_in_two_X};
@@ -48,117 +72,137 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                 VillagersPlus.CONFIG.third_flower_in_four_Z,
                 VillagersPlus.CONFIG.forth_flower_in_four_Z};
 
-    // Slight per-plant height so a fuller tub steps down gently. Index = plant count - 1.
+    // A fuller tub steps the plants down so they do not overlap.
     private static final float[] twoFlowerY = new float[]{0.95F, 0.95F};
     private static final float[] threeFlowerY = new float[]{0.95F, 0.90F, 0.90F};
     private static final float[] fourFlowerY = new float[]{0.95F, 0.90F, 0.90F, 0.85F};
 
-    private final BlockRenderManager manager;
+    private final BlockModelResolver blockModelResolver;
 
-    public HorticulturistTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.manager = ctx.getRenderManager();
+    public HorticulturistTableBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        this.blockModelResolver = ctx.blockModelResolver();
     }
 
     @Override
-    public void render(HorticulturistTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, net.minecraft.util.math.Vec3d cameraPos) {
-        BlockState blockState = blockEntity.getCachedState();
-        BlockPos pos = blockEntity.getPos();
-        DefaultedList<ItemStack> defaultedList = blockEntity.getInventory();
-        World world = blockEntity.getWorld();
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (!(blockState.getBlock() instanceof HorticulturistTableBlock)) {
+    @Override
+    public void extractRenderState(HorticulturistTableBlockEntity blockEntity, State state, float tickProgress, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(blockEntity, state, crumblingOverlay);
+        NonNullList<ItemStack> inventory = blockEntity.getInventory();
+        for (int n = 0; n < state.plants.length; n++) {
+            state.plants[n] = Block.byItem(inventory.get(n).getItem());
+        }
+        state.plantScale = blockEntity.getPlantScale();
+
+        BlockState tableState = blockEntity.getBlockState();
+        state.valid = tableState.getBlock() instanceof HorticulturistTableBlock;
+        for (BlockModelRenderState model : state.models) {
+            model.clear();
+        }
+        if (!state.valid) {
             return;
         }
 
-        // Bone-meal / shears size; applied per plant around its base so it stays on the soil.
-        float scale = blockEntity.getPlantScale();
-
-        if (blockState.get(HorticulturistTableBlock.IS_TALL_FLOWER)) {
-            matrixStack.push();
-            Block flower = Block.getBlockFromItem(defaultedList.get(0).getItem());
-            if (flower instanceof TallPlantBlock) {
-                matrixStack.translate(0.0D, 0.95D, 0.0D);
-                // Scale once before BOTH halves so the upper half's translate happens in
-                // scaled space and the two halves stay attached.
-                applyPlantScale(matrixStack, scale);
-                renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, true, i, j);
-                matrixStack.translate(0.0D, 1.0D, 0.0D);
-                renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, false, i, j);
+        state.tallFlower = tableState.getValue(HorticulturistTableBlock.IS_TALL_FLOWER);
+        state.flowers = tableState.getValue(HorticulturistTableBlock.FLOWERS);
+        if (state.tallFlower) {
+            Block flower = state.plants[0];
+            if (flower instanceof DoublePlantBlock) {
+                resolve(state.models[0], tallState(flower, DoubleBlockHalf.LOWER));
+                resolve(state.models[UPPER_HALF], tallState(flower, DoubleBlockHalf.UPPER));
             } else {
-                Block flowerOne = Block.getBlockFromItem(defaultedList.get(0).getItem());
-                if (flowerOne.getDefaultState().isOf(Blocks.CACTUS)) {
+                resolve(state.models[0], displayState(flower));
+            }
+            return;
+        }
+
+        for (int n = 0; n < Math.min(state.flowers, state.plants.length); n++) {
+            resolve(state.models[n], displayState(state.plants[n]));
+        }
+    }
+
+    private void resolve(BlockModelRenderState model, BlockState blockState) {
+        blockModelResolver.update(model, blockState, DISPLAY_CONTEXT);
+    }
+
+    @Override
+    public void submit(State state, PoseStack matrixStack, SubmitNodeCollector queue, CameraRenderState camera) {
+        if (!state.valid) {
+            return;
+        }
+
+        int light = state.lightCoords;
+        float scale = state.plantScale;
+
+        if (state.tallFlower) {
+            matrixStack.pushPose();
+            Block flower = state.plants[0];
+            if (flower instanceof DoublePlantBlock) {
+                matrixStack.translate(0.0D, 0.95D, 0.0D);
+                applyPlantScale(matrixStack, scale);
+                state.models[0].submit(matrixStack, queue, light, OverlayTexture.NO_OVERLAY, 0);
+                matrixStack.translate(0.0D, 1.0D, 0.0D);
+                state.models[UPPER_HALF].submit(matrixStack, queue, light, OverlayTexture.NO_OVERLAY, 0);
+            } else {
+                if (flower.defaultBlockState().is(Blocks.CACTUS)) {
                     matrixStack.scale(0.75F, 0.75F, 0.75F);
                     matrixStack.translate(0.15D, 0.15D, 0.15D);
                 }
 
                 matrixStack.translate(0.0D, 0.95D, 0.0D);
                 applyPlantScale(matrixStack, scale);
-                renderFlower(flowerOne, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                state.models[0].submit(matrixStack, queue, light, OverlayTexture.NO_OVERLAY, 0);
             }
-            matrixStack.pop();
+            matrixStack.popPose();
             return;
         }
 
-        switch (blockState.get(HorticulturistTableBlock.FLOWERS)) {
-            case 1 -> renderFlowerAt(defaultedList, 0, 0.0F, 0.95F, 0.0F, scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+        switch (state.flowers) {
+            case 1 -> renderFlowerAt(state, 0, 0.0F, 0.95F, 0.0F, matrixStack, queue);
             case 2 -> {
                 for (int n = 0; n < 2; n++) {
-                    renderFlowerAt(defaultedList, n, twoFlowerXOffset[n], twoFlowerY[n], twoFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, twoFlowerXOffset[n], twoFlowerY[n], twoFlowerZOffset[n], matrixStack, queue);
                 }
             }
             case 3 -> {
                 for (int n = 0; n < 3; n++) {
-                    renderFlowerAt(defaultedList, n, threeFlowerXOffset[n], threeFlowerY[n], threeFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, threeFlowerXOffset[n], threeFlowerY[n], threeFlowerZOffset[n], matrixStack, queue);
                 }
             }
             case 4 -> {
                 for (int n = 0; n < 4; n++) {
-                    renderFlowerAt(defaultedList, n, fourFlowerXOffset[n], fourFlowerY[n], fourFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, fourFlowerXOffset[n], fourFlowerY[n], fourFlowerZOffset[n], matrixStack, queue);
                 }
             }
         }
     }
 
-    /// Scales around the centre of the plant's base (block models render 0..1 from the corner).
-    private static void applyPlantScale(MatrixStack matrixStack, float scale) {
+    private static void applyPlantScale(PoseStack matrixStack, float scale) {
         if (scale != 1.0F) {
             matrixStack.translate(0.5F * (1.0F - scale), 0.0F, 0.5F * (1.0F - scale));
             matrixStack.scale(scale, scale, scale);
         }
     }
 
-    /// Renders one plant at an absolute X/Y/Z position, isolated in its own matrix so offsets never accumulate.
-    private void renderFlowerAt(DefaultedList<ItemStack> list, int slot, float x, float y, float z, float scale, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        Block flower = Block.getBlockFromItem(list.get(slot).getItem());
-        matrixStack.push();
+    private void renderFlowerAt(State state, int slot, float x, float y, float z, PoseStack matrixStack, SubmitNodeCollector queue) {
+        matrixStack.pushPose();
         matrixStack.translate(x, y, z);
-        applyPlantScale(matrixStack, scale);
-        renderFlower(flower, world, pos, matrixStack, vertexConsumerProvider, light, overlay);
-        matrixStack.pop();
+        applyPlantScale(matrixStack, state.plantScale);
+        state.models[slot].submit(matrixStack, queue, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+        matrixStack.popPose();
     }
 
-    private void renderFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        this.manager.renderBlockAsEntity(displayState(flower), matrixStack, vertexConsumerProvider, light, overlay);
-    }
-
-    /// The state a plant is drawn in while it sits in the tub.
-    ///
-    /// Segmented plants (pink petals, wildflowers, leaf litter) draw one quadrant of the block per
-    /// segment and leave the rest empty, so a single segment lands in a corner instead of on the
-    /// soil. Filling every segment covers the whole slot, like every other plant model does.
     private static BlockState displayState(Block flower) {
-        if (flower instanceof Segmented segmented) {
-            return flower.getDefaultState().with(segmented.getAmountProperty(), Segmented.MAX_SEGMENTS);
+        if (flower instanceof SegmentableBlock segmented) {
+            return flower.defaultBlockState().setValue(segmented.getSegmentAmountProperty(), SegmentableBlock.MAX_SEGMENT);
         }
-        return flower.getDefaultState();
+        return flower.defaultBlockState();
     }
 
-
-    private void renderTallFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean lower, int light, int overlay) {
-        if (lower) {
-            this.manager.renderBlockAsEntity(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.LOWER), matrixStack, vertexConsumerProvider, light, overlay);
-        } else {
-            this.manager.renderBlockAsEntity(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.UPPER), matrixStack, vertexConsumerProvider, light, overlay);
-        }
+    private static BlockState tallState(Block flower, DoubleBlockHalf half) {
+        return flower.defaultBlockState().setValue(DoublePlantBlock.HALF, half);
     }
 }

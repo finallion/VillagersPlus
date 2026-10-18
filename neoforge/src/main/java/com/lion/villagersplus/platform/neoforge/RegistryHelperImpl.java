@@ -1,23 +1,23 @@
 package com.lion.villagersplus.platform.neoforge;
 
 import com.lion.villagersplus.VillagersPlus;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.text.Text;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
@@ -26,17 +26,17 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class RegistryHelperImpl {
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(RegistryKeys.BLOCK, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(RegistryKeys.BLOCK_ENTITY_TYPE, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(RegistryKeys.ITEM, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(RegistryKeys.PARTICLE_TYPE, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<ScreenHandlerType<?>> MENUS = DeferredRegister.create(RegistryKeys.SCREEN_HANDLER, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<ItemGroup> CREATIVE_TABS = DeferredRegister.create(RegistryKeys.ITEM_GROUP, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<PointOfInterestType> POINT_OF_INTEREST_TYPES = DeferredRegister.create(RegistryKeys.POINT_OF_INTEREST_TYPE, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(RegistryKeys.VILLAGER_PROFESSION, VillagersPlus.MOD_ID);
-    public static final DeferredRegister<StructureProcessorType<?>> STRUCTURE_PROCESSOR_TYPES = DeferredRegister.create(RegistryKeys.STRUCTURE_PROCESSOR, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(Registries.PARTICLE_TYPE, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<PoiType> POINT_OF_INTEREST_TYPES = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(Registries.VILLAGER_PROFESSION, VillagersPlus.MOD_ID);
+    public static final DeferredRegister<StructureProcessorType<?>> STRUCTURE_PROCESSOR_TYPES = DeferredRegister.create(Registries.STRUCTURE_PROCESSOR, VillagersPlus.MOD_ID);
 
-    public static final HashMap<RegistryKey<ItemGroup>, List<Item>> ITEMS_TO_ADD = new HashMap<>();
+    public static final HashMap<ResourceKey<CreativeModeTab>, List<Item>> ITEMS_TO_ADD = new HashMap<>();
 
     public static <T extends Block> Supplier<T> registerBlock(String name, Supplier<T> block) {
         return BLOCKS.register(name, block);
@@ -46,16 +46,16 @@ public class RegistryHelperImpl {
         return TILE_ENTITIES.register(name, blockEntity);
     }
 
-    public static void registerItemGroup(RegistryKey<ItemGroup> registryKey, String name, String literalName, Supplier<Item> item) {
-        CREATIVE_TABS.register(name, () -> new ItemGroup.Builder(ItemGroup.Row.TOP,0)
+    public static void registerItemGroup(ResourceKey<CreativeModeTab> registryKey, String name, String literalName, Supplier<Item> item) {
+        CREATIVE_TABS.register(name, () -> new CreativeModeTab.Builder(CreativeModeTab.Row.TOP,0)
                 .icon(() -> new ItemStack(item.get()))
-                .displayName(Text.literal(literalName)).build());
+                .title(Component.literal(literalName)).build());
     }
 
     public static <T extends Item> Supplier<T> registerItem(String name, Supplier<T> item) {
         return ITEMS.register(name, item);
     }
-    public static void addToItemGroup(RegistryKey<ItemGroup> itemGroup, Item item) {
+    public static void addToItemGroup(ResourceKey<CreativeModeTab> itemGroup, Item item) {
         if (ITEMS_TO_ADD.containsKey(itemGroup)) {
             ITEMS_TO_ADD.get(itemGroup).add(item);
         } else {
@@ -69,25 +69,18 @@ public class RegistryHelperImpl {
         PARTICLES.register(name, () -> particleType);
     }
 
-    public static void registerScreenHandlerType(String name, ScreenHandlerType<?> screenHandlerType) {
+    public static void registerScreenHandlerType(String name, MenuType<?> screenHandlerType) {
         MENUS.register(name, () -> screenHandlerType);
     }
 
-    public static void registerRenderType(RenderLayer type, Block... blocks) {
-        // done block model JSON
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererProvider<T, S> renderProvider) {
     }
-
-
-    public static <T extends BlockEntity> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererFactory<T> renderProvider) {
-        // registered via event
-    }
-
 
     public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
         return VILLAGER_PROFESSIONS.register(name, villagerProfession);
     }
 
-    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
         return POINT_OF_INTEREST_TYPES.register(name, pointOfInterestType);
     }
 

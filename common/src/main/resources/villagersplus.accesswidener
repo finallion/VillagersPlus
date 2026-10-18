@@ -1,19 +1,15 @@
-accessWidener v2 named
+accessWidener v2 official
 
-# DefaultParticleType is called SimpleParticleType as of 1.21; its constructor is protected.
-accessible method net/minecraft/particle/SimpleParticleType <init> (Z)V
+accessible method net/minecraft/core/particles/SimpleParticleType <init> (Z)V
 
-# PointOfInterestType became a record in 1.21. The old "accessible/mutable field blockStates" and
-# "ticketCount" lines are gone on purpose: a record component cannot be made mutable, and nothing
-# here ever needed it — VPPointOfInterestTypes only reads blockStates() (a public record accessor)
-# and puts into the map below. Widening them would have been a hard startup crash for no gain.
-accessible field net/minecraft/world/poi/PointOfInterestTypes POI_STATES_TO_TYPE Ljava/util/Map;
-accessible method net/minecraft/world/poi/PointOfInterestTypes getStatesOfBlock (Lnet/minecraft/block/Block;)Ljava/util/Set;
+# Vanilla fills this map for its own types only. VillagersPlus adds its states.
+accessible field net/minecraft/world/entity/ai/village/poi/PoiTypes TYPE_BY_STATE Ljava/util/Map;
+accessible method net/minecraft/world/entity/ai/village/poi/PoiTypes getBlockStates (Lnet/minecraft/world/level/block/Block;)Ljava/util/Set;
 
-# BlockEntityType.Builder was removed in 1.21.6 and the constructor is private. Fabric API has a
-# builder for this, but :common only sees the loader and Architectury, not Fabric API.
-accessible method net/minecraft/block/entity/BlockEntityType <init> (Lnet/minecraft/block/entity/BlockEntityType$BlockEntityFactory;Ljava/util/Set;)V
+# The constructor is private and no builder exists.
+accessible method net/minecraft/world/level/block/entity/BlockEntityType <init> (Lnet/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier;Ljava/util/Set;)V
+accessible class net/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier
 
-# Fabric API dropped blockrenderlayer-v1 for 1.21.6+; RenderLayers.BLOCKS is the map it used to
-# write into, and it is still the only way to give a block a non-solid chunk render layer.
-accessible field net/minecraft/client/render/RenderLayers BLOCKS Ljava/util/Map;
+# The constructor is private and its supplier type is package-private.
+accessible method net/minecraft/world/inventory/MenuType <init> (Lnet/minecraft/world/inventory/MenuType$MenuSupplier;Lnet/minecraft/world/flag/FeatureFlagSet;)V
+accessible class net/minecraft/world/inventory/MenuType$MenuSupplier

@@ -1,31 +1,34 @@
 package com.lion.villagersplus.client.screen;
 
 import com.lion.villagersplus.init.VPScreens;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.potion.Potions;
-import net.minecraft.screen.*;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 
-public class AlchemistTableScreenHandler extends ScreenHandler {
-    private final Inventory inventory;
-    private final PropertyDelegate propertyDelegate;
+public class AlchemistTableScreenHandler extends AbstractContainerMenu {
+    private final Container inventory;
+    private final ContainerData propertyDelegate;
     private final Slot ingredientSlot;
 
-    public AlchemistTableScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(5), new ArrayPropertyDelegate(2));
+    public AlchemistTableScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, new SimpleContainer(5), new SimpleContainerData(2));
     }
 
-    public AlchemistTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    public AlchemistTableScreenHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData propertyDelegate) {
         super(VPScreens.ALCHEMIST_TABLE_SCREEN_HANDLER, syncId);
-        checkSize(inventory, 5);
-        checkDataCount(propertyDelegate, 2);
+        checkContainerSize(inventory, 5);
+        checkContainerDataCount(propertyDelegate, 2);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
         this.addSlot(new AlchemistTableScreenHandler.PotionSlot(inventory, 0, 56, 51));
@@ -33,7 +36,7 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
         this.addSlot(new AlchemistTableScreenHandler.PotionSlot(inventory, 2, 102, 51));
         this.ingredientSlot = this.addSlot(new AlchemistTableScreenHandler.IngredientSlot(inventory, 3, 79, 17));
         this.addSlot(new AlchemistTableScreenHandler.FuelSlot(inventory, 4, 17, 17));
-        this.addProperties(propertyDelegate);
+        this.addDataSlots(propertyDelegate);
 
         int i;
         for(i = 0; i < 3; ++i) {
@@ -48,59 +51,59 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
 
     }
 
-    public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+    public boolean stillValid(Player player) {
+        return this.inventory.stillValid(player);
     }
 
-    public ItemStack quickMove(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
             if ((index < 0 || index > 2) && index != 3 && index != 4) {
                 if (AlchemistTableScreenHandler.FuelSlot.matches(itemStack)) {
-                    if (this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false)) {
+                    if (this.moveItemStackTo(itemStack2, 4, 5, false) || this.ingredientSlot.mayPlace(itemStack2) && !this.moveItemStackTo(itemStack2, 3, 4, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (this.ingredientSlot.canInsert(itemStack2)) {
-                    if (!this.insertItem(itemStack2, 3, 4, false)) {
+                } else if (this.ingredientSlot.mayPlace(itemStack2)) {
+                    if (!this.moveItemStackTo(itemStack2, 3, 4, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (AlchemistTableScreenHandler.PotionSlot.matches(itemStack) && itemStack.getCount() == 1) {
-                    if (!this.insertItem(itemStack2, 0, 3, false)) {
+                    if (!this.moveItemStackTo(itemStack2, 0, 3, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (index >= 5 && index < 32) {
-                    if (!this.insertItem(itemStack2, 32, 41, false)) {
+                    if (!this.moveItemStackTo(itemStack2, 32, 41, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (index >= 32 && index < 41) {
-                    if (!this.insertItem(itemStack2, 5, 32, false)) {
+                    if (!this.moveItemStackTo(itemStack2, 5, 32, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.insertItem(itemStack2, 5, 41, false)) {
+                } else if (!this.moveItemStackTo(itemStack2, 5, 41, false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.insertItem(itemStack2, 5, 41, true)) {
+                if (!this.moveItemStackTo(itemStack2, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onQuickTransfer(itemStack2, itemStack);
+                slot.onQuickCraft(itemStack2, itemStack);
             }
 
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot.setByPlayer(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot.setChanged();
             }
 
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTakeItem(player, itemStack2);
+            slot.onTake(player, itemStack2);
         }
 
         return itemStack;
@@ -115,73 +118,60 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
     }
 
     static class PotionSlot extends Slot {
-        public PotionSlot(Inventory inventory, int i, int j, int k) {
+        public PotionSlot(Container inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
-        public boolean canInsert(ItemStack stack) {
+        public boolean mayPlace(ItemStack stack) {
             return matches(stack);
         }
 
-        public int getMaxItemCount() {
+        public int getMaxStackSize() {
             return 1;
         }
 
-        /*
-        public void onTakeItem(PlayerEntity player, ItemStack stack) {
-            Potion potion = PotionUtil.getPotion(stack);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
-            }
-
-            super.onTakeItem(player, stack);
-        }
-         */
-
         public static boolean matches(ItemStack stack) {
-            // Items.POTION is the item every potion stack carries, water included.
-            return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.POTION);
+            return stack.is(Items.GLASS_BOTTLE) || stack.is(Items.POTION);
         }
     }
 
     private static class IngredientSlot extends Slot {
-        public IngredientSlot(Inventory inventory, int i, int j, int k) {
+        public IngredientSlot(Container inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
-        public boolean canInsert(ItemStack stack) {
+        public boolean mayPlace(ItemStack stack) {
             return matches(stack);
         }
 
-        public int getMaxItemCount() {
+        public int getMaxStackSize() {
             return 1;
         }
 
         public static boolean matches(ItemStack stack) {
-            // A water bottle is the base being brewed, not an ingredient. The potion lives in a
-            // component now; an item with none at all (a plain glass bottle) is not water either.
-            PotionContentsComponent contents = stack.get(DataComponentTypes.POTION_CONTENTS);
-            if (contents != null && contents.matches(Potions.WATER)) {
+            // A water bottle is the brew base. A stack without potion contents is not water.
+            PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+            if (contents != null && contents.is(Potions.WATER)) {
                 return false;
             }
-            return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION);
+            return stack.is(Items.POTION) || stack.is(Items.SPLASH_POTION) || stack.is(Items.LINGERING_POTION);
         }
     }
 
     private static class FuelSlot extends Slot {
-        public FuelSlot(Inventory inventory, int i, int j, int k) {
+        public FuelSlot(Container inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
-        public boolean canInsert(ItemStack stack) {
+        public boolean mayPlace(ItemStack stack) {
             return matches(stack);
         }
 
         public static boolean matches(ItemStack stack) {
-            return stack.isOf(Items.GUNPOWDER);
+            return stack.is(Items.GUNPOWDER);
         }
 
-        public int getMaxItemCount() {
+        public int getMaxStackSize() {
             return 64;
         }
     }

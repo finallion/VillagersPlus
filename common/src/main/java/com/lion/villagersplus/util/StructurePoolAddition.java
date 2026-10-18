@@ -3,34 +3,33 @@ package com.lion.villagersplus.util;
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.mixin.StructurePoolAccessor;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.structure.pool.SinglePoolElement;
-import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.structure.processor.StructureProcessorList;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StructurePoolAddition {
-    private static final RegistryKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of("minecraft", "empty"));
-    /** Turns the miner house's chiseled stone into ores - see {@link com.lion.villagersplus.worldgen.OreVeinProcessor}. */
-    private static final RegistryKey<StructureProcessorList> MINER_PROCESSOR_LIST_KEY = RegistryKey.of(RegistryKeys.PROCESSOR_LIST, Identifier.of(VillagersPlus.MOD_ID, "miner_ores"));
-    private static final Identifier plainsPoolLocation = Identifier.of("minecraft:village/plains/houses");
-    private static final Identifier desertPoolLocation = Identifier.of("minecraft:village/desert/houses");
-    private static final Identifier savannaPoolLocation = Identifier.of("minecraft:village/savanna/houses");
-    private static final Identifier snowyPoolLocation = Identifier.of("minecraft:village/snowy/houses");
-    private static final Identifier taigaPoolLocation = Identifier.of("minecraft:village/taiga/houses");
+    private static final ResourceKey<StructureProcessorList> EMPTY_PROCESSOR_LIST_KEY = ResourceKey.create(Registries.PROCESSOR_LIST, Identifier.fromNamespaceAndPath("minecraft", "empty"));
+    /// Replaces the chiseled stone of the miner house with ores. See [OreVeinProcessor].
+    private static final ResourceKey<StructureProcessorList> MINER_PROCESSOR_LIST_KEY = ResourceKey.create(Registries.PROCESSOR_LIST, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, "miner_ores"));
+    private static final Identifier plainsPoolLocation = Identifier.parse("minecraft:village/plains/houses");
+    private static final Identifier desertPoolLocation = Identifier.parse("minecraft:village/desert/houses");
+    private static final Identifier savannaPoolLocation = Identifier.parse("minecraft:village/savanna/houses");
+    private static final Identifier snowyPoolLocation = Identifier.parse("minecraft:village/snowy/houses");
+    private static final Identifier taigaPoolLocation = Identifier.parse("minecraft:village/taiga/houses");
 
     public static void registerJigsaws(MinecraftServer server) {
-        Registry<StructurePool> templatePoolRegistry = server.getRegistryManager().getOrThrow(RegistryKeys.TEMPLATE_POOL);
-        Registry<StructureProcessorList> processorListRegistry = server.getRegistryManager().getOrThrow(RegistryKeys.PROCESSOR_LIST);
-        RegistryEntry<StructureProcessorList> minerProcessors = processorList(processorListRegistry, MINER_PROCESSOR_LIST_KEY);
+        Registry<StructureTemplatePool> templatePoolRegistry = server.registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
+        Registry<StructureProcessorList> processorListRegistry = server.registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST);
+        Holder<StructureProcessorList> minerProcessors = processorList(processorListRegistry, MINER_PROCESSOR_LIST_KEY);
 
         addBuildingToPool(templatePoolRegistry, processorListRegistry, plainsPoolLocation, "villagersplus:village/plains/plains_alchemist", VillagersPlus.CONFIG.plains_alchemist_weight);
         addBuildingToPool(templatePoolRegistry, processorListRegistry, plainsPoolLocation, "villagersplus:village/plains/plains_oceanographer", VillagersPlus.CONFIG.plains_oceanographer_weight);
@@ -61,27 +60,23 @@ public class StructurePoolAddition {
         addBuildingToPool(templatePoolRegistry, processorListRegistry, desertPoolLocation, "villagersplus:village/desert/desert_occultist", VillagersPlus.CONFIG.desert_occultist_weight);
     }
 
-    public static void addBuildingToPool(Registry<StructurePool> templatePoolRegistry, Registry<StructureProcessorList> processorListRegistry, Identifier poolRL, String nbtPieceRL, int weight) {
+    public static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry, Registry<StructureProcessorList> processorListRegistry, Identifier poolRL, String nbtPieceRL, int weight) {
         addBuildingToPool(templatePoolRegistry, poolRL, nbtPieceRL, weight, processorListRegistry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY));
     }
 
-    /**
-     * Looks up a processor list by key, falling back to the empty one. A datapack is free to drop our
-     * lists, and a village without ore markers is a far better outcome than a server that will not
-     * start.
-     */
-    private static RegistryEntry<StructureProcessorList> processorList(Registry<StructureProcessorList> registry, RegistryKey<StructureProcessorList> key) {
-        return registry.getOptional(key).map(entry -> (RegistryEntry<StructureProcessorList>) entry).orElseGet(() -> {
-            VillagersPlus.LOGGER.warn("Processor list {} is missing, placing that building unprocessed", key.getValue());
+    /// Looks up a processor list, falling back to the empty one when a datapack removed ours.
+    private static Holder<StructureProcessorList> processorList(Registry<StructureProcessorList> registry, ResourceKey<StructureProcessorList> key) {
+        return registry.get(key).map(entry -> (Holder<StructureProcessorList>) entry).orElseGet(() -> {
+            VillagersPlus.LOGGER.warn("Processor list {} is missing, placing that building unprocessed", key.identifier());
             return registry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY);
         });
     }
 
-    public static void addBuildingToPool(Registry<StructurePool> templatePoolRegistry, Identifier poolRL, String nbtPieceRL, int weight, RegistryEntry<StructureProcessorList> processorList) {
-        StructurePool pool = templatePoolRegistry.get(poolRL);
+    public static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry, Identifier poolRL, String nbtPieceRL, int weight, Holder<StructureProcessorList> processorList) {
+        StructureTemplatePool pool = templatePoolRegistry.getValue(poolRL);
         if (pool == null) return;
 
-        SinglePoolElement piece = SinglePoolElement.ofProcessedSingle(nbtPieceRL, processorList).apply(StructurePool.Projection.RIGID);
+        SinglePoolElement piece = SinglePoolElement.single(nbtPieceRL, processorList).apply(StructureTemplatePool.Projection.RIGID);
 
         for (int i = 0; i < weight; i++) {
             ((StructurePoolAccessor) pool).getTemplates().add(piece);

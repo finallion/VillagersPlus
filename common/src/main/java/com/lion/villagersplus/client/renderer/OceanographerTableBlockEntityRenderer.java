@@ -2,37 +2,80 @@ package com.lion.villagersplus.client.renderer;
 
 import com.lion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.lion.villagersplus.blocks.OceanographerTableBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CoralFanBlock;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class OceanographerTableBlockEntityRenderer implements BlockEntityRenderer<OceanographerTableBlockEntity> {
-    private final BlockRenderManager manager;
-    private final EntityRenderDispatcher entityRenderDispatcher;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CoralFanBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
-    // Per-facing coral placement. Immutable and selected locally per render call: the renderer
-    // instance is shared by ALL aquarium block entities, so mutating shared fields per facing
-    // (as this used to do) leaked one aquarium's offsets into the next one rendered that frame.
+public class OceanographerTableBlockEntityRenderer implements BlockEntityRenderer<OceanographerTableBlockEntity, OceanographerTableBlockEntityRenderer.State> {
+
+    public static class State extends BlockEntityRenderState {
+        final Block[] corals = new Block[4];
+        final Vec3[] coralOffsets = new Vec3[4];
+        final BlockModelRenderState[] coralModels = new BlockModelRenderState[4];
+        float coralScale = 1.0F;
+        boolean valid;
+        Direction facing = Direction.NORTH;
+        final List<FishDraw> fish = new ArrayList<>();
+
+        State() {
+            for (int n = 0; n < coralModels.length; n++) {
+                coralModels[n] = new BlockModelRenderState();
+            }
+        }
+    }
+
+    private static class FishDraw {
+        EntityRenderState entityState;
+        int dx;
+        int dy;
+        int dz;
+        float x;
+        float y;
+        float z;
+        float bob;
+        float pitch;
+        float bodyYaw;
+        boolean pitched;
+        float scale;
+        float roll;
+        boolean axolotl;
+        float width;
+        float height;
+    }
+
+    private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
+
+    private final EntityRenderDispatcher entityRenderDispatcher;
+    private final BlockModelResolver blockModelResolver;
+
     private static final float[] Y_OFFSET_NORTH = {0.45F, 0.75F, 0.3F, 0.45F};
     private static final float[] Y_OFFSET_SOUTH = {0.75F, 0.45F, 0.45F, 0.3F};
     private static final float[] Y_OFFSET_EAST = {0.45F, 0.3F, 0.45F, 0.75F};
@@ -53,186 +96,188 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
     private static final float[] X_OFFSET_FAN_WEST = {0.2F, 1.25F, 1.45F, 0.2F};
     private static final float[] Z_OFFSET_FAN_WEST = {0.17F, 1.25F, 0.15F, 1.2F};
 
-    /** Reused for block model rendering; the model renderer re-seeds it per face anyway. */
-    private final Random renderRandom = Random.create();
-
-    public OceanographerTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.manager = ctx.getRenderManager();
-        this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
+    public OceanographerTableBlockEntityRenderer(BlockEntityRendererProvider.Context ctx) {
+        this.entityRenderDispatcher = ctx.entityRenderer();
+        this.blockModelResolver = ctx.blockModelResolver();
     }
 
     @Override
-    public void render(OceanographerTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, net.minecraft.util.math.Vec3d cameraPos) {
-        BlockState blockState = blockEntity.getCachedState();
-        BlockPos pos = blockEntity.getPos();
-        World world = blockEntity.getWorld();
-        DefaultedList<ItemStack> defaultedList = blockEntity.getInventory();
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (blockState.getBlock() instanceof OceanographerTableBlock) {
-            float[] yOffset;
-            float[] xOffset = X_OFFSET_DEFAULT;
-            float[] zOffset = Z_OFFSET_DEFAULT;
-            float[] xOffsetFan = X_OFFSET_FAN_DEFAULT;
-            float[] zOffsetFan = Z_OFFSET_FAN_DEFAULT;
-            switch (blockState.get(OceanographerTableBlock.FACING)) {
-                case EAST -> {
-                    yOffset = Y_OFFSET_EAST;
-                    xOffset = X_OFFSET_EAST;
-                    zOffset = Z_OFFSET_EAST;
-                    xOffsetFan = X_OFFSET_FAN_EAST;
-                    zOffsetFan = Z_OFFSET_FAN_EAST;
-                }
-                case WEST -> {
-                    yOffset = Y_OFFSET_WEST;
-                    xOffset = X_OFFSET_WEST;
-                    zOffset = Z_OFFSET_WEST;
-                    xOffsetFan = X_OFFSET_FAN_WEST;
-                    zOffsetFan = Z_OFFSET_FAN_WEST;
-                }
-                case SOUTH -> yOffset = Y_OFFSET_SOUTH;
-                default -> yOffset = Y_OFFSET_NORTH;
-            }
+    @Override
+    public void extractRenderState(OceanographerTableBlockEntity blockEntity, State state, float f, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(blockEntity, state, crumblingOverlay);
+        BlockPos pos = blockEntity.getBlockPos();
+        NonNullList<ItemStack> inventory = blockEntity.getInventory();
 
-            float coralScale = blockEntity.getCoralScale();
-            for (int it = 0; it < 4; it++) {
-                // Skipped before the model path: an empty slot would otherwise cost a lookup, an
-                // offset and a full render pass over air's empty model, per slot per aquarium per
-                // frame.
-                if (defaultedList.get(it).isEmpty()) {
-                    continue;
-                }
-                matrixStack.push();
-                Block coral = Block.getBlockFromItem(defaultedList.get(it).getItem());
-                Vec3d offset = coral.getDefaultState().getModelOffset(pos);
-                matrixStack.scale(0.4F, 0.4F, 0.4F);
-                if (coral instanceof CoralFanBlock) {
-                    matrixStack.translate(-offset.x + xOffsetFan[it], -offset.y + yOffset[it], -offset.z + zOffsetFan[it]);
-                } else {
-                    matrixStack.translate(-offset.x + xOffset[it], -offset.y + yOffset[it], -offset.z + zOffset[it]);
-                }
-                // Bone-meal / shears size, scaled around the centre of the coral's base.
-                if (coralScale != 1.0F) {
-                    matrixStack.translate(0.5F * (1.0F - coralScale), 0.0F, 0.5F * (1.0F - coralScale));
-                    matrixStack.scale(coralScale, coralScale, coralScale);
-                }
-                renderCoral(coral, world, pos, matrixStack, vertexConsumerProvider, i, j);
-                matrixStack.pop();
-            }
+        BlockState tableState = blockEntity.getBlockState();
+        state.valid = tableState.getBlock() instanceof OceanographerTableBlock;
+        if (state.valid) {
+            state.facing = tableState.getValue(OceanographerTableBlock.FACING);
+        }
 
-            // A fish is drawn by the aquarium it currently swims in, not by the one that owns it -
-            // see OceanographerTableBlockEntity#handOffFishToHost. So this block draws its own fish
-            // only while it is still in here, plus any fish handed over by its neighbours.
-            if (blockEntity.drawsOwnFish()) {
-                renderFish(blockEntity, 0, 0, 0, f, matrixStack, vertexConsumerProvider, i);
+        for (int it = 0; it < 4; it++) {
+            ItemStack stack = inventory.get(it);
+            if (stack.isEmpty()) {
+                state.corals[it] = null;
+                continue;
             }
-            for (OceanographerTableBlockEntity guest : blockEntity.getGuestFish()) {
-                // The list is pruned on tick; re-check here so a fish that moved on between the
-                // tick and this frame is not drawn twice.
-                if (!guest.isFishInBlock(pos)) {
-                    continue;
-                }
-                BlockPos guestPos = guest.getPos();
-                renderFish(guest, guestPos.getX() - pos.getX(), guestPos.getY() - pos.getY(), guestPos.getZ() - pos.getZ(),
-                        f, matrixStack, vertexConsumerProvider, i);
+            Block coral = Block.byItem(stack.getItem());
+            state.corals[it] = coral;
+            state.coralOffsets[it] = coral.defaultBlockState().getOffset(pos);
+            blockModelResolver.update(state.coralModels[it], coral.defaultBlockState(), DISPLAY_CONTEXT);
+        }
+        state.coralScale = blockEntity.getCoralScale();
+
+        state.fish.clear();
+        if (blockEntity.drawsOwnFish()) {
+            addFish(state, blockEntity, 0, 0, 0, f);
+        }
+        for (OceanographerTableBlockEntity guest : blockEntity.getGuestFish()) {
+            // The guest list is pruned on tick, so it may still list a fish that moved on.
+            if (!guest.isFishInBlock(pos)) {
+                continue;
             }
+            BlockPos guestPos = guest.getBlockPos();
+            addFish(state, guest, guestPos.getX() - pos.getX(), guestPos.getY() - pos.getY(), guestPos.getZ() - pos.getZ(), f);
         }
     }
 
-    /**
-     * Draws {@code owner}'s fish. The entity is created and ticked by the block entity (persistent
-     * animation state), so here we only place and orient it along its interpolated path.
-     *
-     * <p>{@code dx/dy/dz} is the offset from the block doing the drawing to the fish's owner; the
-     * tank-local swim position is added on top. It is zero whenever a block draws its own fish.
-     */
-    private void renderFish(OceanographerTableBlockEntity owner, int dx, int dy, int dz, float f,
-                            MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light) {
+    private void addFish(State state, OceanographerTableBlockEntity owner, int dx, int dy, int dz, float f) {
         Entity fish = owner.getDisplayFish();
         if (fish == null) {
             return;
         }
-        matrixStack.push();
+        FishDraw draw = new FishDraw();
+        draw.entityState = this.entityRenderDispatcher.extractEntity(fish, f);
+        draw.entityState.lightCoords = state.lightCoords;
+        draw.entityState.shadowRadius = 0.0F;
+        draw.entityState.shadowPieces.clear();
+        draw.dx = dx;
+        draw.dy = dy;
+        draw.dz = dz;
+        draw.width = fish.getBbWidth();
+        draw.height = fish.getBbHeight();
+        draw.scale = owner.getFishScale();
+        draw.roll = owner.getRoll(f);
+        float bob = Mth.sin(owner.getAnimAge(f) * 0.1F) / 2.0F + 0.5F;
+        draw.bob = bob + bob * bob;
+        draw.x = owner.getFishX(f);
+        draw.y = owner.getFishY(f);
+        draw.z = owner.getFishZ(f);
+        draw.pitch = owner.getFishPitch(f);
+        if (fish instanceof LivingEntity fishLiving) {
+            draw.pitched = true;
+            draw.bodyYaw = Mth.rotLerp(f, fishLiving.yBodyRotO, fishLiving.yBodyRot);
+        }
+        draw.axolotl = fish instanceof Axolotl;
+        state.fish.add(draw);
+    }
 
-        // Fish-food / diet-food size: scale the model, and shrink the swim circle for bigger
-        // animals so they stay inside the tub.
-        float scale = owner.getFishScale();
+    @Override
+    public void submit(State state, PoseStack matrixStack, SubmitNodeCollector queue, CameraRenderState camera) {
+        if (!state.valid) {
+            return;
+        }
+
+        float[] yOffset;
+        float[] xOffset = X_OFFSET_DEFAULT;
+        float[] zOffset = Z_OFFSET_DEFAULT;
+        float[] xOffsetFan = X_OFFSET_FAN_DEFAULT;
+        float[] zOffsetFan = Z_OFFSET_FAN_DEFAULT;
+        switch (state.facing) {
+            case EAST -> {
+                yOffset = Y_OFFSET_EAST;
+                xOffset = X_OFFSET_EAST;
+                zOffset = Z_OFFSET_EAST;
+                xOffsetFan = X_OFFSET_FAN_EAST;
+                zOffsetFan = Z_OFFSET_FAN_EAST;
+            }
+            case WEST -> {
+                yOffset = Y_OFFSET_WEST;
+                xOffset = X_OFFSET_WEST;
+                zOffset = Z_OFFSET_WEST;
+                xOffsetFan = X_OFFSET_FAN_WEST;
+                zOffsetFan = Z_OFFSET_FAN_WEST;
+            }
+            case SOUTH -> yOffset = Y_OFFSET_SOUTH;
+            default -> yOffset = Y_OFFSET_NORTH;
+        }
+
+        float coralScale = state.coralScale;
+        for (int it = 0; it < 4; it++) {
+            Block coral = state.corals[it];
+            if (coral == null) {
+                continue;
+            }
+            Vec3 offset = state.coralOffsets[it];
+            matrixStack.pushPose();
+            matrixStack.scale(0.4F, 0.4F, 0.4F);
+            if (coral instanceof CoralFanBlock) {
+                matrixStack.translate(-offset.x + xOffsetFan[it], -offset.y + yOffset[it], -offset.z + zOffsetFan[it]);
+            } else {
+                matrixStack.translate(-offset.x + xOffset[it], -offset.y + yOffset[it], -offset.z + zOffset[it]);
+            }
+            if (coralScale != 1.0F) {
+                matrixStack.translate(0.5F * (1.0F - coralScale), 0.0F, 0.5F * (1.0F - coralScale));
+                matrixStack.scale(coralScale, coralScale, coralScale);
+            }
+            state.coralModels[it].submit(matrixStack, queue, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            matrixStack.popPose();
+        }
+
+        for (FishDraw draw : state.fish) {
+            renderFish(draw, matrixStack, queue, camera);
+        }
+    }
+
+    private void renderFish(FishDraw draw, PoseStack matrixStack, SubmitNodeCollector queue, CameraRenderState camera) {
+        matrixStack.pushPose();
+
         float g = 0.53125F;
-        float hh = Math.max(fish.getWidth(), fish.getHeight());
+        float hh = Math.max(draw.width, draw.height);
         if ((double) hh > 1.0D) {
             g /= hh;
         }
-        g *= scale;
+        g *= draw.scale;
 
-        float roll = owner.getRoll(f);
+        matrixStack.translate((double) (draw.dx + draw.x),
+                (double) (draw.dy + draw.y + draw.bob * 0.05F),
+                (double) (draw.dz + draw.z));
 
-        // Position comes from the block entity: a circle in a single tub, or a free
-        // wander path across all connected aquarium blocks (tank-local coordinates).
-        float bob = MathHelper.sin(owner.getAnimAge(f) * 0.1F) / 2.0F + 0.5F;
-        bob += bob * bob;
-        matrixStack.translate((double) (dx + owner.getFishX(f)),
-                (double) (dy + owner.getFishY(f) + bob * 0.05F),
-                (double) (dz + owner.getFishZ(f)));
-
-        // Nose up/down while travelling vertically: pitch around the fish's lateral
-        // axis (conjugate by the body yaw, which the entity renderer applies itself).
-        float pitch = owner.getFishPitch(f);
-        if (pitch != 0.0F && fish instanceof LivingEntity fishLiving) {
-            float bodyYaw = MathHelper.lerpAngleDegrees(f, fishLiving.lastBodyYaw, fishLiving.bodyYaw);
-            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-bodyYaw));
-            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch));
-            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(bodyYaw));
+        if (draw.pitch != 0.0F && draw.pitched) {
+            matrixStack.mulPose(Axis.YP.rotationDegrees(-draw.bodyYaw));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(draw.pitch));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(draw.bodyYaw));
         }
 
         Vector3f vec3f = new Vector3f(0.5F, 1.0F, 0.5F);
         vec3f.normalize();
-        matrixStack.multiply((new Quaternionf()).rotationAxis(hh * 0.017453292F, vec3f));
+        matrixStack.mulPose((new Quaternionf()).rotationAxis(hh * 0.017453292F, vec3f));
         matrixStack.scale(g, g, g);
         matrixStack.translate(0.0D, -0.2F, 0.0D);
 
-        // Axolotl "tumble" - a playful barrel roll around its own axis.
-        if (roll != 0.0F) {
-            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
+        if (draw.roll != 0.0F) {
+            matrixStack.mulPose(Axis.XP.rotationDegrees(draw.roll));
         }
-        if (fish instanceof AxolotlEntity) {
+        if (draw.axolotl) {
             matrixStack.scale(0.8F, 0.8F, 0.8F);
         }
 
-        // The ticked entity's bodyYaw drives the heading; f interpolates the animation.
-        // Shadows off for the same reason vanilla turns them off when it draws an entity
-        // outside the world: EntityRenderDispatcher casts the shadow at the entity's *world*
-        // position, and the display fish is never placed, so it sits at (0, 0, 0). Near
-        // spawn that stacked a shadow blob at the origin for every aquarium in range.
-        this.entityRenderDispatcher.setRenderShadows(false);
-        this.entityRenderDispatcher.render(fish, 0.0D, 0.0D, 0.0D, f, matrixStack, vertexConsumerProvider, light);
-        this.entityRenderDispatcher.setRenderShadows(true);
+        this.entityRenderDispatcher.submit(draw.entityState, camera, 0.0D, 0.0D, 0.0D, matrixStack, queue);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
-    /**
-     * The tank itself is chunk geometry and stays visible as far as the chunk does, but everything
-     * this renderer draws inside it - corals and fish - is gated by
-     * {@code BlockEntityRenderDispatcher.render} on {@link #isInRenderDistance}, which defaults to
-     * 64 blocks. At that line the aquarium keeps its glass and empties out in one step. Give the
-     * contents the reach the block itself has instead.
-     */
     @Override
-    public int getRenderDistance() {
+    public int getViewDistance() {
         return 128;
     }
 
-    /// In a multi-block tank the fish may swim into neighbouring blocks, so per-section culling has
-    /// to be skipped or it vanishes at chunk section borders.
-    ///
-    /// Unconditional, because the block entity is not passed in: opting out only for aquariums that
-    /// actually hold a fish cannot be expressed here. That errs on the right side, since the
-    /// alternative makes fish disappear.
     @Override
-    public boolean rendersOutsideBoundingBox() {
+    public boolean shouldRenderOffScreen() {
         return true;
-    }
-
-    private void renderCoral(Block coral, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        this.manager.renderBlockAsEntity(coral.getDefaultState(), matrixStack, vertexConsumerProvider, light, overlay);
     }
 }

@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"render_type": "cutout_mipped",
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "villagersplus:block/alchemist_workstation",

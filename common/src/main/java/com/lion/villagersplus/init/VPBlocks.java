@@ -7,42 +7,37 @@ import com.lion.villagersplus.blocks.OceanographerTableBlock;
 import com.lion.villagersplus.blocks.OreGrinderBlock;
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.platform.RegistryHelper;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Supplier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class VPBlocks {
 
-    /**
-     * Blocks must carry their own RegistryKey since 1.21.2: AbstractBlock derives the loot table and
-     * translation key from it and throws "Block id not set" without one. This compiles fine and only
-     * fails at registration, so every block goes through here instead of calling Settings.create().
-     */
-    private static AbstractBlock.Settings settings(String name) {
-        return AbstractBlock.Settings.create()
-                .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(VillagersPlus.MOD_ID, name)));
+    /// Every block needs its own registry key in the settings, or registration throws "Block id not set".
+    private static BlockBehaviour.Properties settings(String name) {
+        return BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, name)));
     }
 
-    public static final Supplier<Block> ALCHEMIST_TABLE_BLOCK = RegistryHelper.registerBlock("alchemist_table", () -> new AlchemistTableBlock(settings("alchemist_table").strength(0.5F).luminance((state) -> 1).nonOpaque()));
-    public static final Supplier<Block> OCEANOGRAPHER_TABLE_BLOCK = RegistryHelper.registerBlock("oceanographer_table", () -> new OceanographerTableBlock(settings("oceanographer_table").strength(0.5F).luminance((state) -> 12).nonOpaque().solidBlock((state, world, pos) -> false).suffocates((state, world, pos) -> false)));
-    public static final Supplier<Block> OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("oak_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> DARK_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("dark_oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("dark_oak_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> ACACIA_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("acacia_horticulturist_table", () -> new HorticulturistTableBlock(settings("acacia_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> JUNGLE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("jungle_horticulturist_table", () -> new HorticulturistTableBlock(settings("jungle_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> SPRUCE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("spruce_horticulturist_table", () -> new HorticulturistTableBlock(settings("spruce_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> BIRCH_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("birch_horticulturist_table", () -> new HorticulturistTableBlock(settings("birch_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> MANGROVE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("mangrove_horticulturist_table", () -> new HorticulturistTableBlock(settings("mangrove_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> CRIMSON_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("crimson_horticulturist_table", () -> new HorticulturistTableBlock(settings("crimson_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> WARPED_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("warped_horticulturist_table", () -> new HorticulturistTableBlock(settings("warped_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> CHERRY_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("cherry_horticulturist_table", () -> new HorticulturistTableBlock(settings("cherry_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> BAMBOO_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("bamboo_horticulturist_table", () -> new HorticulturistTableBlock(settings("bamboo_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> PALE_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("pale_oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("pale_oak_horticulturist_table").strength(0.5F).nonOpaque().burnable().luminance((state) -> state.get(HorticulturistTableBlock.LIGHT))));
-    public static final Supplier<Block> OCCULTIST_TABLE_BLOCK = RegistryHelper.registerBlock("occultist_table", () -> new OccultistTableBlock(settings("occultist_table").strength(0.5F).luminance((state) -> state.get(OccultistTableBlock.FILLING) * 2).nonOpaque()));
-    public static final Supplier<Block> ORE_GRINDER_BLOCK = RegistryHelper.registerBlock("ore_grinder", () -> new OreGrinderBlock(settings("ore_grinder").strength(1.5F).requiresTool().luminance((state) -> state.get(OreGrinderBlock.LIT) ? 13 : 0).nonOpaque()));
+    public static final Supplier<Block> ALCHEMIST_TABLE_BLOCK = RegistryHelper.registerBlock("alchemist_table", () -> new AlchemistTableBlock(settings("alchemist_table").strength(0.5F).lightLevel((state) -> 1).noOcclusion()));
+    public static final Supplier<Block> OCEANOGRAPHER_TABLE_BLOCK = RegistryHelper.registerBlock("oceanographer_table", () -> new OceanographerTableBlock(settings("oceanographer_table").strength(0.5F).lightLevel((state) -> 12).noOcclusion().isRedstoneConductor((state, world, pos) -> false).isSuffocating((state, world, pos) -> false)));
+    public static final Supplier<Block> OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("oak_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> DARK_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("dark_oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("dark_oak_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> ACACIA_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("acacia_horticulturist_table", () -> new HorticulturistTableBlock(settings("acacia_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> JUNGLE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("jungle_horticulturist_table", () -> new HorticulturistTableBlock(settings("jungle_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> SPRUCE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("spruce_horticulturist_table", () -> new HorticulturistTableBlock(settings("spruce_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> BIRCH_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("birch_horticulturist_table", () -> new HorticulturistTableBlock(settings("birch_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> MANGROVE_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("mangrove_horticulturist_table", () -> new HorticulturistTableBlock(settings("mangrove_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> CRIMSON_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("crimson_horticulturist_table", () -> new HorticulturistTableBlock(settings("crimson_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> WARPED_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("warped_horticulturist_table", () -> new HorticulturistTableBlock(settings("warped_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> CHERRY_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("cherry_horticulturist_table", () -> new HorticulturistTableBlock(settings("cherry_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> BAMBOO_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("bamboo_horticulturist_table", () -> new HorticulturistTableBlock(settings("bamboo_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> PALE_OAK_HORTICULTURIST_TABLE_BLOCK = RegistryHelper.registerBlock("pale_oak_horticulturist_table", () -> new HorticulturistTableBlock(settings("pale_oak_horticulturist_table").strength(0.5F).noOcclusion().ignitedByLava().lightLevel((state) -> state.getValue(HorticulturistTableBlock.LIGHT))));
+    public static final Supplier<Block> OCCULTIST_TABLE_BLOCK = RegistryHelper.registerBlock("occultist_table", () -> new OccultistTableBlock(settings("occultist_table").strength(0.5F).lightLevel((state) -> state.getValue(OccultistTableBlock.FILLING) * 2).noOcclusion()));
+    public static final Supplier<Block> ORE_GRINDER_BLOCK = RegistryHelper.registerBlock("ore_grinder", () -> new OreGrinderBlock(settings("ore_grinder").strength(1.5F).requiresCorrectToolForDrops().lightLevel((state) -> state.getValue(OreGrinderBlock.LIT) ? 13 : 0).noOcclusion()));
 
     public static void init() {
 

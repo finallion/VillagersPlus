@@ -2,15 +2,13 @@ package com.lion.villagersplus.blockentities;
 
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.init.VPBlockEntities;
-import net.minecraft.block.BlockState;
-
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class OccultistTableBlockEntity extends BlockEntity {
     private int levels = 0;
@@ -25,17 +23,17 @@ public class OccultistTableBlockEntity extends BlockEntity {
         return levels;
     }
 
-    public void interact(World world, PlayerEntity player) {
-        if (player.isSneaking()) {
+    public void interact(Level world, Player player) {
+        if (player.isShiftKeyDown()) {
             if (levels <= MAX_EXP_STORAGE - AMOUNT) {
                 if (player.totalExperience < AMOUNT) {
-                    if (!world.isClient()) {
+                    if (!world.isClientSide()) {
                         this.levels += player.totalExperience;
-                        player.addExperience(-(player.totalExperience));
+                        player.giveExperiencePoints(-(player.totalExperience));
                     }
                 } else {
-                    if (!world.isClient()) {
-                        player.addExperience(-AMOUNT);
+                    if (!world.isClientSide()) {
+                        player.giveExperiencePoints(-AMOUNT);
                         this.levels += AMOUNT;
                     }
                 }
@@ -43,13 +41,13 @@ public class OccultistTableBlockEntity extends BlockEntity {
         } else {
             if (levels > 0) {
                 if (levels >= AMOUNT) {
-                    if (!world.isClient()) {
-                        player.addExperience(AMOUNT);
+                    if (!world.isClientSide()) {
+                        player.giveExperiencePoints(AMOUNT);
                         this.levels -= AMOUNT;
                     }
                 } else {
-                    if (!world.isClient()) {
-                        player.addExperience(levels);
+                    if (!world.isClientSide()) {
+                        player.giveExperiencePoints(levels);
                         this.levels = 0;
                     }
                 }
@@ -58,14 +56,14 @@ public class OccultistTableBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void readData(ReadView view) {
-        super.readData(view);
-        this.levels = view.getInt("Levels", 0);
+    protected void loadAdditional(ValueInput view) {
+        super.loadAdditional(view);
+        this.levels = view.getIntOr("Levels", 0);
     }
 
     @Override
-    protected void writeData(WriteView view) {
-        super.writeData(view);
+    protected void saveAdditional(ValueOutput view) {
+        super.saveAdditional(view);
         view.putInt("Levels", this.levels);
     }
 
