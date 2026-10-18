@@ -2,18 +2,11 @@ package com.lion.villagersplus.init;
 
 import com.lion.villagersplus.platform.RegistryHelper;
 import com.lion.villagersplus.worldgen.OreVeinProcessor;
-import net.minecraft.structure.processor.StructureProcessorType;
 
 public class VPStructures {
 
-    /**
-     * Held as a constant because {@link OreVeinProcessor#getType()} has to hand back the very instance
-     * that was registered - Forge only puts it into the registry later, off the mod event bus.
-     */
-    public static final StructureProcessorType<OreVeinProcessor> ORE_VEIN = () -> OreVeinProcessor.CODEC;
-
     static {
-        RegistryHelper.registerStructureProcessorType("ore_vein", ORE_VEIN);
+        RegistryHelper.registerStructureProcessorType("ore_vein", OreVeinProcessor.CODEC);
     }
 
     public static void init() {

@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:calm_food"
+        "recipes": "villagersplus:calm_food"
       }
     }
   },

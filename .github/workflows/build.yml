@@ -1,23 +1,19 @@
 # Builds the mod on every push and pull request.
 #
-# VillagersPlus resolves VillagerTradingPlus from mavenLocal (see fabric/build.gradle and
-# neoforge/build.gradle), so the library has to be checked out and published locally before this
-# repo can compile at all. A fresh runner has an empty local Maven repository.
+# VillagerTradingPlus comes from mavenLocal, so the job publishes it first.
 
 name: build
 on: [pull_request, push]
 
 env:
-  # Branch of the library that matches this branch. Bump this together with minecraft_version when
-  # opening a new Minecraft branch, otherwise the build silently compiles against the old library.
-  VTP_REF: '1.21.1'
+  # VillagerTradingPlus branch for this Minecraft version.
+  VTP_REF: '26.3'
 
 jobs:
   build:
     strategy:
       matrix:
-        # Java 21 is the floor: options.release = 21 and both loader manifests require it.
-        java: [21]
+        java: [25]
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:

@@ -1,12 +1,12 @@
 package com.lion.villagersplus.mixin;
 
-import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.world.entity.animal.fish.TropicalFish;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(TropicalFishEntity.class)
+@Mixin(TropicalFish.class)
 public interface TropicalFishEntityInvoker {
 
-    @Invoker("setTropicalFishVariant")
+    @Invoker("setPackedVariant")
     public void setTropicalFishVariantMixin(int variant);
 }

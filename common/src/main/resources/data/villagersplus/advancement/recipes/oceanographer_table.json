@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:oceanographer_table"
+        "recipes": "villagersplus:oceanographer_table"
       }
     }
   },

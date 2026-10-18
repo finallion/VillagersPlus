@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:acacia_horticulturist_table"
+        "recipes": "villagersplus:acacia_horticulturist_table"
       }
     }
   },

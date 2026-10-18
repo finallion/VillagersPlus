@@ -1,14 +1,12 @@
 package com.lion.villagersplus.init;
 
 import com.lion.villagersplus.platform.RegistryHelper;
-import net.minecraft.particle.SimpleParticleType;
-
+import net.minecraft.core.particles.SimpleParticleType;
 
 public class VPParticles {
 
     public static final SimpleParticleType EXPERIENCE_PARTICLE = new SimpleParticleType(false);
     public static final SimpleParticleType BUBBLE_PARTICLE = new SimpleParticleType(false);
-
 
     static {
         RegistryHelper.registerParticleType("experience_particle", EXPERIENCE_PARTICLE);

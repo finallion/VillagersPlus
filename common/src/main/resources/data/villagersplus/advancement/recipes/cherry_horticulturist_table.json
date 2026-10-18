@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:cherry_horticulturist_table"
+        "recipes": "villagersplus:cherry_horticulturist_table"
       }
     }
   },

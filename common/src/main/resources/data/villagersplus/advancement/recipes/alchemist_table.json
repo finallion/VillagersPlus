@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:alchemist_table"
+        "recipes": "villagersplus:alchemist_table"
       }
     }
   },

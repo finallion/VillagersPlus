@@ -14,7 +14,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "villagersplus:mangrove_horticulturist_table"
+        "recipes": "villagersplus:mangrove_horticulturist_table"
       }
     }
   },

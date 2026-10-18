@@ -7,26 +7,26 @@
         {
           "weight": 24,
           "data": {
-            "Name": "minecraft:coal_ore"
+            "id": "minecraft:coal_ore"
           }
         },
         {
           "weight": 20,
           "data": {
-            "Name": "minecraft:copper_ore"
+            "id": "minecraft:copper_ore"
           }
         },
         {
           "weight": 18,
           "data": {
-            "Name": "minecraft:iron_ore"
+            "id": "minecraft:iron_ore"
           }
         },
         {
           "weight": 10,
           "data": {
-            "Name": "minecraft:redstone_ore",
-            "Properties": {
+            "id": "minecraft:redstone_ore",
+            "properties": {
               "lit": "false"
             }
           }
@@ -34,43 +34,43 @@
         {
           "weight": 8,
           "data": {
-            "Name": "minecraft:gold_ore"
+            "id": "minecraft:gold_ore"
           }
         },
         {
           "weight": 6,
           "data": {
-            "Name": "minecraft:lapis_ore"
+            "id": "minecraft:lapis_ore"
           }
         },
         {
           "weight": 4,
           "data": {
-            "Name": "minecraft:raw_iron_block"
+            "id": "minecraft:raw_iron_block"
           }
         },
         {
           "weight": 3,
           "data": {
-            "Name": "minecraft:raw_copper_block"
+            "id": "minecraft:raw_copper_block"
           }
         },
         {
           "weight": 3,
           "data": {
-            "Name": "minecraft:emerald_ore"
+            "id": "minecraft:emerald_ore"
           }
         },
         {
           "weight": 2,
           "data": {
-            "Name": "minecraft:raw_gold_block"
+            "id": "minecraft:raw_gold_block"
           }
         },
         {
           "weight": 2,
           "data": {
-            "Name": "minecraft:diamond_ore"
+            "id": "minecraft:diamond_ore"
           }
         }
       ]

@@ -1,153 +1,142 @@
 package com.lion.villagersplus.blocks;
 
-import com.mojang.serialization.MapCodec;
 import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blockentities.OccultistTableBlockEntity;
 import com.lion.villagersplus.init.VPParticles;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.IntProperty;
+import net.minecraft.world.level.block.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.*;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class OccultistTableBlock extends WorkstationBlock {
-    public static final IntProperty FILLING;
+    public static final IntegerProperty FILLING;
 
-    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
-    public static final MapCodec<OccultistTableBlock> CODEC = createCodec(OccultistTableBlock::new);
-
-    @Override
-    protected MapCodec<? extends OccultistTableBlock> getCodec() {
-        return CODEC;
-    }
-
-    public OccultistTableBlock(Settings settings) {
+    public OccultistTableBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FILLING, 0));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FILLING, 0));
     }
 
     @Override
-    public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
+    public boolean isCollisionShapeFullBlock(BlockState state, BlockGetter world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new OccultistTableBlockEntity(pos, state);
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof OccultistTableBlockEntity tile && !player.isCreative()) {
             tile.interact(world, player);
 
-            if (world.isClient) {
-                if (player.isSneaking()) {
-                    createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, ParticleTypes.SOUL, world.random);
-                    world.playSound(player, pos, SoundEvents.PARTICLE_SOUL_ESCAPE.value(), SoundCategory.BLOCKS, 3.0F, 0.0F);
+            if (world.isClientSide()) {
+                if (player.isShiftKeyDown()) {
+                    createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, ParticleTypes.SOUL, world.getRandom());
+                    world.playSound(player, pos, SoundEvents.SOUL_ESCAPE.value(), SoundSource.BLOCKS, 3.0F, 0.0F);
                 } else {
-                    createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, VPParticles.EXPERIENCE_PARTICLE, world.random);
-                    world.playSound(player, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 3.0F, 1.0F);
+                    createParticleSpiral(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0D, 0.0D, 0.0D, 250, VPParticles.EXPERIENCE_PARTICLE, world.getRandom());
+                    world.playSound(player, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 3.0F, 1.0F);
                 }
             }
 
-            if (!world.isClient()) {
+            if (!world.isClientSide()) {
                 int levels = tile.getLevels();
                 int maxLevels = VillagersPlus.CONFIG.max_exp_amount;
 
                 if (levels >= 0.8 * maxLevels) {
-                    state = state.with(OccultistTableBlock.FILLING, 5);
+                    state = state.setValue(OccultistTableBlock.FILLING, 5);
                 } else if (levels >= 0.6 * maxLevels) {
-                    state = state.with(OccultistTableBlock.FILLING, 4);
+                    state = state.setValue(OccultistTableBlock.FILLING, 4);
                 } else if (levels >= 0.4 * maxLevels) {
-                    state = state.with(OccultistTableBlock.FILLING, 3);
+                    state = state.setValue(OccultistTableBlock.FILLING, 3);
                 } else if (levels >= 0.2 * maxLevels) {
-                    state = state.with(OccultistTableBlock.FILLING, 2);
+                    state = state.setValue(OccultistTableBlock.FILLING, 2);
                 } else if (levels > 0) {
-                    state = state.with(OccultistTableBlock.FILLING, 1);
+                    state = state.setValue(OccultistTableBlock.FILLING, 1);
                 } else {
-                    state = state.with(OccultistTableBlock.FILLING, 0);
+                    state = state.setValue(OccultistTableBlock.FILLING, 0);
                 }
 
-                world.setBlockState(pos, state, 2);
+                world.setBlock(pos, state, 2);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
 
     }
 
     @Override
-    protected boolean isTransparent(BlockState state) {
+    protected boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 
-
-
-    public static <T extends ParticleEffect> void createParticleSpiral(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int length, T type, Random random) {
-        double yCoord = y + 1.1D; // top of block
+    public static <T extends ParticleOptions> void createParticleSpiral(Level world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int length, T type, RandomSource random) {
+        double yCoord = y + 1.1D;
 
         for (int i = 0; i < length; i++) {
             float densityFactor = (float) i / 15;
-            double xCoord = x + MathHelper.sin(densityFactor) / 3;
+            double xCoord = x + Mth.sin(densityFactor) / 3;
             yCoord += 0.0075;
-            double zCoord = z + MathHelper.cos(densityFactor) / 3;
+            double zCoord = z + Mth.cos(densityFactor) / 3;
             if (random.nextInt(7) == 0) {
-                world.addParticleClient(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
+                world.addParticle(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
             }
         }
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        if (state.get(FILLING) > 0 && random.nextInt(3) == 0) {
-            world.addParticleClient(VPParticles.EXPERIENCE_PARTICLE, pos.getX() + 0.5D + random.nextDouble() - random.nextDouble(), pos.getY() + 1.0D + random.nextDouble(), pos.getZ() + 0.5D + random.nextDouble() - random.nextDouble(), 0.0D, 0.05D, 0.0D);
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+        if (state.getValue(FILLING) > 0 && random.nextInt(3) == 0) {
+            world.addParticle(VPParticles.EXPERIENCE_PARTICLE, pos.getX() + 0.5D + random.nextDouble() - random.nextDouble(), pos.getY() + 1.0D + random.nextDouble(), pos.getZ() + 0.5D + random.nextDouble() - random.nextDouble(), 0.0D, 0.05D, 0.0D);
         }
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        // Since 1.21.6 this only fires when the block really changed and only on the server, so
-        // the old isOf(newState) guard is gone along with the newState parameter.
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
-            this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
+        if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClientSide()) {
+            this.tryDropExperience((ServerLevel) world, pos, ItemStack.EMPTY, ConstantInt.of(table.getLevels()));
         }
 
-        super.onStateReplaced(state, world, pos, moved);
+        super.affectNeighborsAfterRemoval(state, world, pos, moved);
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
+    public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, Direction direction) {
+        return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FILLING);
     }
 
     static {
-        FILLING = IntProperty.of("filling", 0, 5);
+        FILLING = IntegerProperty.create("filling", 0, 5);
     }
 }
