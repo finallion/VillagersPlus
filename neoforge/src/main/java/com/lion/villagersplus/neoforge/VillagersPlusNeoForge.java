@@ -4,7 +4,7 @@ import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.VillagersPlusClient;
 import com.lion.villagersplus.platform.neoforge.RegistryHelperImpl;
 import com.lion.villagersplus.util.StructurePoolAddition;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,14 +18,10 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 @Mod(VillagersPlus.MOD_ID)
 public class VillagersPlusNeoForge {
 
-    /**
-     * NeoForge hands the mod bus to the constructor; there is no FMLJavaModLoadingContext lookup any
-     * more. The two buses stay distinct: registries and setup are mod-bus, server lifecycle is game-bus.
-     */
     public VillagersPlusNeoForge(IEventBus modEventBus) {
         VillagersPlus.init();
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             VillagersPlusClient.init();
         }
 
@@ -54,13 +50,11 @@ public class VillagersPlusNeoForge {
         StructurePoolAddition.registerJigsaws(event.getServer());
     }
 
-    /** Registered explicitly via addListener above, so it needs no annotation. */
     private static void addItemsToTabs(BuildCreativeModeTabContentsEvent event) {
         RegistryHelperImpl.ITEMS_TO_ADD.forEach((itemGroup, itemPairs) -> {
             if (event.getTabKey() == itemGroup) {
-                // The event is an ItemGroup.Entries itself now, so entries go in directly.
                 itemPairs.forEach(item ->
-                        event.add(item.getDefaultStack(), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS));
+                        event.accept(item.getDefaultInstance(), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS));
             }
         });
     }

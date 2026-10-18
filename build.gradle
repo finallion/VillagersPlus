@@ -1,6 +1,7 @@
 plugins {
-	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.11-SNAPSHOT" apply false
+	id "architectury-plugin" version "3.5.170"
+	id "dev.architectury.loom-no-remap" version "1.17.493" apply false
+	id "com.gradleup.shadow" version "9.6.1" apply false
 	id "me.modmuss50.mod-publish-plugin" version "1.1.0"
 }
 
@@ -8,39 +9,16 @@ architectury {
 	minecraft = rootProject.minecraft_version
 }
 
-// VillagerTradingPlus is consumed from mavenLocal under a fixed version, and Loom keys its remapped
-// copy of a dependency by that version - so a republished library never reaches the run without
-// dropping that copy first. Run this on its own, then build:
-//
-//     gradlew dropLibraryCache
-//     gradlew :neoforge:build
-//
-// Chaining both into one invocation fails: nothing orders the delete against the compile classpath,
-// so the jar can be removed while a task is still resolving against it.
-tasks.register("dropLibraryCache", Delete) {
-	description = "Removes the cached remap of VillagerTradingPlus so a fresh publishToMavenLocal is picked up. Run on its own, before the build."
-	group = "build"
-	delete "${rootDir}/.gradle/loom-cache/remapped_mods/remapped/lion/villagertradingplus"
-}
-
 subprojects {
-	apply plugin: "dev.architectury.loom"
-
-	loom {
-		silentMojangMappingsLicense()
-	}
+	apply plugin: "dev.architectury.loom-no-remap"
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings loom.layered {
-			mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
-			mappings "dev.architectury:yarn-mappings-patch-neoforge:${rootProject.yarn_mappings_patch_neoforge_version}"
-		}
 	}
 }
 
 allprojects {
-	apply plugin: "java"
+	apply plugin: "java-library"
 	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 
@@ -56,9 +34,9 @@ allprojects {
 		maven { url 'https://jitpack.io' }
 	}
 
-	tasks.withType(JavaCompile) {
+	tasks.withType(JavaCompile).configureEach {
 		options.encoding = "UTF-8"
-		options.release = 21
+		options.release = 25
 	}
 
 	java {
@@ -66,6 +44,10 @@ allprojects {
 	}
 }
 
+
+evaluationDependsOn(":common")
+evaluationDependsOn(":fabric")
+evaluationDependsOn(":neoforge")
 
 publishMods {
 	dryRun = providers.environmentVariable("PUBLISH_LIVE").getOrElse("false") != "true"
@@ -84,7 +66,7 @@ publishMods {
 		accessToken = token("CURSEFORGE_TOKEN", "curseforgeToken")
 		projectId = providers.gradleProperty("villagersplusCurseforgeId").getOrElse("000000")
 		minecraftVersions.add(rootProject.minecraft_version)
-		// CurseForge rejects uploads that declare neither.
+		// CurseForge needs both environment flags.
 		clientRequired = true
 		serverRequired = true
 	}
@@ -135,7 +117,7 @@ publishMods {
 		repository = "finallion/VillagersPlus_-FABRIC-"
 		commitish = providers.environmentVariable("GITHUB_SHA").getOrElse(rootProject.minecraft_version)
 		file project(":fabric")
-		additionalFiles.from(project(":neoforge").tasks.named("remapJar").flatMap { it.archiveFile })
+		additionalFiles.from(project(":neoforge").tasks.named("shadowJar").flatMap { it.archiveFile })
 		modLoaders.add("fabric")
 		modLoaders.add("neoforge")
 	}

@@ -6,9 +6,8 @@ import com.lion.villagersplus.blockentities.OccultistTableBlockEntity;
 import com.lion.villagersplus.blockentities.OceanographerTableBlockEntity;
 import com.lion.villagersplus.blockentities.OreGrinderBlockEntity;
 import com.lion.villagersplus.platform.RegistryHelper;
-import net.minecraft.block.entity.BlockEntityType;
-
 import java.util.function.Supplier;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class VPBlockEntities {
 

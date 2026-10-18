@@ -1,7 +1,6 @@
 {
   "format_version": "1.9.0",
   "credit": "Made with Blockbench",
-  "render_type": "cutout_mipped",
   "texture_size": [64, 64],
   "textures": {
     "0": "villagersplus:block/ore_grinder",

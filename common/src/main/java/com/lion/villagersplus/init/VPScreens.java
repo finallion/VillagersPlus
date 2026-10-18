@@ -4,18 +4,15 @@ import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.client.screen.AlchemistTableScreenHandler;
 import com.lion.villagersplus.client.screen.OreGrinderScreenHandler;
 import com.lion.villagersplus.platform.RegistryHelper;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 
 public class VPScreens {
 
     public static void init() {}
 
-    public static final ScreenHandlerType<AlchemistTableScreenHandler> ALCHEMIST_TABLE_SCREEN_HANDLER = new ScreenHandlerType<>(AlchemistTableScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
-    public static final ScreenHandlerType<OreGrinderScreenHandler> ORE_GRINDER_SCREEN_HANDLER = new ScreenHandlerType<>(OreGrinderScreenHandler::new, FeatureFlags.VANILLA_FEATURES);
+    public static final MenuType<AlchemistTableScreenHandler> ALCHEMIST_TABLE_SCREEN_HANDLER = new MenuType<>(AlchemistTableScreenHandler::new, FeatureFlags.VANILLA_SET);
+    public static final MenuType<OreGrinderScreenHandler> ORE_GRINDER_SCREEN_HANDLER = new MenuType<>(OreGrinderScreenHandler::new, FeatureFlags.VANILLA_SET);
 
     static {
         RegistryHelper.registerScreenHandlerType("alchemist_table_screen_handler", ALCHEMIST_TABLE_SCREEN_HANDLER);

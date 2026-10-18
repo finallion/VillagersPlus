@@ -1,21 +1,21 @@
 package com.lion.villagersplus.platform;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.poi.PointOfInterestType;
-
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 
 public class RegistryHelper {
 
@@ -30,7 +30,7 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void registerItemGroup(RegistryKey<ItemGroup> registryKey, String name, String literalName, Supplier<Item> item) {
+    public static void registerItemGroup(ResourceKey<CreativeModeTab> registryKey, String name, String literalName, Supplier<Item> item) {
         throw new AssertionError();
     }
 
@@ -40,7 +40,7 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void addToItemGroup(RegistryKey<ItemGroup> itemGroup, Item item) {
+    public static void addToItemGroup(ResourceKey<CreativeModeTab> itemGroup, Item item) {
         throw new AssertionError();
     }
 
@@ -50,22 +50,17 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void registerRenderType(RenderLayer type, Block... blocks) {
+    public static void registerScreenHandlerType(String name, MenuType<?> screenHandlerType) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static void registerScreenHandlerType(String name, ScreenHandlerType<?> screenHandlerType) {
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererProvider<T, S> renderProvider) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static <T extends BlockEntity> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererFactory<T> renderProvider) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
         throw new AssertionError();
     }
 
@@ -75,7 +70,7 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void registerStructureProcessorType(String name, StructureProcessorType<?> structureProcessorType) {
+    public static void registerStructureProcessorType(String name, MapCodec<? extends StructureProcessor> structureProcessorCodec) {
         throw new AssertionError();
     }
 }
