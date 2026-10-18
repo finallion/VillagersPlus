@@ -14,7 +14,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.BlockRenderLayer;
-import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.BlockRenderLayers;
 
 public class VillagersPlusClientFabric implements ClientModInitializer {
 
@@ -29,11 +29,9 @@ public class VillagersPlusClientFabric implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(VPParticles.EXPERIENCE_PARTICLE, ExperienceParticle.ExperienceParticleFactory::new);
         ParticleFactoryRegistry.getInstance().register(VPParticles.BUBBLE_PARTICLE, BubbleParticle.Factory::new);
 
-        // Fabric API dropped blockrenderlayer-v1 for 1.21.6+ because the chunk layer moved into the
-        // vanilla BlockRenderLayer enum. RenderLayers.BLOCKS is the map that API wrote into, so
-        // write to it directly; the field is widened in villagersplus.accesswidener.
-        RenderLayers.BLOCKS.put(VPBlocks.OCEANOGRAPHER_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);
-        RenderLayers.BLOCKS.put(VPBlocks.ALCHEMIST_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);
-        RenderLayers.BLOCKS.put(VPBlocks.ORE_GRINDER_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);
+        // Fabric API has no render layer map here. Write to the vanilla map.
+        BlockRenderLayers.BLOCKS.put(VPBlocks.OCEANOGRAPHER_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT);
+        BlockRenderLayers.BLOCKS.put(VPBlocks.ALCHEMIST_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT);
+        BlockRenderLayers.BLOCKS.put(VPBlocks.ORE_GRINDER_BLOCK.get(), BlockRenderLayer.CUTOUT);
     }
 }

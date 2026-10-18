@@ -9,7 +9,8 @@ import net.minecraft.world.chunk.ProtoChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /// Keeps the miner's shaft and its vanilla mineshaft out of the village's terrain adaptation.
@@ -41,13 +42,13 @@ public class StructurePieceMixin {
     ///
     /// Skipping the call there is the outcome vanilla produces anyway, since the mark is discarded
     /// and the block placed regardless. Chunks still in the pipeline pass through untouched.
-    @Redirect(
+    @WrapOperation(
             method = "addBlock",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/chunk/Chunk;markBlockForPostProcessing(Lnet/minecraft/util/math/BlockPos;)V"))
-    private void villagersplus$onlyPostProcessUnfinishedChunks(Chunk chunk, BlockPos pos) {
+    private void villagersplus$onlyPostProcessUnfinishedChunks(Chunk chunk, BlockPos pos, Operation<Void> original) {
         if (chunk instanceof ProtoChunk) {
-            chunk.markBlockForPostProcessing(pos);
+            original.call(chunk, pos);
         }
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorType;
-import net.minecraft.util.collection.Pool;
+import net.minecraft.util.collection.WeightedPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -36,13 +36,13 @@ public class OreVeinProcessor extends StructureProcessor {
     // StructureProcessorType.codec() returns a MapCodec since 1.20.5, so build one directly.
     public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Registries.BLOCK.getCodec().fieldOf("target").forGetter(processor -> processor.target),
-            Pool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
+            WeightedPool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
     ).apply(instance, OreVeinProcessor::new));
 
     private final Block target;
-    private final Pool<BlockState> ores;
+    private final WeightedPool<BlockState> ores;
 
-    public OreVeinProcessor(Block target, Pool<BlockState> ores) {
+    public OreVeinProcessor(Block target, WeightedPool<BlockState> ores) {
         this.target = target;
         this.ores = ores;
     }

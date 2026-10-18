@@ -69,12 +69,12 @@ public class AlchemistTableBlock extends WorkstationBlock {
 
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : validateTicker(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
+        return world.isClient() ? null : validateTicker(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
     }
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world.isClient) {
+        if (world.isClient()) {
             return ActionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -142,7 +142,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 

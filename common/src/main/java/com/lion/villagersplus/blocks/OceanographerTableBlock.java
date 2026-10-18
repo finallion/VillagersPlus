@@ -14,7 +14,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import org.jetbrains.annotations.Nullable;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.sound.SoundCategory;
@@ -145,7 +144,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         // Only the client needs to tick: it drives the display fish's swim animation.
-        if (!world.isClient) {
+        if (!world.isClient()) {
             return null;
         }
         return validateTicker(type, VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(),
@@ -199,7 +198,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                                     itemStack.decrement(1);
                                 }
                             } else {
-                                itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
+                                itemStack.damage(1, player, hand.getEquipmentSlot());
                             }
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
@@ -231,7 +230,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
-                    if (world.isClient) {
+                    if (world.isClient()) {
                         world.playSound(null, pos, SoundEvents.BLOCK_CORAL_BLOCK_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
 
@@ -251,7 +250,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
-                    if (world.isClient) player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    if (world.isClient()) world.playSoundClient(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                     return ActionResult.SUCCESS;
                     // Either bucket works: the tank holds its own water, so the empty one handed
@@ -268,7 +267,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             world.setBlockState(pos, state.with(FISH, 0), 3);
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         } else {
-                            player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                            world.playSoundClient(SoundEvents.ITEM_BUCKET_FILL_FISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
                         }
 
                         return ActionResult.SUCCESS;
@@ -343,7 +342,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         // Connecting upward removes the upper block's floor - existing corals there would
         // float in the water, so pop them out.
-        if (!world.isClient && state.get(UP)) {
+        if (!world.isClient() && state.get(UP)) {
             BlockPos above = pos.up();
             BlockState aboveState = world.getBlockState(above);
             if (aboveState.isOf(this) && aboveState.get(CORALS) > 0
@@ -383,7 +382,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return (Integer)state.get(FISH) + state.get(CORALS);
     }
 

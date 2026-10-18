@@ -1,20 +1,14 @@
 package com.lion.villagersplus.mixin;
 
 import com.lion.villagersplus.util.LegacyItemStacks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /// Updates this mod's stored inventories on the way in from an older world.
 ///
@@ -30,12 +24,9 @@ import java.util.function.Supplier;
 @Mixin(VersionedChunkStorage.class)
 public class VersionedChunkStorageMixin {
 
-    @Inject(method = "updateChunkNbt", at = @At("HEAD"))
-    private void villagersplus$migrateStoredItems(RegistryKey<World> worldKey,
-                                                  Supplier<PersistentStateManager> persistentStateManagerFactory,
-                                                  NbtCompound nbt,
-                                                  Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey,
+    @Inject(method = "updateChunkNbt(Lnet/minecraft/nbt/NbtCompound;ILnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/nbt/NbtCompound;", at = @At("HEAD"))
+    private void villagersplus$migrateStoredItems(NbtCompound nbt, int dataVersion, NbtCompound context,
                                                   CallbackInfoReturnable<NbtCompound> cir) {
-        LegacyItemStacks.migrateChunk(nbt, VersionedChunkStorage.getDataVersion(nbt));
+        LegacyItemStacks.migrateChunk(nbt, NbtHelper.getDataVersion(nbt, dataVersion));
     }
 }

@@ -34,7 +34,7 @@ public class OreGrinderScreenHandler extends ScreenHandler {
         checkDataCount(propertyDelegate, 4);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
-        this.world = playerInventory.player.getWorld();
+        this.world = playerInventory.player.getEntityWorld();
 
         this.addSlot(new InputSlot(inventory, OreGrinderBlockEntity.INPUT_SLOT, 56, 17));
         this.addSlot(new FuelSlot(inventory, OreGrinderBlockEntity.FUEL_SLOT, 56, 53, this.world));

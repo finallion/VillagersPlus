@@ -25,7 +25,7 @@ public class VillagersPlusNeoForge {
     public VillagersPlusNeoForge(IEventBus modEventBus) {
         VillagersPlus.init();
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             VillagersPlusClient.init();
         }
 

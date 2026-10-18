@@ -3,13 +3,15 @@ package com.lion.villagersplus.particles;
 import com.lion.villagersplus.init.VPBlocks;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.particle.SimpleParticleType;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.BlockPos;
 
-public class BubbleParticle extends SpriteBillboardParticle {
+public class BubbleParticle extends BillboardParticle {
 
-    BubbleParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-        super(clientWorld, d, e, f);
+    BubbleParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Sprite sprite) {
+        super(clientWorld, d, e, f, sprite);
         this.gravityStrength = -0.125F;
         this.velocityMultiplier = 0.85F;
         this.setBoundingBoxSpacing(0.02F, 0.02F);
@@ -32,8 +34,8 @@ public class BubbleParticle extends SpriteBillboardParticle {
 
     }
 
-    public ParticleTextureSheet getType() {
-        return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+    protected RenderType getRenderType() {
+        return RenderType.PARTICLE_ATLAS_OPAQUE;
     }
 
     public static class Factory implements ParticleFactory<SimpleParticleType> {
@@ -43,9 +45,8 @@ public class BubbleParticle extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            BubbleParticle bubble = new BubbleParticle(clientWorld, d, e, f, g, h, i);
-            bubble.setSprite(this.spriteProvider);
+        public Particle createParticle(SimpleParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, Random random) {
+            BubbleParticle bubble = new BubbleParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.getSprite(random));
             return bubble;
         }
     }

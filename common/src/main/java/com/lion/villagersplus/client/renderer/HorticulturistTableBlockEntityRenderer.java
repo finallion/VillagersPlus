@@ -5,22 +5,25 @@ import com.lion.villagersplus.blockentities.HorticulturistTableBlockEntity;
 import com.lion.villagersplus.blocks.HorticulturistTableBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.block.entity.state.BlockEntityRenderState;
+import net.minecraft.client.render.command.ModelCommandRenderer;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.state.CameraRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.util.math.Vec3d;
 
-public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
+public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity, HorticulturistTableBlockEntityRenderer.State> {
 
-    // Absolute X/Z positions per plant, measured from the block origin. Each plant renders inside
-    // its own push()/pop(), so these never accumulate across plants.
+    public static class State extends BlockEntityRenderState {
+        final Block[] plants = new Block[4];
+        float plantScale = 1.0F;
+    }
+
     public static float[] twoFlowerXOffset = new float[]{
                 VillagersPlus.CONFIG.first_flower_in_two_X,
                 VillagersPlus.CONFIG.second_flower_in_two_X};
@@ -48,72 +51,77 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                 VillagersPlus.CONFIG.third_flower_in_four_Z,
                 VillagersPlus.CONFIG.forth_flower_in_four_Z};
 
-    // Slight per-plant height so a fuller tub steps down gently. Index = plant count - 1.
+    // Index is the plant slot. A fuller tub steps down, so the plants do not overlap.
     private static final float[] twoFlowerY = new float[]{0.95F, 0.95F};
     private static final float[] threeFlowerY = new float[]{0.95F, 0.90F, 0.90F};
     private static final float[] fourFlowerY = new float[]{0.95F, 0.90F, 0.90F, 0.85F};
 
-    private final BlockRenderManager manager;
-
     public HorticulturistTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.manager = ctx.getRenderManager();
     }
 
     @Override
-    public void render(HorticulturistTableBlockEntity blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, net.minecraft.util.math.Vec3d cameraPos) {
-        BlockState blockState = blockEntity.getCachedState();
-        BlockPos pos = blockEntity.getPos();
-        DefaultedList<ItemStack> defaultedList = blockEntity.getInventory();
-        World world = blockEntity.getWorld();
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (!(blockState.getBlock() instanceof HorticulturistTableBlock)) {
+    @Override
+    public void updateRenderState(HorticulturistTableBlockEntity blockEntity, State state, float tickProgress, Vec3d cameraPos, ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlay) {
+        BlockEntityRenderState.updateBlockEntityRenderState(blockEntity, state, crumblingOverlay);
+        DefaultedList<ItemStack> inventory = blockEntity.getInventory();
+        for (int n = 0; n < state.plants.length; n++) {
+            state.plants[n] = Block.getBlockFromItem(inventory.get(n).getItem());
+        }
+        state.plantScale = blockEntity.getPlantScale();
+    }
+
+    @Override
+    public void render(State state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, CameraRenderState camera) {
+        if (!(state.blockState.getBlock() instanceof HorticulturistTableBlock)) {
             return;
         }
 
-        // Bone-meal / shears size; applied per plant around its base so it stays on the soil.
-        float scale = blockEntity.getPlantScale();
+        int light = state.lightmapCoordinates;
+        float scale = state.plantScale;
 
-        if (blockState.get(HorticulturistTableBlock.IS_TALL_FLOWER)) {
+        if (state.blockState.get(HorticulturistTableBlock.IS_TALL_FLOWER)) {
             matrixStack.push();
-            Block flower = Block.getBlockFromItem(defaultedList.get(0).getItem());
+            Block flower = state.plants[0];
             if (flower instanceof TallPlantBlock) {
                 matrixStack.translate(0.0D, 0.95D, 0.0D);
-                // Scale once before BOTH halves so the upper half's translate happens in
-                // scaled space and the two halves stay attached.
+                // Scale both halves in one space, so they stay attached.
                 applyPlantScale(matrixStack, scale);
-                renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, true, i, j);
+                renderTallFlower(flower, matrixStack, queue, true, light);
                 matrixStack.translate(0.0D, 1.0D, 0.0D);
-                renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, false, i, j);
+                renderTallFlower(flower, matrixStack, queue, false, light);
             } else {
-                Block flowerOne = Block.getBlockFromItem(defaultedList.get(0).getItem());
-                if (flowerOne.getDefaultState().isOf(Blocks.CACTUS)) {
+                if (flower.getDefaultState().isOf(Blocks.CACTUS)) {
                     matrixStack.scale(0.75F, 0.75F, 0.75F);
                     matrixStack.translate(0.15D, 0.15D, 0.15D);
                 }
 
                 matrixStack.translate(0.0D, 0.95D, 0.0D);
                 applyPlantScale(matrixStack, scale);
-                renderFlower(flowerOne, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                renderFlower(flower, matrixStack, queue, light);
             }
             matrixStack.pop();
             return;
         }
 
-        switch (blockState.get(HorticulturistTableBlock.FLOWERS)) {
-            case 1 -> renderFlowerAt(defaultedList, 0, 0.0F, 0.95F, 0.0F, scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+        switch (state.blockState.get(HorticulturistTableBlock.FLOWERS)) {
+            case 1 -> renderFlowerAt(state, 0, 0.0F, 0.95F, 0.0F, matrixStack, queue);
             case 2 -> {
                 for (int n = 0; n < 2; n++) {
-                    renderFlowerAt(defaultedList, n, twoFlowerXOffset[n], twoFlowerY[n], twoFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, twoFlowerXOffset[n], twoFlowerY[n], twoFlowerZOffset[n], matrixStack, queue);
                 }
             }
             case 3 -> {
                 for (int n = 0; n < 3; n++) {
-                    renderFlowerAt(defaultedList, n, threeFlowerXOffset[n], threeFlowerY[n], threeFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, threeFlowerXOffset[n], threeFlowerY[n], threeFlowerZOffset[n], matrixStack, queue);
                 }
             }
             case 4 -> {
                 for (int n = 0; n < 4; n++) {
-                    renderFlowerAt(defaultedList, n, fourFlowerXOffset[n], fourFlowerY[n], fourFlowerZOffset[n], scale, world, pos, matrixStack, vertexConsumerProvider, i, j);
+                    renderFlowerAt(state, n, fourFlowerXOffset[n], fourFlowerY[n], fourFlowerZOffset[n], matrixStack, queue);
                 }
             }
         }
@@ -127,25 +135,19 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /// Renders one plant at an absolute X/Y/Z position, isolated in its own matrix so offsets never accumulate.
-    private void renderFlowerAt(DefaultedList<ItemStack> list, int slot, float x, float y, float z, float scale, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        Block flower = Block.getBlockFromItem(list.get(slot).getItem());
+    private void renderFlowerAt(State state, int slot, float x, float y, float z, MatrixStack matrixStack, OrderedRenderCommandQueue queue) {
         matrixStack.push();
         matrixStack.translate(x, y, z);
-        applyPlantScale(matrixStack, scale);
-        renderFlower(flower, world, pos, matrixStack, vertexConsumerProvider, light, overlay);
+        applyPlantScale(matrixStack, state.plantScale);
+        renderFlower(state.plants[slot], matrixStack, queue, state.lightmapCoordinates);
         matrixStack.pop();
     }
 
-    private void renderFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        this.manager.renderBlockAsEntity(displayState(flower), matrixStack, vertexConsumerProvider, light, overlay);
+    private void renderFlower(Block flower, MatrixStack matrixStack, OrderedRenderCommandQueue queue, int light) {
+        queue.submitBlock(matrixStack, displayState(flower), light, OverlayTexture.DEFAULT_UV, 0);
     }
 
-    /// The state a plant is drawn in while it sits in the tub.
-    ///
-    /// Segmented plants (pink petals, wildflowers, leaf litter) draw one quadrant of the block per
-    /// segment and leave the rest empty, so a single segment lands in a corner instead of on the
-    /// soil. Filling every segment covers the whole slot, like every other plant model does.
+    /// Segmented plants draw one quadrant per segment, so fill every segment.
     private static BlockState displayState(Block flower) {
         if (flower instanceof Segmented segmented) {
             return flower.getDefaultState().with(segmented.getAmountProperty(), Segmented.MAX_SEGMENTS);
@@ -153,12 +155,8 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         return flower.getDefaultState();
     }
 
-
-    private void renderTallFlower(Block flower, World world, BlockPos pos, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean lower, int light, int overlay) {
-        if (lower) {
-            this.manager.renderBlockAsEntity(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.LOWER), matrixStack, vertexConsumerProvider, light, overlay);
-        } else {
-            this.manager.renderBlockAsEntity(flower.getDefaultState().with(TallPlantBlock.HALF, DoubleBlockHalf.UPPER), matrixStack, vertexConsumerProvider, light, overlay);
-        }
+    private void renderTallFlower(Block flower, MatrixStack matrixStack, OrderedRenderCommandQueue queue, boolean lower, int light) {
+        DoubleBlockHalf half = lower ? DoubleBlockHalf.LOWER : DoubleBlockHalf.UPPER;
+        queue.submitBlock(matrixStack, flower.getDefaultState().with(TallPlantBlock.HALF, half), light, OverlayTexture.DEFAULT_UV, 0);
     }
 }

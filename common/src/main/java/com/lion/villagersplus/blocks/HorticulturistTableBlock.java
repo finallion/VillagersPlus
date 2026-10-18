@@ -5,7 +5,6 @@ import com.lion.villagersplus.blockentities.HorticulturistTableBlockEntity;
 import com.lion.villagersplus.init.VPTags;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,6 +19,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -135,7 +135,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                             itemStack.decrement(1);
                         }
                     } else {
-                        itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
+                        itemStack.damage(1, player, hand.getEquipmentSlot());
                     }
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
@@ -154,7 +154,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
-                if (world.isClient) {
+                if (world.isClient()) {
                     world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
 
@@ -167,7 +167,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
-                if (world.isClient) {
+                if (world.isClient()) {
                     world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
                 return ActionResult.SUCCESS;
@@ -190,7 +190,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             }
 
-            if (world.isClient) {
+            if (world.isClient()) {
                 world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
             return ActionResult.SUCCESS;
@@ -217,7 +217,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return state.get(FLOWERS);
     }
 
