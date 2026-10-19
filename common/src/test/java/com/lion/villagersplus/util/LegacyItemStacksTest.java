@@ -43,8 +43,10 @@ class LegacyItemStacksTest {
 
         NbtCompound enchantments = pickaxe.getCompoundOrEmpty("components")
                 .getCompoundOrEmpty("minecraft:enchantments");
-        assertTrue(enchantments.toString().contains("minecraft:efficiency"),
-                "enchantments after migration: " + pickaxe);
+        assertTrue(
+                enchantments.toString().contains("minecraft:efficiency"),
+                "enchantments after migration: " + pickaxe
+        );
     }
 
     /// 1.20.5 turned the stack NBT into components and 1.21.5 lifted the fish variant out of
@@ -56,10 +58,11 @@ class LegacyItemStacksTest {
                 "{Slot:0b,id:\"minecraft:tropical_fish_bucket\",Count:1b,tag:{BucketVariantTag:117506305}}");
 
         NbtCompound components = bucket.getCompoundOrEmpty("components");
-        assertTrue(components.contains("minecraft:tropical_fish/base_color"),
-                "fish variant after migration: " + bucket);
-        assertTrue(components.contains("minecraft:tropical_fish/pattern"),
-                "fish variant after migration: " + bucket);
+        assertTrue(
+                components.contains("minecraft:tropical_fish/base_color"),
+                "fish variant after migration: " + bucket
+        );
+        assertTrue(components.contains("minecraft:tropical_fish/pattern"), "fish variant after migration: " + bucket);
     }
 
     @Test
@@ -68,8 +71,7 @@ class LegacyItemStacksTest {
                 "{Slot:0b,id:\"minecraft:axolotl_bucket\",Count:1b,tag:{Variant:2,Age:0,Health:14.0f}}");
 
         NbtCompound components = bucket.getCompoundOrEmpty("components");
-        assertTrue(components.contains("minecraft:axolotl/variant"),
-                "axolotl variant after migration: " + bucket);
+        assertTrue(components.contains("minecraft:axolotl/variant"), "axolotl variant after migration: " + bucket);
     }
 
     @Test
@@ -96,8 +98,11 @@ class LegacyItemStacksTest {
         LegacyItemStacks.migrateChunk(chunk, MC_1_20_1);
         NbtCompound afterVanilla = DataFixTypes.CHUNK.update(Schemas.getFixer(), chunk, MC_1_20_1, current);
 
-        assertEquals(32, firstStack(afterVanilla).getInt("count", -1),
-                "vanilla's fixer must not touch the entries again: " + afterVanilla);
+        assertEquals(
+                32,
+                firstStack(afterVanilla).getInt("count", -1),
+                "vanilla's fixer must not touch the entries again: " + afterVanilla
+        );
     }
 
     @Test

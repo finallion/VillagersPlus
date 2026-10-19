@@ -17,11 +17,7 @@ import java.util.function.Supplier;
 
 public class VPBlocks {
 
-    /**
-     * Blocks must carry their own RegistryKey since 1.21.2: AbstractBlock derives the loot table and
-     * translation key from it and throws "Block id not set" without one. This compiles fine and only
-     * fails at registration, so every block goes through here instead of calling Settings.create().
-     */
+    /// Every block needs its own registry key in the settings, or registration throws "Block id not set".
     private static AbstractBlock.Settings settings(String name) {
         return AbstractBlock.Settings.create()
                 .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Identifier.of(VillagersPlus.MOD_ID, name)));

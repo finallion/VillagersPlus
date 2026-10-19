@@ -51,7 +51,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
     // Sneak-placed aquariums never connect (in either direction).
     public static final BooleanProperty STANDALONE;
 
-    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
     public static final MapCodec<OceanographerTableBlock> CODEC = createCodec(OceanographerTableBlock::new);
 
     @Override
@@ -61,8 +60,18 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
     public OceanographerTableBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(CORALS, 0).with(FISH, 0).with(IS_FILLED, false).with(FACING, Direction.NORTH)
-                .with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false).with(STANDALONE, false));
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(CORALS, 0)
+                .with(FISH, 0)
+                .with(IS_FILLED, false)
+                .with(FACING, Direction.NORTH)
+                .with(NORTH, false)
+                .with(EAST, false)
+                .with(SOUTH, false)
+                .with(WEST, false)
+                .with(UP, false)
+                .with(DOWN, false)
+                .with(STANDALONE, false));
     }
 
     public static BooleanProperty connectionProperty(Direction direction) {
@@ -76,24 +85,18 @@ public class OceanographerTableBlock extends WorkstationBlock {
         };
     }
 
-    /** Mutual consent: both blocks must be non-standalone aquariums to connect. */
+    /// Both blocks must be non-standalone aquariums to connect.
     private boolean connectsTo(BlockState state, BlockState neighborState) {
         return !state.get(STANDALONE) && neighborState.isOf(this) && !neighborState.get(STANDALONE);
     }
 
-    /**
-     * {@return every aquarium that forms one tank with {@code start}, including {@code start}}
-     *
-     * <p>Follows the same connection properties as the block entity's own scan, so both agree on
-     * what "one tank" means. A position with no aquarium on it - the spot a block is about to be
-     * placed in - is a tank of one. The walk stops once {@code budget} blocks are collected, which
-     * keeps it bounded next to an oversized structure built before this cap existed.
-     */
+    /// Returns every aquarium in the tank of `start`, stopping at `budget` blocks.
     private Set<BlockPos> collectTank(WorldView world, BlockPos start, int budget) {
         Set<BlockPos> tank = new HashSet<>();
         tank.add(start);
 
         BlockState startState = world.getBlockState(start);
+
         if (!startState.isOf(this) || startState.get(STANDALONE)) {
             return tank;
         }
@@ -107,8 +110,10 @@ public class OceanographerTableBlock extends WorkstationBlock {
                 if (!currentState.get(connectionProperty(direction))) {
                     continue;
                 }
+
                 BlockPos next = current.offset(direction);
                 BlockState nextState = world.getBlockState(next);
+
                 if (nextState.isOf(this) && !nextState.get(STANDALONE) && tank.add(next)) {
                     queue.add(next);
                 }
@@ -117,21 +122,15 @@ public class OceanographerTableBlock extends WorkstationBlock {
         return tank;
     }
 
-    /**
-     * Whether opening the seam between {@code pos} and {@code neighborPos} keeps the resulting tank
-     * within {@link OceanographerTableBlockEntity#MAX_TANK_BLOCKS}.
-     *
-     * <p>Asked from both sides of a seam and answers the same either way, because it looks at the
-     * union of the two tanks rather than at one side's view of it. That is what keeps a refused
-     * connection from being re-opened by the neighbour's own update a tick later, which would leave
-     * one block's glass gone and the other's intact.
-     */
+    /// Both sides of a seam give the same answer.
     private boolean joinStaysWithinLimit(WorldView world, BlockPos pos, BlockPos neighborPos) {
         int limit = OceanographerTableBlockEntity.MAX_TANK_BLOCKS;
         Set<BlockPos> tank = collectTank(world, pos, limit);
+
         if (tank.contains(neighborPos)) {
             return true;
         }
+
         tank.addAll(collectTank(world, neighborPos, limit));
         return tank.size() <= limit;
     }
@@ -143,13 +142,21 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            World world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
         // Only the client needs to tick: it drives the display fish's swim animation.
         if (!world.isClient) {
             return null;
         }
-        return validateTicker(type, VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(),
-                OceanographerTableBlockEntity::clientTick);
+
+        return validateTicker(
+                type,
+                VPBlockEntities.OCEANOGRAPHER_TABLE_BLOCK_ENTITY.get(),
+                OceanographerTableBlockEntity::clientTick
+        );
     }
 
     @Override
@@ -165,34 +172,48 @@ public class OceanographerTableBlock extends WorkstationBlock {
     }
 
     @Override
-    protected ActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(
+            ItemStack itemStack,
+            BlockState state,
+            World world,
+            BlockPos pos,
+            PlayerEntity player,
+            Hand hand,
+            BlockHitResult hit
+    ) {
 
         if (world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity blockEntity) {
                 boolean isFishFood = itemStack.isOf(VPItems.FISH_FOOD.get());
                 boolean isDietFood = itemStack.isOf(VPItems.DIET_FOOD.get());
+
                 if ((isFishFood || isDietFood) && state.get(FISH) >= 1) {
                     if (!world.isClient()) {
                         float delta = isFishFood ? OceanographerTableBlockEntity.FISH_SCALE_STEP
                                                  : -OceanographerTableBlockEntity.FISH_SCALE_STEP;
+
                         if (blockEntity.adjustFishScale(delta)) {
                             if (!player.getAbilities().creativeMode) {
                                 itemStack.decrement(1);
                             }
+
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
                     } else {
                         world.playSound(null, pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, isFishFood ? 1.2F : 0.6F);
                     }
+
                     return ActionResult.SUCCESS;
                 }
 
                 // Bone meal grows the corals, shears trim them back down (mirrors the fish foods).
                 boolean isBoneMeal = itemStack.isOf(Items.BONE_MEAL);
                 boolean isShears = itemStack.isOf(Items.SHEARS);
+
                 if ((isBoneMeal || isShears) && state.get(CORALS) >= 1) {
                     if (!world.isClient()) {
                         float delta = isBoneMeal ? OceanographerTableBlockEntity.CORAL_SCALE_STEP
                                                  : -OceanographerTableBlockEntity.CORAL_SCALE_STEP;
+
                         if (blockEntity.adjustCoralScale(delta)) {
                             if (isBoneMeal) {
                                 if (!player.getAbilities().creativeMode) {
@@ -201,24 +222,29 @@ public class OceanographerTableBlock extends WorkstationBlock {
                             } else {
                                 itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
                             }
+
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                         }
                     } else {
                         world.playSound(null, pos, isBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
+
                     return ActionResult.SUCCESS;
                 }
 
                 if (itemStack.isOf(VPItems.CALM_FOOD.get()) && state.get(FISH) >= 1) {
                     if (!world.isClient()) {
                         blockEntity.toggleStationary();
+
                         if (!player.getAbilities().creativeMode) {
                             itemStack.decrement(1);
                         }
+
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     } else {
                         world.playSound(null, pos, SoundEvents.ITEM_BONE_MEAL_USE, SoundCategory.BLOCKS, 1.0F, 0.9F);
                     }
+
                     return ActionResult.SUCCESS;
                 }
 
@@ -253,13 +279,16 @@ public class OceanographerTableBlock extends WorkstationBlock {
                         world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                     }
 
-                    if (world.isClient) player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    if (world.isClient) {
+                        player.playSoundToPlayer(SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    }
 
                     return ActionResult.SUCCESS;
                     // Either bucket works: the tank holds its own water, so the empty one handed
                     // back when the fish went in is enough to get it out again.
                 } else if ((itemStack.isOf(Items.WATER_BUCKET) || itemStack.isOf(Items.BUCKET)) && state.get(FISH) >= 1) {
                     ItemStack fish = blockEntity.getStack(OceanographerTableBlockEntity.FISH_SLOT);
+
                     if (!fish.isEmpty()) {
                         if (!world.isClient()) {
                             ItemStack fishBucket = blockEntity.extractFish();
@@ -277,6 +306,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
                 }
         }
+
         return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
@@ -285,6 +315,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         // Since 1.21.6 this only fires when the block really changed and only on the server, so
         // the old isOf(newState) guard is gone along with the newState parameter.
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
         if (blockEntity instanceof OceanographerTableBlockEntity) {
             ItemScatterer.spawn(world, pos, (OceanographerTableBlockEntity)blockEntity);
         }
@@ -319,21 +350,33 @@ public class OceanographerTableBlock extends WorkstationBlock {
         for (Direction direction : Direction.values()) {
             BlockPos neighborPos = pos.offset(direction);
             boolean connect = this.connectsTo(state, world.getBlockState(neighborPos));
+
             if (connect && !tank.contains(neighborPos)) {
                 Set<BlockPos> branch = collectTank(world, neighborPos, limit);
+
                 if (tank.size() + branch.size() > limit) {
                     connect = false;
                 } else {
                     tank.addAll(branch);
                 }
             }
+
             state = state.with(connectionProperty(direction), connect);
         }
         return state;
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, net.minecraft.world.WorldView world, net.minecraft.world.tick.ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, net.minecraft.util.math.random.Random random) {
+    protected BlockState getStateForNeighborUpdate(
+            BlockState state,
+            net.minecraft.world.WorldView world,
+            net.minecraft.world.tick.ScheduledTickView tickView,
+            BlockPos pos,
+            Direction direction,
+            BlockPos neighborPos,
+            BlockState neighborState,
+            net.minecraft.util.math.random.Random random
+    ) {
         // An open seam stays open; only a new one has to fit the cap, so a tank never falls apart
         // because of an unrelated update somewhere along its edge.
         boolean connect = this.connectsTo(state, neighborState)
@@ -353,6 +396,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
         if (!world.isClient && state.get(UP)) {
             BlockPos above = pos.up();
             BlockState aboveState = world.getBlockState(above);
+
             if (aboveState.isOf(this) && aboveState.get(CORALS) > 0
                     && world.getBlockEntity(above) instanceof OceanographerTableBlockEntity blockEntity) {
                 blockEntity.ejectCorals();
@@ -365,9 +409,18 @@ public class OceanographerTableBlock extends WorkstationBlock {
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         BlockState result = state.with(FACING, rotation.rotate(state.get(FACING)));
         return switch (rotation) {
-            case CLOCKWISE_180 -> result.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST));
-            case COUNTERCLOCKWISE_90 -> result.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH));
-            case CLOCKWISE_90 -> result.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH));
+            case CLOCKWISE_180 -> result.with(NORTH, state.get(SOUTH))
+                    .with(EAST, state.get(WEST))
+                    .with(SOUTH, state.get(NORTH))
+                    .with(WEST, state.get(EAST));
+            case COUNTERCLOCKWISE_90 -> result.with(NORTH, state.get(EAST))
+                    .with(EAST, state.get(SOUTH))
+                    .with(SOUTH, state.get(WEST))
+                    .with(WEST, state.get(NORTH));
+            case CLOCKWISE_90 -> result.with(NORTH, state.get(WEST))
+                    .with(EAST, state.get(NORTH))
+                    .with(SOUTH, state.get(EAST))
+                    .with(WEST, state.get(SOUTH));
             default -> result;
         };
     }

@@ -37,8 +37,7 @@ public final class LegacyItemStacks {
     /// nothing, so this stays a plain field.
     private static volatile int announcedVersion;
 
-    private LegacyItemStacks() {
-    }
+    private LegacyItemStacks() {}
 
     /// Rewrites the stored items of every block entity of this mod in one chunk read from disk.
     ///
@@ -47,6 +46,7 @@ public final class LegacyItemStacks {
     /// the chunk a moment later, so a current world walks straight back out.
     public static void migrateChunk(NbtCompound chunkNbt, int fromVersion) {
         int current = SharedConstants.getGameVersion().dataVersion().id();
+
         if (fromVersion <= 0 || fromVersion >= current) {
             return;
         }
@@ -55,6 +55,7 @@ public final class LegacyItemStacks {
         for (int i = 0; i < blockEntities.size(); i++) {
             NbtCompound blockEntity = blockEntities.getCompoundOrEmpty(i);
             String id = blockEntity.getString(ID, "");
+
             if (id.startsWith(VillagersPlus.MOD_ID + ":")) {
                 announce(fromVersion, current);
                 migrateInventory(blockEntity, id, fromVersion, current);
@@ -75,6 +76,7 @@ public final class LegacyItemStacks {
 
         for (int i = 0; i < items.size(); i++) {
             NbtCompound before = items.getCompoundOrEmpty(i);
+
             if (before.isEmpty()) {
                 continue;
             }
@@ -91,15 +93,23 @@ public final class LegacyItemStacks {
             }
 
             items.set(i, after);
+
             if (!changed.isEmpty()) {
                 changed.append(", ");
             }
+
             changed.append(describe(before, after));
         }
 
         if (!changed.isEmpty()) {
-            LOGGER.info("{} at {},{},{}: {}", id,
-                    blockEntity.getInt("x", 0), blockEntity.getInt("y", 0), blockEntity.getInt("z", 0), changed);
+            LOGGER.info(
+                    "{} at {},{},{}: {}",
+                    id,
+                    blockEntity.getInt("x", 0),
+                    blockEntity.getInt("y", 0),
+                    blockEntity.getInt("z", 0),
+                    changed
+            );
         }
     }
 
@@ -114,12 +124,15 @@ public final class LegacyItemStacks {
                 TypeReferences.ITEM_STACK,
                 new Dynamic<>(NbtOps.INSTANCE, stack),
                 from,
-                to);
+                to
+        );
 
         NbtCompound result = (NbtCompound) fixed.getValue();
+
         if (slot != null) {
             result.put(SLOT, slot);
         }
+
         return result;
     }
 
@@ -129,12 +142,17 @@ public final class LegacyItemStacks {
         StringBuilder line = new StringBuilder()
                 .append("slot ").append(before.getInt(SLOT, -1))
                 .append(' ').append(after.getString(ID, before.getString(ID, "?")))
-                .append(' ').append(count(before)).append(" -> ").append(count(after));
+                .append(' ')
+                .append(count(before))
+                .append(" -> ")
+                .append(count(after));
 
         NbtCompound components = after.getCompoundOrEmpty("components");
+
         if (!components.isEmpty()) {
             line.append(' ').append(components.getKeys());
         }
+
         return line.toString();
     }
 

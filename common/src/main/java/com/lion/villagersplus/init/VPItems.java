@@ -12,9 +12,7 @@ import java.util.function.Supplier;
 
 public class VPItems {
 
-    /**
-     * Items need their RegistryKey in the settings since 1.21.2, same reason as in VPBlocks.
-     */
+    /// A block item takes its translation key from its settings, not from its block.
     private static Item.Settings settings(String name) {
         return new Item.Settings()
                 .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(VillagersPlus.MOD_ID, name)));

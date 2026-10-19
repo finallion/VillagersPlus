@@ -31,11 +31,13 @@ import java.util.function.Supplier;
 public class VersionedChunkStorageMixin {
 
     @Inject(method = "updateChunkNbt", at = @At("HEAD"))
-    private void villagersplus$migrateStoredItems(RegistryKey<World> worldKey,
-                                                  Supplier<PersistentStateManager> persistentStateManagerFactory,
-                                                  NbtCompound nbt,
-                                                  Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey,
-                                                  CallbackInfoReturnable<NbtCompound> cir) {
+    private void villagersplus$migrateStoredItems(
+            RegistryKey<World> worldKey,
+            Supplier<PersistentStateManager> persistentStateManagerFactory,
+            NbtCompound nbt,
+            Optional<RegistryKey<MapCodec<? extends ChunkGenerator>>> generatorCodecKey,
+            CallbackInfoReturnable<NbtCompound> cir
+    ) {
         LegacyItemStacks.migrateChunk(nbt, VersionedChunkStorage.getDataVersion(nbt));
     }
 }

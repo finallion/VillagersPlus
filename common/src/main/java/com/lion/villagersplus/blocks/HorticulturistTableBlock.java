@@ -27,19 +27,13 @@ import net.minecraft.world.event.GameEvent;
 public class HorticulturistTableBlock extends WorkstationBlock {
     public static final IntProperty FLOWERS;
     public static final BooleanProperty IS_TALL_FLOWER;
-    /** Light the tub gives off, driven by what is planted in it. Read by the block's luminance. */
     public static final IntProperty LIGHT;
 
-    /**
-     * What one torchflower is worth in the tub. It gives off no light where it grows, and the tub
-     * holds four, so this is a quarter of the way to full brightness: 4, 8, 12, 15.
-     */
+    /// Light of one torchflower. Four fill the tub: 4, 8, 12, 15.
     private static final int TORCHFLOWER_LIGHT = 4;
 
-    /** Brightest a tub can get, whatever is packed into it. */
     private static final int MAX_LIGHT = 15;
 
-    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
     public static final MapCodec<HorticulturistTableBlock> CODEC = createCodec(HorticulturistTableBlock::new);
 
     @Override
@@ -49,16 +43,20 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
     public HorticulturistTableBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FLOWERS, 0).with(IS_TALL_FLOWER, false).with(LIGHT, 0));
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(FLOWERS, 0)
+                .with(IS_TALL_FLOWER, false)
+                .with(LIGHT, 0));
     }
 
-    /**
-     * Runs every planted block's own ambient effect - a firefly bush's fireflies, an eyeblossom's
-     * particles, whatever a future plant brings - so the tub does not have to know about any of
-     * them. Anchored one block up, where the plants are actually drawn.
-     */
+    /// Runs the ambient effect of every planted block, anchored where the plants are drawn.
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, net.minecraft.util.math.random.Random random) {
+    public void randomDisplayTick(
+            BlockState state,
+            World world,
+            BlockPos pos,
+            net.minecraft.util.math.random.Random random
+    ) {
         if (state.get(FLOWERS) == 0 || !(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
             return;
         }
@@ -68,14 +66,16 @@ public class HorticulturistTableBlock extends WorkstationBlock {
             if (stack.isEmpty()) {
                 continue;
             }
+
             Block plant = Block.getBlockFromItem(stack.getItem());
+
             if (plant != Blocks.AIR) {
                 plant.randomDisplayTick(plant.getDefaultState(), world, plantPos, random);
             }
         }
     }
 
-    /** Every plant adds its own light, so a tub packed with them is brighter than one holding a single one. */
+    /// Every plant adds light, so a packed tub is brighter than a single plant.
     private static int lightFor(HorticulturistTableBlockEntity blockEntity) {
         int light = 0;
         for (ItemStack stack : blockEntity.getInventory()) {
@@ -86,15 +86,12 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         return Math.min(light, MAX_LIGHT);
     }
 
-    /**
-     * What one plant contributes. A torchflower lights the tub even though it glows nowhere else;
-     * every other plant contributes whatever light it already emits as a block, so a glowing plant
-     * needs no entry here.
-     */
+    /// Torchflower adds light only inside the tub. Other plants add the light they emit.
     private static int plantLight(Block plant) {
         if (plant == Blocks.TORCHFLOWER) {
             return TORCHFLOWER_LIGHT;
         }
+
         return plant.getDefaultState().getLuminance();
     }
 
@@ -109,7 +106,15 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    protected ActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(
+            ItemStack itemStack,
+            BlockState state,
+            World world,
+            BlockPos pos,
+            PlayerEntity player,
+            Hand hand,
+            BlockHitResult hit
+    ) {
 
         if (!(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
             return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
@@ -129,6 +134,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                         : HorticulturistTableBlockEntity.MAX_PLANT_SCALE;
                 float delta = holdingBoneMeal ? HorticulturistTableBlockEntity.PLANT_SCALE_STEP
                                               : -HorticulturistTableBlockEntity.PLANT_SCALE_STEP;
+
                 if (blockEntity.adjustPlantScale(delta, max)) {
                     if (holdingBoneMeal) {
                         if (!player.getAbilities().creativeMode) {
@@ -137,11 +143,13 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                     } else {
                         itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
                     }
+
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
             } else {
                 world.playSound(null, pos, holdingBoneMeal ? SoundEvents.ITEM_BONE_MEAL_USE : SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
+
             return ActionResult.SUCCESS;
         }
 
@@ -152,7 +160,13 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 }
 
                 if (!world.isClient()) {
-                    world.setBlockState(pos, state.with(FLOWERS, 4).with(IS_TALL_FLOWER, true).with(LIGHT, lightFor(blockEntity)), 3);
+                    world.setBlockState(
+                            pos,
+                            state.with(FLOWERS, 4)
+                                    .with(IS_TALL_FLOWER, true)
+                                    .with(LIGHT, lightFor(blockEntity)),
+                            3
+                    );
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
@@ -167,13 +181,20 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 }
 
                 if (!world.isClient()) {
-                    world.setBlockState(pos, state.with(FLOWERS, state.get(FLOWERS) + 1).with(IS_TALL_FLOWER, false).with(LIGHT, lightFor(blockEntity)), 3);
+                    world.setBlockState(
+                            pos,
+                            state.with(FLOWERS, state.get(FLOWERS) + 1)
+                                    .with(IS_TALL_FLOWER, false)
+                                    .with(LIGHT, lightFor(blockEntity)),
+                            3
+                    );
                     world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
                 if (world.isClient) {
                     world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
+
                 return ActionResult.SUCCESS;
             }
         }
@@ -185,18 +206,27 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
             if (!world.isClient()) {
                 ItemStack removed = blockEntity.removeFlower(topSlot);
+
                 if (removed.isEmpty()) {
                     return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
                 }
+
                 player.getInventory().offerOrDrop(removed);
                 int remaining = tall ? 0 : state.get(FLOWERS) - 1;
-                world.setBlockState(pos, state.with(FLOWERS, remaining).with(IS_TALL_FLOWER, false).with(LIGHT, lightFor(blockEntity)), 3);
+                world.setBlockState(
+                        pos,
+                        state.with(FLOWERS, remaining)
+                                .with(IS_TALL_FLOWER, false)
+                                .with(LIGHT, lightFor(blockEntity)),
+                        3
+                );
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             }
 
             if (world.isClient) {
                 world.playSound(null, pos, SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
+
             return ActionResult.SUCCESS;
         }
 
@@ -208,6 +238,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         // Since 1.21.6 this only fires when the block really changed and only on the server, so
         // the old isOf(newState) guard is gone along with the newState parameter.
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
         if (blockEntity instanceof HorticulturistTableBlockEntity) {
             ItemScatterer.spawn(world, pos, (HorticulturistTableBlockEntity)blockEntity);
         }
