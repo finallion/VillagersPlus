@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[37,)"
+loaderVersion = "[47,)"
 license = "CC0-1.0"
 
 [[mods]]
@@ -15,14 +15,14 @@ logoFile = "villagersplus_logo.png"
 [[dependencies.villagersplus]]
 modId = "forge"
 mandatory = true
-versionRange = "[41.0.22,)"
+versionRange = "[47.0.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagersplus]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20,)"
+versionRange = "[1.20.1,1.20.2)"
 ordering = "NONE"
 side = "BOTH"
 

@@ -25,7 +25,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+
+import java.util.ArrayDeque;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OceanographerTableBlock extends WorkstationBlock {
     public static final IntProperty CORALS;
@@ -153,7 +158,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
                 // No planting in stacked upper blocks - they have no floor for the corals.
                 if (itemStack.isIn(VPTags.AQUARIUM_PLANTABLE_ITEMS) && state.get(CORALS) < 4 && !state.get(DOWN)) {
-                    blockEntity.insertCoral(itemStack, state.get(CORALS));
+                    if (!blockEntity.insertCoral(itemStack, state.get(CORALS))) {
+                        return ActionResult.PASS;
+                    }
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(CORALS, state.get(CORALS) + 1), 3);
@@ -222,20 +229,94 @@ public class OceanographerTableBlock extends WorkstationBlock {
         builder.add(CORALS, FISH, IS_FILLED, FACING, NORTH, EAST, SOUTH, WEST, UP, DOWN, STANDALONE);
     }
 
+    private Set<BlockPos> collectTank(WorldView world, BlockPos start, int budget) {
+        Set<BlockPos> tank = new HashSet<>();
+        tank.add(start);
+
+        BlockState startState = world.getBlockState(start);
+
+        if (!startState.isOf(this) || startState.get(STANDALONE)) {
+            return tank;
+        }
+
+        ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+        queue.add(start);
+
+        while (!queue.isEmpty() && tank.size() <= budget) {
+            BlockPos current = queue.poll();
+            BlockState currentState = world.getBlockState(current);
+
+            for (Direction direction : Direction.values()) {
+                if (!currentState.get(connectionProperty(direction))) {
+                    continue;
+                }
+
+                BlockPos next = current.offset(direction);
+                BlockState nextState = world.getBlockState(next);
+
+                if (nextState.isOf(this) && !nextState.get(STANDALONE) && tank.add(next)) {
+                    queue.add(next);
+                }
+            }
+        }
+
+        return tank;
+    }
+
+    private boolean joinStaysWithinLimit(WorldView world, BlockPos pos, BlockPos neighborPos) {
+        int limit = OceanographerTableBlockEntity.MAX_TANK_BLOCKS;
+        Set<BlockPos> tank = collectTank(world, pos, limit);
+
+        if (tank.contains(neighborPos)) {
+            return true;
+        }
+
+        tank.addAll(collectTank(world, neighborPos, limit));
+
+        return tank.size() <= limit;
+    }
+
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         boolean standalone = ctx.getPlayer() != null && ctx.getPlayer().isSneaking();
         BlockState state = this.getDefaultState()
                 .with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())
                 .with(STANDALONE, standalone);
+        WorldView world = ctx.getWorld();
+        BlockPos pos = ctx.getBlockPos();
+        int limit = OceanographerTableBlockEntity.MAX_TANK_BLOCKS;
+        Set<BlockPos> tank = new HashSet<>();
+        tank.add(pos);
+
         for (Direction direction : Direction.values()) {
-            state = state.with(connectionProperty(direction), this.connectsTo(state, ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction))));
+            BlockPos neighborPos = pos.offset(direction);
+            boolean connect = this.connectsTo(state, world.getBlockState(neighborPos));
+
+            if (connect && !tank.contains(neighborPos)) {
+                Set<BlockPos> branch = collectTank(world, neighborPos, limit);
+
+                if (tank.size() + branch.size() > limit) {
+                    connect = false;
+                } else {
+                    tank.addAll(branch);
+                }
+            }
+
+            state = state.with(connectionProperty(direction), connect);
         }
+
         return state;
     }
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        return state.with(connectionProperty(direction), this.connectsTo(state, neighborState));
+        boolean connect = this.connectsTo(state, neighborState)
+                && (state.get(connectionProperty(direction)) || joinStaysWithinLimit(world, pos, neighborPos));
+
+        if (world.isClient() && world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity tank) {
+            tank.requestTankRescan();
+        }
+
+        return state.with(connectionProperty(direction), connect);
     }
 
     @Override

@@ -258,8 +258,22 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (!outputStack.isOf(result.getItem())) {
             return false;
         }
-        int combined = outputStack.getCount() + result.getCount();
+        int worstCaseYield = scaledYield(result) * (fortuneLevel() + 1);
+        int combined = outputStack.getCount() + worstCaseYield;
         return combined <= this.getMaxCountPerStack() && combined <= outputStack.getMaxCount();
+    }
+
+    private int fortuneLevel() {
+        ItemStack pickaxeStack = this.inventory.get(PICKAXE_SLOT);
+
+        return VillagersPlus.CONFIG.ore_grinder_fortune_enabled
+                ? EnchantmentHelper.getLevel(Enchantments.FORTUNE, pickaxeStack) : 0;
+    }
+
+    private static int scaledYield(ItemStack baseResult) {
+        float multiplier = Math.max(0.0F, VillagersPlus.CONFIG.ore_grinder_output_multiplier);
+
+        return Math.max(1, Math.round(baseResult.getCount() * multiplier));
     }
 
     private void grind(@Nullable ItemStack baseResult) {
@@ -273,10 +287,8 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         // Fortune boosts the yield (vanilla ore-drop formula) on top of the base doubling;
         // Efficiency (handled in getGrindTime) only affects grinding speed. Both the base
         // output and the Fortune effect are configurable for balancing.
-        float multiplier = Math.max(0.0F, VillagersPlus.CONFIG.ore_grinder_output_multiplier);
-        int count = Math.max(1, Math.round(baseResult.getCount() * multiplier));
-        int fortune = VillagersPlus.CONFIG.ore_grinder_fortune_enabled
-                ? EnchantmentHelper.getLevel(Enchantments.FORTUNE, pickaxeStack) : 0;
+        int fortune = fortuneLevel();
+        int count = scaledYield(baseResult);
         if (fortune > 0) {
             int bonus = this.world.random.nextInt(fortune + 2) - 1;
             if (bonus < 0) {
