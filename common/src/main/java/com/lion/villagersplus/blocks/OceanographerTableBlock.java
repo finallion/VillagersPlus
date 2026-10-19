@@ -223,7 +223,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
                 // No planting in stacked upper blocks - they have no floor for the corals.
                 if (itemStack.isIn(VPTags.AQUARIUM_PLANTABLE_ITEMS) && state.get(CORALS) < 4 && !state.get(DOWN)) {
-                    blockEntity.insertCoral(itemStack, state.get(CORALS));
+                    if (!blockEntity.insertCoral(itemStack, state.get(CORALS))) {
+                        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
+                    }
 
                     if (!world.isClient()) {
                         world.setBlockState(pos, state.with(CORALS, state.get(CORALS) + 1), 3);
@@ -335,6 +337,11 @@ public class OceanographerTableBlock extends WorkstationBlock {
         // because of an unrelated update somewhere along its edge.
         boolean connect = this.connectsTo(state, neighborState)
                 && (state.get(connectionProperty(direction)) || joinStaysWithinLimit(world, pos, neighborPos));
+
+        if (world.isClient() && world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity tank) {
+            tank.requestTankRescan();
+        }
+
         return state.with(connectionProperty(direction), connect);
     }
 

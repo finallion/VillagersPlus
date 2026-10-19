@@ -1,6 +1,9 @@
 package com.lion.villagersplus.config;
 
+import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.config.annotations.Description;
+
+import java.lang.reflect.Field;
 
 public class VPConfig implements Config {
 
@@ -111,6 +114,49 @@ public class VPConfig implements Config {
 
     public float forth_flower_in_four_X = -0.20F;
     public float forth_flower_in_four_Z = 0.17F;
+
+    @Override
+    public void validate() {
+        max_exp_amount = clamp("max_exp_amount", max_exp_amount, 1, 100000);
+        exp_amount = clamp("exp_amount", exp_amount, 1, max_exp_amount);
+        explosion_chance = clamp("explosion_chance", explosion_chance, 1, Integer.MAX_VALUE);
+        ore_grinder_pickaxe_damage = clamp("ore_grinder_pickaxe_damage", ore_grinder_pickaxe_damage, 0, 100);
+        ore_grinder_output_multiplier = clampMultiplier(ore_grinder_output_multiplier);
+
+        for (Field field : VPConfig.class.getFields()) {
+            if (field.getName().endsWith("_weight") && field.getType() == int.class) {
+                clampWeight(field);
+            }
+        }
+    }
+
+    private static int clamp(String name, int value, int min, int max) {
+        int clamped = Math.max(min, Math.min(max, value));
+
+        if (clamped != value) {
+            VillagersPlus.LOGGER.warn("Config value {} = {} is out of range {}..{}, using {}.", name, value, min, max, clamped);
+        }
+
+        return clamped;
+    }
+
+    private static float clampMultiplier(float value) {
+        float clamped = Float.isNaN(value) || Float.isInfinite(value) ? 1.0F : Math.max(0.0F, Math.min(64.0F, value));
+
+        if (Float.compare(clamped, value) != 0) {
+            VillagersPlus.LOGGER.warn("Config value ore_grinder_output_multiplier = {} is out of range 0..64, using {}.", value, clamped);
+        }
+
+        return clamped;
+    }
+
+    private void clampWeight(Field field) {
+        try {
+            field.setInt(this, clamp(field.getName(), field.getInt(this), 0, 100));
+        } catch (IllegalAccessException e) {
+            VillagersPlus.LOGGER.warn("Cannot validate config value {}.", field.getName());
+        }
+    }
 
 
 }
