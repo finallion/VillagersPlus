@@ -170,6 +170,11 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return SLOTS;
     }
 
+    @Override
+    public boolean isValid(int slot, ItemStack stack) {
+        return false;
+    }
+
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
         return this.isValid(slot, stack);
     }

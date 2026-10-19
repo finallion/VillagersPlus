@@ -120,16 +120,8 @@ public class OccultistTableBlock extends WorkstationBlock {
         }
     }
 
-    @Override
-    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        // Since 1.21.6 this only fires when the block really changed and only on the server, so
-        // the old isOf(newState) guard is gone along with the newState parameter.
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
-            this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
-        }
-
-        super.onStateReplaced(state, world, pos, moved);
+    public void dropStoredExperience(ServerWorld world, BlockPos pos, int amount) {
+        this.dropExperienceWhenMined(world, pos, ItemStack.EMPTY, ConstantIntProvider.create(amount));
     }
 
     @Override

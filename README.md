@@ -3,6 +3,8 @@
 ## Introduction
 This mod adds new villager types, trades and unique and useful workstations.
 
+For Minecraft 1.21.8 on Fabric and NeoForge. Fabric API is required on Fabric.
+
 Currently added professions:
 - Horticulturist
 - Oceanographer
@@ -13,7 +15,7 @@ Currently added professions:
 Currently added workstations:
 - **Flower Tub** (Horticulturist): Holds up to 4 small plants or 1 tall plant, including flowers, corals, grass ...
 - **Aquarium** (Oceanographer): Holds up to 4 seaplants and 1 bucketable entity. Feed it Fish Food to enlarge the fish, Diet Food to shrink it again, and Calming Food to settle it down. Place more aquariums next to it, to create an even larger one!
-- **Alchemist Table**: Burns gunpowder as fuel and converts one potion into three random potions, each of them either a normal or a splash potion. It has a 2 in 3 chance to explode instead (configurable). The explosion destroys the bottles and the fuel, but leaves the terrain intact.
+- **Alchemist Table**: Burns gunpowder as fuel and converts one potion into three random potions, each of them either a normal or a splash potion. By default 2 of 3 brews explode instead. `explosion_chance` N makes 1 in N brews succeed. The explosion destroys the bottles and the fuel, but leaves the terrain intact.
 - **Enchanted Basin** (Occultist): Stores experience. Right-click to take experience, shift right-click to store experience.
 - **Ore Grinder** (Miner): A furnace-style ore doubler. Four slots: input, fuel, output and a pickaxe.
   - The pickaxe **material** sets the speed - no pickaxe 800 ticks, wood 600, stone 300, iron 200, diamond 150, netherite 133, gold 100.
@@ -33,7 +35,7 @@ The miner's house generates in plains, savanna and taiga villages.
 
 | Mod | Required | Notes |
 | --- | --- | --- |
-| **VillagerTradingPlus** | Yes, on both loaders | The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
+| **VillagersTradingPlus** | Yes, on both loaders | The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
 | Fabric API | Yes, on Fabric | Not needed on NeoForge. |
 
 
@@ -42,7 +44,7 @@ The miner's house generates in plains, savanna and taiga villages.
 `config/villagersplus/villagersplus-4.0-config.json5`
 
 Everything that shapes trades themselves - trade counts, price scaling, conditions and the trading
-screen controls - lives in VillagerTradingPlus' own config instead, because those settings apply to
+screen controls - lives in VillagersTradingPlus' own config instead, because those settings apply to
 every mod feeding the library.
 
 ### Workstations
@@ -67,14 +69,15 @@ Plus a set of `*_flower_in_*` floats that position the plants inside the Flower 
 
 ## Customizing trades
 
-Every trade in this mod is defined as JSON and served by the **VillagerTradingPlus** library, which
+Every trade in this mod is defined as JSON and served by the **VillagersTradingPlus** library, which
 is a required dependency. A datapack can add, replace or delete trades, gate them behind conditions
 and reprice them - for VillagersPlus professions, the vanilla professions and the wandering trader
 alike.
 
 The trade format, all fourteen trade types, the condition list and the trade-related config options
 are documented in that library's own README:
-<https://github.com/finallion/VillagerTradingPlus>
+<https://github.com/finallion/VillagersTradingPlus>
+(also on [Modrinth](https://modrinth.com/mod/villagerstradingplus))
 
 The default trade files of this mod live inside the jar under
 `data/villagersplus/default_villager_trades`. Copy one into a datapack at the same path to override it.
@@ -255,3 +258,10 @@ The default trade files of this mod live inside the jar under
 * Amethyst Shard - Buy 1 for 1 Emerald
 * Obsidian - Buy 2 for 3 Emeralds
 * Ancient Debris - Sell 1 for 8 Emeralds
+
+## More mods
+
+- [The Graveyard](https://modrinth.com/mod/the-graveyard-fabric): bosses, structures, mobs and blocks themed around the graveyard. A [Forge version](https://modrinth.com/mod/the-graveyard-forge) exists too.
+- [VillagersTradingPlus](https://modrinth.com/mod/villagerstradingplus): the trade library VillagersPlus needs.
+- [DataDrivenVillagers](https://github.com/finallion/DataDrivenVillagers): create and change villager professions from JSON files.
+- [VanillaTales](https://github.com/finallion/Vanilla-Tales): a collection of small, independent mods that add little stories to vanilla content.
