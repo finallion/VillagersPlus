@@ -12,14 +12,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/// Proves the conversion on a hand written pre-1.20.5 chunk, without a world and without a launcher.
-///
-/// Two earlier attempts at this migration were only ever judged by opening a save and looking at a
-/// block, which cannot separate "the fixer is wrong" from "the code never ran" from "the data was
-/// already gone". These three cases are exactly the three reported symptoms.
+/// Tests the conversion on a hand-written chunk, without a world.
 class LegacyItemStacksTest {
 
-    /// The version 1.20.1 stamps into a chunk.
     private static final int MC_1_20_1 = 3465;
 
     @BeforeAll
@@ -49,9 +44,7 @@ class LegacyItemStacksTest {
         );
     }
 
-    /// 1.20.5 turned the stack NBT into components and 1.21.5 lifted the fish variant out of
-    /// `bucket_entity_data` into three colour and pattern components of its own, so the shape the
-    /// variant arrives in depends on the target version, not on how it was stored.
+    /// The shape of the fish variant depends on the target version, not on how it was stored.
     @Test
     void aBucketKeepsItsFishVariant() {
         NbtCompound bucket = migrateSingleStack(
@@ -85,10 +78,7 @@ class LegacyItemStacksTest {
         assertEquals(parse(entry), firstStack(chunk), "a current chunk must come back untouched");
     }
 
-    /// The migration runs before vanilla's chunk fixer, so the fixer gets the chance to undo it. It
-    /// does not, because it never reaches inside a block entity whose id it has no schema for, which
-    /// is the whole reason this class exists. That claim is what the two failed attempts rested on,
-    /// so it is checked here rather than assumed.
+    /// Vanilla's fixer skips unknown block entities.
     @Test
     void vanillasChunkFixerLeavesTheMigratedEntriesAlone() {
         NbtCompound chunk = chunkWith("{Slot:1b,id:\"minecraft:coal\",Count:32b}");

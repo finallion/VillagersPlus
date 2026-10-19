@@ -53,7 +53,6 @@ public class VillagersPlusNeoForge {
     private static void addItemsToTabs(BuildCreativeModeTabContentsEvent event) {
         RegistryHelperImpl.ITEMS_TO_ADD.forEach((itemGroup, itemPairs) -> {
             if (event.getTabKey() == itemGroup) {
-                // The event is an ItemGroup.Entries itself now, so entries go in directly.
                 itemPairs.forEach(item ->
                         event.add(item.getDefaultStack(), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS));
             }

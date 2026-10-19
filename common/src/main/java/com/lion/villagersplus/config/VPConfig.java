@@ -7,8 +7,6 @@ import java.lang.reflect.Field;
 
 public class VPConfig implements Config {
 
-    /// The file name carries the feature line, so a config with a different set of settings lands in
-    /// a fresh file instead of being read against a layout it does not match.
     @Override
     public String getName() {
         return "villagersplus-4.0-config";
@@ -23,10 +21,6 @@ public class VPConfig implements Config {
     public String getDirectory() {
         return "villagersplus";
     }
-
-    // Everything that shapes trades themselves now lives in VillagerTradingPlus' own config - the
-    // trade system moved into that library, and its settings apply to every mod feeding it, not just
-    // to this one.
 
     @Description("Max amount of experience storable in the enchanted basin. (Default: 500)")
     public int max_exp_amount = 500;

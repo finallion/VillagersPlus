@@ -35,10 +35,6 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public static final EnumProperty<Direction> FACING;
     protected static final VoxelShape SHAPE;
 
-    // The onPlaced override that copied a named block item's name onto the block entity is gone:
-    // LockableContainerBlockEntity reads minecraft:custom_name out of the item's components itself now
-    // (see its readComponents), so doing it here would only duplicate vanilla.
-
     public static final MapCodec<AlchemistTableBlock> CODEC = createCodec(AlchemistTableBlock::new);
 
     @Override
@@ -137,8 +133,6 @@ public class AlchemistTableBlock extends WorkstationBlock {
 
     @Override
     protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
-        // Since 1.21.6 this only fires when the block really changed and only on the server, so
-        // the old isOf(newState) guard is gone along with the newState parameter.
         BlockEntity blockEntity = world.getBlockEntity(pos);
 
         if (blockEntity instanceof AlchemistTableBlockEntity) {

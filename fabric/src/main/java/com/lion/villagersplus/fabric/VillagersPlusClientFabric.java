@@ -29,9 +29,7 @@ public class VillagersPlusClientFabric implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(VPParticles.EXPERIENCE_PARTICLE, ExperienceParticle.ExperienceParticleFactory::new);
         ParticleFactoryRegistry.getInstance().register(VPParticles.BUBBLE_PARTICLE, BubbleParticle.Factory::new);
 
-        // Fabric API dropped blockrenderlayer-v1 for 1.21.6+ because the chunk layer moved into the
-        // vanilla BlockRenderLayer enum. RenderLayers.BLOCKS is the map that API wrote into, so
-        // write to it directly; the field is widened in villagersplus.accesswidener.
+        // The access widener opens the field of RenderLayers.BLOCKS.
         RenderLayers.BLOCKS.put(VPBlocks.OCEANOGRAPHER_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);
         RenderLayers.BLOCKS.put(VPBlocks.ALCHEMIST_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);
         RenderLayers.BLOCKS.put(VPBlocks.ORE_GRINDER_BLOCK.get(), BlockRenderLayer.CUTOUT_MIPPED);

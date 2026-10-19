@@ -112,7 +112,7 @@ public class OccultistTableBlock extends WorkstationBlock {
             T type,
             Random random
     ) {
-        double yCoord = y + 1.1D; // top of block
+        double yCoord = y + 1.1D;
 
         for (int i = 0; i < length; i++) {
             float densityFactor = (float) i / 15;
