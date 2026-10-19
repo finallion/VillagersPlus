@@ -34,18 +34,22 @@ public class AlchemistTableScreen extends HandledScreen<AlchemistTableScreenHand
         context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) (0), (float) (0), this.backgroundWidth, this.backgroundHeight, 256, 256);
         int k = ((AlchemistTableScreenHandler)this.handler).getFuel();
         int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
+
         if (l > 0) {
             context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 60, j + 44, (float) (176), (float) (29), l, 4, 256, 256);
         }
 
         int m = ((AlchemistTableScreenHandler)this.handler).getBrewTime();
+
         if (m > 0) {
             int n = (int)(28.0F * (1.0F - (float)m / 400.0F));
+
             if (n > 0) {
                 context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 97, j + 16, (float) (176), (float) (0), 9, n, 256, 256);
             }
 
             n = BUBBLE_PROGRESS[m / 2 % 7];
+
             if (n > 0) {
                 context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 63, j + 14 + 29 - n, (float) (185), (float) (29 - n), 12, n, 256, 256);
             }

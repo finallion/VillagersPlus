@@ -44,39 +44,64 @@ public class VPVillagerProfessions {
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_WARPED_POI.get();
 
     static {
-        HORTICULTURIST = RegistryHelper.registerVillagerProfession("horticulturist", () -> new VillagerProfession(
-                Text.translatable("entity.minecraft.villager.horticulturist"),
-                HORTICULTURIST_PREDICATE,
-                HORTICULTURIST_PREDICATE,
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_FARMER
-        ));
+        HORTICULTURIST = RegistryHelper.registerVillagerProfession(
+                "horticulturist",
+                () -> new VillagerProfession(
+                        Text.translatable("entity.minecraft.villager.horticulturist"),
+                        HORTICULTURIST_PREDICATE,
+                        HORTICULTURIST_PREDICATE,
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_FARMER
+                )
+        );
 
-        OCCULTIST = RegistryHelper.registerVillagerProfession("occultist", () -> new VillagerProfession(
-                Text.translatable("entity.minecraft.villager.occultist"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
-        ));
+        OCCULTIST = RegistryHelper.registerVillagerProfession(
+                "occultist",
+                () -> new VillagerProfession(
+                        Text.translatable("entity.minecraft.villager.occultist"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
+                )
+        );
 
-        OCEANOGRAPHER = RegistryHelper.registerVillagerProfession("oceanographer", () -> new VillagerProfession(
-                Text.translatable("entity.minecraft.villager.oceanographer"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ITEM_BUCKET_FILL
-        ));
+        OCEANOGRAPHER = RegistryHelper.registerVillagerProfession(
+                "oceanographer",
+                () -> new VillagerProfession(
+                        Text.translatable("entity.minecraft.villager.oceanographer"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ITEM_BUCKET_FILL
+                )
+        );
 
-        ALCHEMIST = RegistryHelper.registerVillagerProfession("alchemist", () -> new VillagerProfession(
-                Text.translatable("entity.minecraft.villager.alchemist"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
-        ));
+        ALCHEMIST = RegistryHelper.registerVillagerProfession(
+                "alchemist",
+                () -> new VillagerProfession(
+                        Text.translatable("entity.minecraft.villager.alchemist"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
+                )
+        );
 
-        MINER = RegistryHelper.registerVillagerProfession("miner", () -> new VillagerProfession(
-                Text.translatable("entity.minecraft.villager.miner"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH
-        ));
+        MINER = RegistryHelper.registerVillagerProfession(
+                "miner",
+                () -> new VillagerProfession(
+                        Text.translatable("entity.minecraft.villager.miner"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH
+                )
+        );
     }
 }

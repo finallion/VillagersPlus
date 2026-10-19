@@ -25,8 +25,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class VersionedChunkStorageMixin {
 
     @Inject(method = "updateChunkNbt(Lnet/minecraft/nbt/NbtCompound;ILnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/nbt/NbtCompound;", at = @At("HEAD"))
-    private void villagersplus$migrateStoredItems(NbtCompound nbt, int dataVersion, NbtCompound context,
-                                                  CallbackInfoReturnable<NbtCompound> cir) {
+    private void villagersplus$migrateStoredItems(
+            NbtCompound nbt,
+            int dataVersion,
+            NbtCompound context,
+            CallbackInfoReturnable<NbtCompound> cir
+    ) {
         LegacyItemStacks.migrateChunk(nbt, NbtHelper.getDataVersion(nbt, dataVersion));
     }
 }

@@ -70,7 +70,10 @@ public class VPPointOfInterestTypes {
         fillMissingPointOfInterestMapValues();
     }
 
-    private static Supplier<PointOfInterestType> registerPointOfInterest(String name, Supplier<PointOfInterestType> pointOfInterestType) {
+    private static Supplier<PointOfInterestType> registerPointOfInterest(
+            String name,
+            Supplier<PointOfInterestType> pointOfInterestType
+    ) {
         REGISTERED_POINT_OF_INTEREST_TYPES.put(name, pointOfInterestType);
         return RegistryHelper.registerPointOfInterestType(name, pointOfInterestType);
     }

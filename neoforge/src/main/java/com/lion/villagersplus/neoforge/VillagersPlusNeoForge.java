@@ -18,10 +18,6 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 @Mod(VillagersPlus.MOD_ID)
 public class VillagersPlusNeoForge {
 
-    /**
-     * NeoForge hands the mod bus to the constructor; there is no FMLJavaModLoadingContext lookup any
-     * more. The two buses stay distinct: registries and setup are mod-bus, server lifecycle is game-bus.
-     */
     public VillagersPlusNeoForge(IEventBus modEventBus) {
         VillagersPlus.init();
 
@@ -54,7 +50,6 @@ public class VillagersPlusNeoForge {
         StructurePoolAddition.registerJigsaws(event.getServer());
     }
 
-    /** Registered explicitly via addListener above, so it needs no annotation. */
     private static void addItemsToTabs(BuildCreativeModeTabContentsEvent event) {
         RegistryHelperImpl.ITEMS_TO_ADD.forEach((itemGroup, itemPairs) -> {
             if (event.getTabKey() == itemGroup) {

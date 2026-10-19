@@ -44,8 +44,11 @@ public class StructurePieceMixin {
     /// and the block placed regardless. Chunks still in the pipeline pass through untouched.
     @WrapOperation(
             method = "addBlock",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/Chunk;markBlockForPostProcessing(Lnet/minecraft/util/math/BlockPos;)V"))
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/chunk/Chunk;markBlockForPostProcessing(Lnet/minecraft/util/math/BlockPos;)V"
+            )
+    )
     private void villagersplus$onlyPostProcessUnfinishedChunks(Chunk chunk, BlockPos pos, Operation<Void> original) {
         if (chunk instanceof ProtoChunk) {
             original.call(chunk, pos);

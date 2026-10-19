@@ -65,7 +65,13 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     @Override
-    public void updateRenderState(HorticulturistTableBlockEntity blockEntity, State state, float tickProgress, Vec3d cameraPos, ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlay) {
+    public void updateRenderState(
+            HorticulturistTableBlockEntity blockEntity,
+            State state,
+            float tickProgress,
+            Vec3d cameraPos,
+            ModelCommandRenderer.CrumblingOverlayCommand crumblingOverlay
+    ) {
         BlockEntityRenderState.updateBlockEntityRenderState(blockEntity, state, crumblingOverlay);
         DefaultedList<ItemStack> inventory = blockEntity.getInventory();
         for (int n = 0; n < state.plants.length; n++) {
@@ -75,7 +81,12 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     @Override
-    public void render(State state, MatrixStack matrixStack, OrderedRenderCommandQueue queue, CameraRenderState camera) {
+    public void render(
+            State state,
+            MatrixStack matrixStack,
+            OrderedRenderCommandQueue queue,
+            CameraRenderState camera
+    ) {
         if (!(state.blockState.getBlock() instanceof HorticulturistTableBlock)) {
             return;
         }
@@ -86,6 +97,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         if (state.blockState.get(HorticulturistTableBlock.IS_TALL_FLOWER)) {
             matrixStack.push();
             Block flower = state.plants[0];
+
             if (flower instanceof TallPlantBlock) {
                 matrixStack.translate(0.0D, 0.95D, 0.0D);
                 // Scale both halves in one space, so they stay attached.
@@ -103,6 +115,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                 applyPlantScale(matrixStack, scale);
                 renderFlower(flower, matrixStack, queue, light);
             }
+
             matrixStack.pop();
             return;
         }
@@ -135,7 +148,15 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    private void renderFlowerAt(State state, int slot, float x, float y, float z, MatrixStack matrixStack, OrderedRenderCommandQueue queue) {
+    private void renderFlowerAt(
+            State state,
+            int slot,
+            float x,
+            float y,
+            float z,
+            MatrixStack matrixStack,
+            OrderedRenderCommandQueue queue
+    ) {
         matrixStack.push();
         matrixStack.translate(x, y, z);
         applyPlantScale(matrixStack, state.plantScale);
@@ -152,10 +173,17 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         if (flower instanceof Segmented segmented) {
             return flower.getDefaultState().with(segmented.getAmountProperty(), Segmented.MAX_SEGMENTS);
         }
+
         return flower.getDefaultState();
     }
 
-    private void renderTallFlower(Block flower, MatrixStack matrixStack, OrderedRenderCommandQueue queue, boolean lower, int light) {
+    private void renderTallFlower(
+            Block flower,
+            MatrixStack matrixStack,
+            OrderedRenderCommandQueue queue,
+            boolean lower,
+            int light
+    ) {
         DoubleBlockHalf half = lower ? DoubleBlockHalf.LOWER : DoubleBlockHalf.UPPER;
         queue.submitBlock(matrixStack, flower.getDefaultState().with(TallPlantBlock.HALF, half), light, OverlayTexture.DEFAULT_UV, 0);
     }

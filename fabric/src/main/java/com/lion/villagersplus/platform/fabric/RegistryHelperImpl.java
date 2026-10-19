@@ -39,11 +39,19 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static void registerItemGroup(RegistryKey<ItemGroup> registryKey, String name, String literalName, Supplier<Item> item) {
-        Registry.register(Registries.ITEM_GROUP, registryKey,
+    public static void registerItemGroup(
+            RegistryKey<ItemGroup> registryKey,
+            String name,
+            String literalName,
+            Supplier<Item> item
+    ) {
+        Registry.register(
+                Registries.ITEM_GROUP,
+                registryKey,
                 FabricItemGroup.builder()
                         .displayName(Text.literal(literalName))
-                        .icon(() -> new ItemStack(item.get())).build());
+                        .icon(() -> new ItemStack(item.get())).build()
+        );
     }
 
     public static void addToItemGroup(RegistryKey<ItemGroup> itemGroup, Item item) {
@@ -64,11 +72,7 @@ public class RegistryHelperImpl {
         Registry.register(Registries.SCREEN_HANDLER, Identifier.of(VillagersPlus.MOD_ID, name), screenHandlerType);
     }
 
-    /**
-     * Fabric API dropped blockrenderlayer-v1 for 1.21.6+, and nothing ever called this: the client
-     * initialiser sets the three cutout blocks itself. Kept as a no-op only because the platform
-     * helper's signature is shared with NeoForge.
-     */
+    /// No-op on Fabric. The client initialiser sets the cutout layers.
     public static void registerRenderType(RenderLayer type, Block... blocks) {
     }
 
@@ -77,16 +81,25 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererFactory<T, S> renderProvider) {
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+            Supplier<BlockEntityType<T>> type,
+            BlockEntityRendererFactory<T, S> renderProvider
+    ) {
         BlockEntityRendererRegistry.register(type.get(), renderProvider);
     }
 
-    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(
+            String name,
+            Supplier<T> pointOfInterestType
+    ) {
         var registry = Registry.register(Registries.POINT_OF_INTEREST_TYPE, Identifier.of(VillagersPlus.MOD_ID, name), pointOfInterestType.get());
         return () -> registry;
     }
 
-    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
+    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(
+            String name,
+            Supplier<T> villagerProfession
+    ) {
         var registry = Registry.register(Registries.VILLAGER_PROFESSION, Identifier.of(VillagersPlus.MOD_ID, name), villagerProfession.get());
         return () -> registry;
     }

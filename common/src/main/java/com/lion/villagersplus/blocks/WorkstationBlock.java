@@ -20,10 +20,6 @@ public abstract class WorkstationBlock extends BlockWithEntity {
         return BlockRenderType.MODEL;
     }
 
-    /**
-     * Two parameters since 1.20.5, not four. The old form silently overrode nothing, which would have
-     * let villagers path straight through their own workstation.
-     */
     @Override
     protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
