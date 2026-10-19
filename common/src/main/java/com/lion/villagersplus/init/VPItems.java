@@ -12,14 +12,11 @@ import java.util.function.Supplier;
 
 public class VPItems {
 
-    /// A block item takes its translation key from its settings, not from its block.
     private static Item.Settings settings(String name) {
         return new Item.Settings()
                 .registryKey(RegistryKey.of(RegistryKeys.ITEM, Identifier.of(VillagersPlus.MOD_ID, name)));
     }
 
-    /// A BlockItem takes its translation key from its settings, not from its block. Without this the
-    /// items read untranslated next to the existing `block.villagersplus.*` entries.
     private static Item.Settings blockItemSettings(String name) {
         return settings(name).useBlockPrefixedTranslationKey();
     }
@@ -43,10 +40,8 @@ public class VPItems {
 
     public static final Supplier<Item> ORE_GRINDER_BLOCK = RegistryHelper.registerItem("ore_grinder", () -> new BlockItem(VPBlocks.ORE_GRINDER_BLOCK.get(), blockItemSettings("ore_grinder")));
 
-    // Aquarium fish-size items: fish food grows the aquarium's animal, diet food shrinks it.
     public static final Supplier<Item> FISH_FOOD = RegistryHelper.registerItem("fish_food", () -> new Item(settings("fish_food")));
     public static final Supplier<Item> DIET_FOOD = RegistryHelper.registerItem("diet_food", () -> new Item(settings("diet_food")));
-    // Calming food: toggles the aquarium animal between free swimming and hovering animated in the centre.
     public static final Supplier<Item> CALM_FOOD = RegistryHelper.registerItem("calm_food", () -> new Item(settings("calm_food")));
 
 

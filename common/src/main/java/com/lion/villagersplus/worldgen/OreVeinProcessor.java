@@ -18,12 +18,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-/// Swaps a marker block for a randomly drawn ore while a template is placed.
-///
-/// The draw uses a seed from the block position, so the placement random stays untouched.
+/// The draw seeds from the block position.
 public class OreVeinProcessor extends StructureProcessor {
 
-    // StructureProcessorType.codec() returns a MapCodec since 1.20.5, so build one directly.
     public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Registries.BLOCK.getCodec().fieldOf("target").forGetter(processor -> processor.target),
             WeightedPool.createCodec(BlockState.CODEC).fieldOf("ores").forGetter(processor -> processor.ores)
@@ -52,8 +49,6 @@ public class OreVeinProcessor extends StructureProcessor {
         }
 
         Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos()));
-        // An empty pool cannot happen through the codec, but a draw that comes back empty has to leave
-        // the marker alone rather than delete it.
         return this.ores.getOrEmpty(random)
                 .map(state -> new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos(), state, null))
                 .orElse(currentBlockInfo);

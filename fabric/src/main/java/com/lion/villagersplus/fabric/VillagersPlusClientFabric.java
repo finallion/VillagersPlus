@@ -29,7 +29,7 @@ public class VillagersPlusClientFabric implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(VPParticles.EXPERIENCE_PARTICLE, ExperienceParticle.ExperienceParticleFactory::new);
         ParticleFactoryRegistry.getInstance().register(VPParticles.BUBBLE_PARTICLE, BubbleParticle.Factory::new);
 
-        // Fabric API has no render layer map here. Write to the vanilla map.
+        // Fabric API has no render layer map. Write to the vanilla map.
         BlockRenderLayers.BLOCKS.put(VPBlocks.OCEANOGRAPHER_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT);
         BlockRenderLayers.BLOCKS.put(VPBlocks.ALCHEMIST_TABLE_BLOCK.get(), BlockRenderLayer.CUTOUT);
         BlockRenderLayers.BLOCKS.put(VPBlocks.ORE_GRINDER_BLOCK.get(), BlockRenderLayer.CUTOUT);

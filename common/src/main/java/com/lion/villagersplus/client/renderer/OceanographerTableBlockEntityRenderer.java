@@ -59,7 +59,6 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
     private final EntityRenderManager entityRenderDispatcher;
 
-    // The renderer instance is shared by all aquarium block entities.
     private static final float[] Y_OFFSET_NORTH = {0.45F, 0.75F, 0.3F, 0.45F};
     private static final float[] Y_OFFSET_SOUTH = {0.75F, 0.45F, 0.45F, 0.3F};
     private static final float[] Y_OFFSET_EAST = {0.45F, 0.3F, 0.45F, 0.75F};
@@ -115,7 +114,6 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         }
         state.coralScale = blockEntity.getCoralScale();
 
-        // The aquarium that a fish swims in draws it.
         state.fish.clear();
 
         if (blockEntity.drawsOwnFish()) {
@@ -143,7 +141,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         FishDraw draw = new FishDraw();
         draw.entityState = this.entityRenderDispatcher.getAndUpdateRenderState(fish, f);
         draw.entityState.light = state.lightmapCoordinates;
-        // The display fish is never placed in the world, so a shadow would land at the origin.
+        // The display fish sits at the world origin, so shadows stay off.
         draw.entityState.shadowRadius = 0.0F;
         draw.entityState.shadowPieces.clear();
         draw.dx = dx;
@@ -259,7 +257,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
                 (double) (draw.dz + draw.z)
         );
 
-        // The entity renderer applies body yaw. Undo that yaw before the pitch.
+        // Undo the entity renderer's body yaw before the pitch.
         if (draw.pitch != 0.0F && draw.pitched) {
             matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-draw.bodyYaw));
             matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(draw.pitch));
@@ -291,7 +289,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         return 128;
     }
 
-    /// The method gets no block entity, so this is unconditional. Fish swim into neighbouring blocks.
+    /// Culling stays off for all blocks, because the method gets no block entity.
     @Override
     public boolean rendersOutsideBoundingBox() {
         return true;

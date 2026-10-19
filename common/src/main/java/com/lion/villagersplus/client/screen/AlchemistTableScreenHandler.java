@@ -134,19 +134,7 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
             return 1;
         }
 
-        /*
-        public void onTakeItem(PlayerEntity player, ItemStack stack) {
-            Potion potion = PotionUtil.getPotion(stack);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
-            }
-
-            super.onTakeItem(player, stack);
-        }
-         */
-
         public static boolean matches(ItemStack stack) {
-            // Items.POTION is the item every potion stack carries, water included.
             return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(Items.POTION);
         }
     }
@@ -165,8 +153,7 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
         }
 
         public static boolean matches(ItemStack stack) {
-            // A water bottle is the base being brewed, not an ingredient. The potion lives in a
-            // component now; an item with none at all (a plain glass bottle) is not water either.
+            // Water bottles do not match. Items without a potion component pass.
             PotionContentsComponent contents = stack.get(DataComponentTypes.POTION_CONTENTS);
 
             if (contents != null && contents.matches(Potions.WATER)) {

@@ -83,7 +83,6 @@ public class RegistryHelperImpl {
     }
 
     public static void registerRenderType(RenderLayer type, Block... blocks) {
-        // done block model JSON
     }
 
 
@@ -91,7 +90,6 @@ public class RegistryHelperImpl {
             Supplier<BlockEntityType<T>> type,
             BlockEntityRendererFactory<T, S> renderProvider
     ) {
-        // registered via event
     }
 
 

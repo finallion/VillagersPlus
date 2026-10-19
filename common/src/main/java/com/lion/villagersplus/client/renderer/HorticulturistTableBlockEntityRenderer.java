@@ -140,7 +140,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /// Scales around the centre of the plant's base (block models render 0..1 from the corner).
+    /// Scales around the base centre. Block models render from the corner.
     private static void applyPlantScale(MatrixStack matrixStack, float scale) {
         if (scale != 1.0F) {
             matrixStack.translate(0.5F * (1.0F - scale), 0.0F, 0.5F * (1.0F - scale));

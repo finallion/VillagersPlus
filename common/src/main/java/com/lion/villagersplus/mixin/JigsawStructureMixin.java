@@ -15,9 +15,6 @@ import java.util.function.Consumer;
 @Mixin(JigsawStructure.class)
 public class JigsawStructureMixin {
 
-    /// Wraps the jigsaw piece generator so a vanilla mineshaft can be grown off the miner's shaft
-    /// after the jigsaw run has finished. The wrapper stays lazy - the original consumer is only
-    /// invoked when the structure start is actually built, same as without this mixin.
     @Inject(method = "getStructurePosition", at = @At("RETURN"), cancellable = true)
     private void villagersplus$attachVanillaMineshaft(Structure.Context context, CallbackInfoReturnable<Optional<Structure.StructurePosition>> cir) {
         Optional<Structure.StructurePosition> result = cir.getReturnValue();
