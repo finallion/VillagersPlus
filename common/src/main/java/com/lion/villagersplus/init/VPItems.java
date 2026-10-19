@@ -16,7 +16,6 @@ public class VPItems {
                 .setId(ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, name)));
     }
 
-    /// A block item takes its translation key from its settings, not from its block.
     private static Item.Properties blockItemSettings(String name) {
         return settings(name).useBlockDescriptionPrefix();
     }

@@ -22,8 +22,6 @@ public class VPConfig implements Config {
         return "villagersplus";
     }
 
-    // Trade settings live in the VillagerTradingPlus config.
-
     @Description("Max amount of experience storable in the enchanted basin. (Default: 500)")
     public int max_exp_amount = 500;
 

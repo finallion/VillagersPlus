@@ -6,7 +6,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 
 public class VPStructures {
 
-    /// `OreVeinProcessor#getType` must return this registered instance.
+    /// `OreVeinProcessor#getType` returns this registered instance.
     public static final StructureProcessorType<OreVeinProcessor> ORE_VEIN = () -> OreVeinProcessor.CODEC;
 
     static {

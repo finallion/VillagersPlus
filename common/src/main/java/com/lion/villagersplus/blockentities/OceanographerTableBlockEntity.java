@@ -54,7 +54,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     public static final float MAX_FISH_SCALE = 1.75F;
     public static final float FISH_SCALE_STEP = 0.25F;
 
-    // Corals stand close to the glass, so their growth cap is lower.
     public static final float MIN_CORAL_SCALE = 0.5F;
     public static final float MAX_CORAL_SCALE = 1.5F;
     public static final float CORAL_SCALE_STEP = 0.25F;
@@ -82,7 +81,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     private int puffTimer;
     private int puffCooldown = 160;
 
-    /// The limit applies when blocks connect, not only in the scan.
     public static final int MAX_TANK_BLOCKS = 48;
     private static final int TANK_RESCAN_INTERVAL = 40;
     private static final float FLOOR_HEIGHT = 0.125F;
@@ -102,7 +100,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     private net.minecraft.util.RandomSource wanderRandom;
 
     private final List<OceanographerTableBlockEntity> guestFish = new ArrayList<>();
-    /// Set while another aquarium of the tank draws this block's fish.
     private boolean fishHandedOff;
 
     public OceanographerTableBlockEntity(BlockPos pos, BlockState state) {
@@ -248,7 +245,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     }
 
     public static void clientTick(Level world, BlockPos pos, BlockState state, OceanographerTableBlockEntity be) {
-        // Drop guests before they re-register, so a fish that moved on is not drawn twice.
+        // Drop guests first. A guest that left stops being drawn.
         be.guestFish.removeIf(guest -> guest.isRemoved() || !guest.isFishInBlock(be.worldPosition));
         be.animateFish(world);
     }
@@ -292,7 +289,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         this.animAge++;
         fish.tickCount = this.animAge;
 
-        // Rescan the connected tank so neighbour changes update the swimmable area.
         if (--this.tankRescanTimer <= 0) {
             this.rescanTank(world);
             this.tankRescanTimer = TANK_RESCAN_INTERVAL;
@@ -372,7 +368,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         this.handOffFishToHost(world);
     }
 
-    /// Hands the fish to the aquarium block it swims in, so section culling uses the right block.
     private void handOffFishToHost(Level world) {
         this.fishHandedOff = false;
         int bx = Mth.floor(this.fishX);
@@ -419,7 +414,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         }
     }
 
-    /// Flood-fills the connected aquariums around this one as tank-local offsets.
     private void rescanTank(Level world) {
         this.tankBlocks.clear();
         this.tankBlockList.clear();
@@ -467,7 +461,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
             this.fishZ = this.prevFishZ = 0.5D;
             this.hasTarget = false;
         } else if (!this.isInsideTank(this.fishX, this.fishY, this.fishZ, inset, insetY)) {
-            // Swim clear of the glass first, because every wander step would fail from inside the margin.
+            // Wander steps fail inside the margin. Swim clear of the glass first.
             this.swimClearOfWalls(inset, insetY);
             return;
         }
@@ -513,7 +507,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         }
     }
 
-    /// Swims the fish back out of the clearance margin, which wander steps cannot do.
     private void swimClearOfWalls(float inset, float insetY) {
         int bx = Mth.floor(this.fishX);
         int by = Mth.floor(this.fishY);
@@ -560,7 +553,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         this.hasTarget = false;
     }
 
-    /// Clamps one coordinate into the cell, `margin` away from walls. Sides with a neighbour have no wall.
+    /// Sides with a neighbour have no wall.
     private static double clampBetweenWalls(double value, int cell, float margin, boolean openLow, boolean openHigh) {
         double min = openLow ? cell : cell + margin + 1.0E-3D;
         double max = openHigh ? cell + 1.0D : cell + 1.0D - margin - 1.0E-3D;
@@ -790,7 +783,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        // Only right-click may fill the display slots, not hoppers.
+        // Hoppers cannot insert. Only the player fills the slots.
         return false;
     }
 

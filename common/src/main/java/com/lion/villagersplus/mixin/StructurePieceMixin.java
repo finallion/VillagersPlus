@@ -13,7 +13,10 @@ import net.minecraft.world.level.chunk.ProtoChunk;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/// Keeps the miner's shaft and its mineshaft out of the village terrain adaptation.
+/// Keeps the miner's shaft and its vanilla mineshaft out of the village's terrain adaptation.
+///
+/// Pieces in a village inherit `beard_thin`. `StructureWeightSampler` reads it from the structure start.
+/// The sampler skips a piece that fails `intersectsChunk`, so returning false skips the adaptation.
 @Mixin(StructurePiece.class)
 public class StructurePieceMixin {
 
@@ -24,7 +27,7 @@ public class StructurePieceMixin {
         }
     }
 
-    /// Skips post-processing marks on finished chunks, which only log a warning.
+    /// Skips post-processing marks on finished chunks. They only log a warning.
     @WrapOperation(
             method = "placeBlock",
             at = @At(
