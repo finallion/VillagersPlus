@@ -21,8 +21,13 @@ public class VersionedChunkStorageMixin {
     private DataFixTypes dataFixType;
 
     @Inject(method = "upgradeChunkTag(Lnet/minecraft/nbt/CompoundTag;ILnet/minecraft/nbt/CompoundTag;I)Lnet/minecraft/nbt/CompoundTag;", at = @At("HEAD"))
-    private void villagersplus$migrateStoredItems(CompoundTag nbt, int defaultVersion, CompoundTag context, int targetVersion,
-                                                  CallbackInfoReturnable<CompoundTag> cir) {
+    private void villagersplus$migrateStoredItems(
+            CompoundTag nbt,
+            int defaultVersion,
+            CompoundTag context,
+            int targetVersion,
+            CallbackInfoReturnable<CompoundTag> cir
+    ) {
         if (dataFixType == DataFixTypes.CHUNK) {
             LegacyItemStacks.migrateChunk(nbt, NbtUtils.getDataVersion(nbt, defaultVersion), targetVersion);
         }

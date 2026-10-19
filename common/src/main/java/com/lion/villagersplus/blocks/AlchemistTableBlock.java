@@ -50,7 +50,14 @@ public class AlchemistTableBlock extends WorkstationBlock {
 
     public AlchemistTableBlock(BlockBehaviour.Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().setValue(BOTTLE_PROPERTIES[0], false).setValue(BOTTLE_PROPERTIES[1], false).setValue(BOTTLE_PROPERTIES[2], false).setValue(BOTTLE_PROPERTIES[3], false).setValue(IS_BREWING, false).setValue(HAS_FUEL, false).setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(BOTTLE_PROPERTIES[0], false)
+                .setValue(BOTTLE_PROPERTIES[1], false)
+                .setValue(BOTTLE_PROPERTIES[2], false)
+                .setValue(BOTTLE_PROPERTIES[3], false)
+                .setValue(IS_BREWING, false)
+                .setValue(HAS_FUEL, false)
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
@@ -69,16 +76,27 @@ public class AlchemistTableBlock extends WorkstationBlock {
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
         return world.isClientSide() ? null : createTickerHelper(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(
+            BlockState state,
+            Level world,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hit
+    ) {
         if (world.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof AlchemistTableBlockEntity) {
                 player.openMenu((AlchemistTableBlockEntity)blockEntity);
             }
@@ -128,6 +146,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
         if (blockEntity instanceof AlchemistTableBlockEntity) {
             Containers.dropContents(world, pos, (AlchemistTableBlockEntity)blockEntity);
         }

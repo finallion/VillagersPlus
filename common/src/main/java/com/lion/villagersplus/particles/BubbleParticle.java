@@ -10,7 +10,16 @@ import net.minecraft.util.RandomSource;
 
 public class BubbleParticle extends SingleQuadParticle {
 
-    BubbleParticle(ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, TextureAtlasSprite sprite) {
+    BubbleParticle(
+            ClientLevel clientWorld,
+            double d,
+            double e,
+            double f,
+            double g,
+            double h,
+            double i,
+            TextureAtlasSprite sprite
+    ) {
         super(clientWorld, d, e, f, sprite);
         this.gravity = -0.125F;
         this.friction = 0.85F;
@@ -24,6 +33,7 @@ public class BubbleParticle extends SingleQuadParticle {
 
     public void tick() {
         super.tick();
+
         if (!this.removed && y - this.yo > 0.0325) {
             this.remove();
         }
@@ -45,7 +55,17 @@ public class BubbleParticle extends SingleQuadParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(SimpleParticleType defaultParticleType, ClientLevel clientWorld, double d, double e, double f, double g, double h, double i, RandomSource random) {
+        public Particle createParticle(
+                SimpleParticleType defaultParticleType,
+                ClientLevel clientWorld,
+                double d,
+                double e,
+                double f,
+                double g,
+                double h,
+                double i,
+                RandomSource random
+        ) {
             BubbleParticle bubble = new BubbleParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider.get(random));
             return bubble;
         }

@@ -116,6 +116,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             addRecipe(recipes, Items.NETHER_QUARTZ_ORE, Items.QUARTZ, 2);
             GRINDING_RECIPES = recipes;
         }
+
         return GRINDING_RECIPES;
     }
 
@@ -128,6 +129,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (input.isEmpty()) {
             return null;
         }
+
         ItemStack result = getGrindingRecipes().get(input.getItem());
         return result == null ? null : result.copy();
     }
@@ -144,16 +146,21 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (!isPickaxe(pickaxe)) {
             return GRIND_TIME_NO_PICKAXE;
         }
+
         // Base grind time comes from the mining speed of the tool component.
         Tool tool = pickaxe.get(DataComponents.TOOL);
+
         if (tool == null) {
             return GRIND_TIME_NO_PICKAXE;
         }
+
         float speed = tool.defaultMiningSpeed();
         int efficiency = enchantmentLevel(world, Enchantments.EFFICIENCY, pickaxe);
+
         if (efficiency > 0) {
             speed += (float) (efficiency * efficiency + 1);
         }
+
         return Mth.clamp((int) (1200.0F / speed), 40, 600);
     }
 
@@ -162,6 +169,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (world == null || stack.isEmpty()) {
             return 0;
         }
+
         return world.registryAccess()
                 .lookupOrThrow(Registries.ENCHANTMENT)
                 .get(enchantment)
@@ -219,10 +227,12 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             if (!blockEntity.isBurning() && canAccept && hasFuel) {
                 blockEntity.burnTime = getFuelTime(world, fuelStack);
                 blockEntity.fuelTime = blockEntity.burnTime;
+
                 if (blockEntity.isBurning()) {
                     dirty = true;
                     Item fuelItem = fuelStack.getItem();
                     fuelStack.shrink(1);
+
                     if (fuelStack.isEmpty()) {
                         ItemStackTemplate remainder = fuelItem.getCraftingRemainder();
                         blockEntity.inventory.set(FUEL_SLOT, remainder == null ? ItemStack.EMPTY : remainder.create());
@@ -232,6 +242,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
 
             if (blockEntity.isBurning() && canAccept) {
                 ++blockEntity.grindProgress;
+
                 if (blockEntity.grindProgress >= blockEntity.grindTimeTotal) {
                     blockEntity.grindProgress = 0;
                     blockEntity.grind(result);
@@ -246,6 +257,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         }
 
         boolean lit = blockEntity.isBurning() && !disabled;
+
         if (state.getValue(OreGrinderBlock.LIT) != lit) {
             dirty = true;
             state = state.setValue(OreGrinderBlock.LIT, lit);
@@ -261,13 +273,17 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (result == null) {
             return false;
         }
+
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
+
         if (outputStack.isEmpty()) {
             return true;
         }
+
         if (!outputStack.is(result.getItem())) {
             return false;
         }
+
         int worstCaseYield = scaledYield(result) * (fortuneLevel() + 1);
         int combined = outputStack.getCount() + worstCaseYield;
         return combined <= this.getMaxStackSize() && combined <= outputStack.getMaxStackSize();
@@ -290,6 +306,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (baseResult == null || !this.canAcceptOutput(baseResult)) {
             return;
         }
+
         ItemStack inputStack = this.inventory.get(INPUT_SLOT);
         ItemStack pickaxeStack = this.inventory.get(PICKAXE_SLOT);
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
@@ -297,15 +314,19 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         // Fortune adds to the base doubling. Efficiency only changes grind speed.
         int fortune = fortuneLevel();
         int count = scaledYield(baseResult);
+
         if (fortune > 0) {
             int bonus = this.level.getRandom().nextInt(fortune + 2) - 1;
+
             if (bonus < 0) {
                 bonus = 0;
             }
+
             count *= (bonus + 1);
         }
 
         int max = Math.min(baseResult.getMaxStackSize(), this.getMaxStackSize());
+
         if (outputStack.isEmpty()) {
             ItemStack newStack = baseResult.copy();
             newStack.setCount(Math.min(count, max));
@@ -323,6 +344,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (!isPickaxe(pickaxe) || !pickaxe.isDamageableItem()) {
             return;
         }
+
         // Unbreaking reduces wear with the vanilla probability.
         int unbreaking = enchantmentLevel(this.level, Enchantments.UNBREAKING, pickaxe);
         int damage = Math.max(0, VillagersPlus.CONFIG.ore_grinder_pickaxe_damage);
@@ -330,7 +352,9 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             if (unbreaking > 0 && this.level.getRandom().nextInt(unbreaking + 1) != 0) {
                 continue;
             }
+
             pickaxe.setDamageValue(pickaxe.getDamageValue() + 1);
+
             if (pickaxe.getDamageValue() >= pickaxe.getMaxDamage()) {
                 this.inventory.set(PICKAXE_SLOT, ItemStack.EMPTY);
                 this.level.playSound(null, this.worldPosition, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -344,6 +368,7 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         if (world == null || fuel.isEmpty()) {
             return 0;
         }
+
         return world.fuelValues().burnDuration(fuel);
     }
 
@@ -399,9 +424,11 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             ItemStack existing = this.inventory.get(slot);
             boolean sameItem = !stack.isEmpty() && ItemStack.isSameItemSameComponents(stack, existing);
             this.inventory.set(slot, stack);
+
             if (stack.getCount() > this.getMaxStackSize()) {
                 stack.setCount(this.getMaxStackSize());
             }
+
             if (slot == INPUT_SLOT && !sameItem) {
                 this.grindProgress = 0;
                 this.setChanged();

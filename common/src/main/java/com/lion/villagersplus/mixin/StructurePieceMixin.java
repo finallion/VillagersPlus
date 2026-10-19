@@ -27,8 +27,11 @@ public class StructurePieceMixin {
     /// Skips post-processing marks on finished chunks, which only log a warning.
     @WrapOperation(
             method = "placeBlock",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/chunk/ChunkAccess;markPosForPostProcessing(Lnet/minecraft/core/BlockPos;)V"))
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/chunk/ChunkAccess;markPosForPostProcessing(Lnet/minecraft/core/BlockPos;)V"
+            )
+    )
     private void villagersplus$onlyPostProcessUnfinishedChunks(ChunkAccess chunk, BlockPos pos, Operation<Void> original) {
         if (chunk instanceof ProtoChunk) {
             original.call(chunk, pos);

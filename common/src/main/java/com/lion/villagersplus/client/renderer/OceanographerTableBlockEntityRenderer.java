@@ -107,23 +107,32 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
     }
 
     @Override
-    public void extractRenderState(OceanographerTableBlockEntity blockEntity, State state, float f, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+    public void extractRenderState(
+            OceanographerTableBlockEntity blockEntity,
+            State state,
+            float f,
+            Vec3 cameraPos,
+            ModelFeatureRenderer.CrumblingOverlay crumblingOverlay
+    ) {
         BlockEntityRenderState.extractBase(blockEntity, state, crumblingOverlay);
         BlockPos pos = blockEntity.getBlockPos();
         NonNullList<ItemStack> inventory = blockEntity.getInventory();
 
         BlockState tableState = blockEntity.getBlockState();
         state.valid = tableState.getBlock() instanceof OceanographerTableBlock;
+
         if (state.valid) {
             state.facing = tableState.getValue(OceanographerTableBlock.FACING);
         }
 
         for (int it = 0; it < 4; it++) {
             ItemStack stack = inventory.get(it);
+
             if (stack.isEmpty()) {
                 state.corals[it] = null;
                 continue;
             }
+
             Block coral = Block.byItem(stack.getItem());
             state.corals[it] = coral;
             state.coralOffsets[it] = coral.defaultBlockState().getOffset(pos);
@@ -132,14 +141,17 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         state.coralScale = blockEntity.getCoralScale();
 
         state.fish.clear();
+
         if (blockEntity.drawsOwnFish()) {
             addFish(state, blockEntity, 0, 0, 0, f);
         }
+
         for (OceanographerTableBlockEntity guest : blockEntity.getGuestFish()) {
             // The guest list is pruned on tick, so it may still list a fish that moved on.
             if (!guest.isFishInBlock(pos)) {
                 continue;
             }
+
             BlockPos guestPos = guest.getBlockPos();
             addFish(state, guest, guestPos.getX() - pos.getX(), guestPos.getY() - pos.getY(), guestPos.getZ() - pos.getZ(), f);
         }
@@ -147,9 +159,11 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
     private void addFish(State state, OceanographerTableBlockEntity owner, int dx, int dy, int dz, float f) {
         Entity fish = owner.getDisplayFish();
+
         if (fish == null) {
             return;
         }
+
         FishDraw draw = new FishDraw();
         draw.entityState = this.entityRenderDispatcher.extractEntity(fish, f);
         draw.entityState.lightCoords = state.lightCoords;
@@ -168,10 +182,12 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         draw.y = owner.getFishY(f);
         draw.z = owner.getFishZ(f);
         draw.pitch = owner.getFishPitch(f);
+
         if (fish instanceof LivingEntity fishLiving) {
             draw.pitched = true;
             draw.bodyYaw = Mth.rotLerp(f, fishLiving.yBodyRotO, fishLiving.yBodyRot);
         }
+
         draw.axolotl = fish instanceof Axolotl;
         state.fish.add(draw);
     }
@@ -209,21 +225,26 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         float coralScale = state.coralScale;
         for (int it = 0; it < 4; it++) {
             Block coral = state.corals[it];
+
             if (coral == null) {
                 continue;
             }
+
             Vec3 offset = state.coralOffsets[it];
             matrixStack.pushPose();
             matrixStack.scale(0.4F, 0.4F, 0.4F);
+
             if (coral instanceof CoralFanBlock) {
                 matrixStack.translate(-offset.x + xOffsetFan[it], -offset.y + yOffset[it], -offset.z + zOffsetFan[it]);
             } else {
                 matrixStack.translate(-offset.x + xOffset[it], -offset.y + yOffset[it], -offset.z + zOffset[it]);
             }
+
             if (coralScale != 1.0F) {
                 matrixStack.translate(0.5F * (1.0F - coralScale), 0.0F, 0.5F * (1.0F - coralScale));
                 matrixStack.scale(coralScale, coralScale, coralScale);
             }
+
             state.coralModels[it].submit(matrixStack, queue, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             matrixStack.popPose();
         }
@@ -238,14 +259,18 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
 
         float g = 0.53125F;
         float hh = Math.max(draw.width, draw.height);
+
         if ((double) hh > 1.0D) {
             g /= hh;
         }
+
         g *= draw.scale;
 
-        matrixStack.translate((double) (draw.dx + draw.x),
+        matrixStack.translate(
+                (double) (draw.dx + draw.x),
                 (double) (draw.dy + draw.y + draw.bob * 0.05F),
-                (double) (draw.dz + draw.z));
+                (double) (draw.dz + draw.z)
+        );
 
         if (draw.pitch != 0.0F && draw.pitched) {
             matrixStack.mulPose(Axis.YP.rotationDegrees(-draw.bodyYaw));
@@ -262,6 +287,7 @@ public class OceanographerTableBlockEntityRenderer implements BlockEntityRendere
         if (draw.roll != 0.0F) {
             matrixStack.mulPose(Axis.XP.rotationDegrees(draw.roll));
         }
+
         if (draw.axolotl) {
             matrixStack.scale(0.8F, 0.8F, 0.8F);
         }
