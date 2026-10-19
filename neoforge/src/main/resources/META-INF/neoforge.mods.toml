@@ -11,7 +11,7 @@ authors = "Lion"
 description = '''
 New villagers, new trades and new beautiful and useful workstations.
 '''
-iconFile = "villagersplus_logo.png"
+logoFile = "villagersplus_logo.png"
 
 [[mixins]]
 config = "villagersplus.mixins.json"

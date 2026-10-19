@@ -202,7 +202,9 @@ public class OceanographerTableBlock extends WorkstationBlock {
                 }
 
                 if (itemStack.is(VPTags.AQUARIUM_PLANTABLE_ITEMS) && state.getValue(CORALS) < 4 && !state.getValue(DOWN)) {
-                    blockEntity.insertCoral(itemStack, state.getValue(CORALS));
+                    if (!blockEntity.insertCoral(itemStack, state.getValue(CORALS))) {
+                        return InteractionResult.TRY_WITH_EMPTY_HAND;
+                    }
 
                     if (!world.isClientSide()) {
                         world.setBlock(pos, state.setValue(CORALS, state.getValue(CORALS) + 1), 3);
@@ -299,6 +301,11 @@ public class OceanographerTableBlock extends WorkstationBlock {
         // A seam that is open stays open. Only a seam that opens must fit the cap.
         boolean connect = this.connectsTo(state, neighborState)
                 && (state.getValue(connectionProperty(direction)) || joinStaysWithinLimit(world, pos, neighborPos));
+
+        if (world.isClientSide() && world.getBlockEntity(pos) instanceof OceanographerTableBlockEntity tank) {
+            tank.requestTankRescan();
+        }
+
         return state.setValue(connectionProperty(direction), connect);
     }
 

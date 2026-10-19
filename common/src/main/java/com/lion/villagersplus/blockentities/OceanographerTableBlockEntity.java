@@ -33,6 +33,7 @@ import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.fish.Pufferfish;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.component.CustomData;
@@ -66,6 +67,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     private Entity displayFish;
     private Item displayFishItem;
+    private Item failedFishItem;
     private boolean varianceInit;
     private float dirSign = 1.0F;
     private float speedMul = 1.0F;
@@ -248,13 +250,23 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         if (!(stack.getItem() instanceof MobBucketItem)) {
             this.displayFish = null;
             this.displayFishItem = null;
+            this.failedFishItem = null;
             this.fishHandedOff = false;
+            return;
+        }
+
+        if (stack.getItem() == this.failedFishItem) {
+            this.displayFish = null;
             return;
         }
 
         if (stack.getItem() != this.displayFishItem || this.displayFish == null) {
             this.displayFishItem = stack.getItem();
             this.displayFish = createFish(world, stack);
+
+            if (this.displayFish == null) {
+                this.failedFishItem = stack.getItem();
+            }
         }
         if (this.displayFish == null) {
             return;
@@ -598,6 +610,16 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     @Nullable
     private Entity createFish(Level world, ItemStack stack) {
+        try {
+            return buildFish(world, stack);
+        } catch (RuntimeException | LinkageError e) {
+            VillagersPlus.LOGGER.error("Cannot create the aquarium fish for {}.", BuiltInRegistries.ITEM.getKey(stack.getItem()), e);
+            return null;
+        }
+    }
+
+    @Nullable
+    private Entity buildFish(Level world, ItemStack stack) {
         if (!(stack.getItem() instanceof MobBucketItem bucketItem)) {
             return null;
         }
@@ -622,6 +644,10 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         fish.applyComponentsFromItemStack(stack);
         ((EntityAccessorMixin) fish).setWasTouchingWater(true);
         return fish;
+    }
+
+    public void requestTankRescan() {
+        this.tankRescanTimer = 0;
     }
 
     @Nullable

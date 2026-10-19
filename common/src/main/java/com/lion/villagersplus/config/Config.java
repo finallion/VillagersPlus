@@ -8,6 +8,9 @@ public interface Config {
         OmegaConfig.writeConfig((Class<Config>) getClass(), this);
     }
 
+    default void validate() {
+    }
+
     String getName();
 
     default String getModid() {
