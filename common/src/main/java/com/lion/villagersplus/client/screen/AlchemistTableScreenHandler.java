@@ -133,17 +133,6 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
             return 1;
         }
 
-        /*
-        public void onTakeItem(PlayerEntity player, ItemStack stack) {
-            Potion potion = PotionUtil.getPotion(stack);
-            if (player instanceof ServerPlayerEntity) {
-                Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
-            }
-
-            super.onTakeItem(player, stack);
-        }
-         */
-
         public static boolean matches(ItemStack stack) {
             return stack.isOf(Items.GLASS_BOTTLE) || stack.isOf(PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER).getItem());
         }

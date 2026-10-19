@@ -37,15 +37,14 @@ public class OceanographerTableBlock extends WorkstationBlock {
     public static final IntProperty FISH;
     public static final DirectionProperty FACING;
     public static final BooleanProperty IS_FILLED;
-    // Connections to adjacent aquariums; a connected side loses its glass wall (or lid/floor
-    // for vertical connections) so several blocks merge into one larger tank.
+    // A connected side loses its glass, so several blocks merge into one tank.
     public static final BooleanProperty NORTH;
     public static final BooleanProperty EAST;
     public static final BooleanProperty SOUTH;
     public static final BooleanProperty WEST;
     public static final BooleanProperty UP;
     public static final BooleanProperty DOWN;
-    // Sneak-placed aquariums never connect (in either direction).
+    // A sneak-placed aquarium never connects.
     public static final BooleanProperty STANDALONE;
 
     public OceanographerTableBlock(Settings settings) {
@@ -75,7 +74,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
         };
     }
 
-    /// Both blocks must be non-standalone aquariums to connect.
     private boolean connectsTo(BlockState state, BlockState neighborState) {
         return !state.get(STANDALONE) && neighborState.isOf(this) && !neighborState.get(STANDALONE);
     }
@@ -92,7 +90,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
             BlockState state,
             BlockEntityType<T> type
     ) {
-        // Only the client needs to tick: it drives the display fish's swim animation.
         if (!world.isClient) {
             return null;
         }
@@ -149,7 +146,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     return ActionResult.success(world.isClient);
                 }
 
-                // Bone meal grows the corals, shears trim them back down (mirrors the fish foods).
                 boolean isBoneMeal = itemStack.isOf(Items.BONE_MEAL);
                 boolean isShears = itemStack.isOf(Items.SHEARS);
 
@@ -192,7 +188,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     return ActionResult.success(world.isClient);
                 }
 
-                // No planting in stacked upper blocks - they have no floor for the corals.
+                // Stacked upper blocks have no floor for corals.
                 if (itemStack.isIn(VPTags.AQUARIUM_PLANTABLE_ITEMS) && state.get(CORALS) < 4 && !state.get(DOWN)) {
                     if (!blockEntity.insertCoral(itemStack, state.get(CORALS))) {
                         return ActionResult.PASS;
@@ -209,10 +205,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
                     return ActionResult.success(world.isClient);
                 } else if (itemStack.getItem() instanceof EntityBucketItem && state.get(FISH) < 1) {
-                    // Only set FISH if the slot was actually free; otherwise a desynced slot
-                    // would eat the state change without a fish. The tank is handed a copy, so
-                    // the stack in hand survives and can be exchanged for an empty bucket below -
-                    // the same trade vanilla's fish bucket makes when you release the fish.
                     if (!blockEntity.insertCoral(itemStack.copy(), OceanographerTableBlockEntity.FISH_SLOT)) {
                         return ActionResult.PASS;
                     }
@@ -228,17 +220,13 @@ public class OceanographerTableBlock extends WorkstationBlock {
                     }
 
                     return ActionResult.success(world.isClient);
-                    // Either bucket works: the tank holds its own water, so the empty one handed
-                    // back when the fish went in is enough to get it out again.
+                    // Either bucket works: the tank holds its own water.
                 } else if ((itemStack.isOf(Items.WATER_BUCKET) || itemStack.isOf(Items.BUCKET)) && state.get(FISH) >= 1) {
                     ItemStack fish = blockEntity.getStack(OceanographerTableBlockEntity.FISH_SLOT);
 
                     if (!fish.isEmpty()) {
                         if (!world.isClient()) {
                             ItemStack fishBucket = blockEntity.extractFish();
-                            // exchangeStack spends one bucket and hands back the fish bucket - into
-                            // the hand when that emptied the stack, into the inventory otherwise
-                            // (empty buckets stack, water buckets do not).
                             player.setStackInHand(hand, ItemUsage.exchangeStack(itemStack, player, fishBucket));
                             world.setBlockState(pos, state.with(FISH, 0), 3);
                             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -369,8 +357,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        // Connecting upward removes the upper block's floor - existing corals there would
-        // float in the water, so pop them out.
+        // Connecting upward removes the upper floor, so existing corals there pop out.
         if (!world.isClient && state.get(UP)) {
             BlockPos above = pos.up();
             BlockState aboveState = world.getBlockState(above);

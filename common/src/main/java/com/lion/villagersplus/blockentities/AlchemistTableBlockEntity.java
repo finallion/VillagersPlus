@@ -192,7 +192,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
             for (int i = 0; i < 3; ++i) {
                 ItemStack itemStack2 = (ItemStack) slots.get(i);
 
-                if (!itemStack2.isEmpty() /*&& BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)*/) {
+                if (!itemStack2.isEmpty()) {
                     return true;
                 }
             }
@@ -202,7 +202,6 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
     }
 
     private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
-        // ingredient slot
         ItemStack itemStack = slots.get(3);
         List<Potion> potions = Registries.POTION.getEntrySet().stream()
                 .map(Map.Entry::getValue)
@@ -244,11 +243,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readNbt(nbt, this.inventory);
         this.brewTime = nbt.getShort("BrewTime");
-        // itemBrewing is deliberately not serialized - it is only there to notice that the
-        // ingredient was swapped mid-brew. Without restoring it from the ingredient slot, a
-        // reloaded table wakes up with itemBrewing == null, tick() reads that as "the ingredient
-        // changed", aborts the running brew and starts a fresh one - which buys another gunpowder
-        // and restarts the 400 ticks. That is the gunpowder lost on every logout/login.
+        // itemBrewing is not saved. Restore it from the ingredient slot on load.
         if (this.brewTime > 0) {
             this.itemBrewing = this.inventory.get(3).getItem();
         }
@@ -293,7 +288,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
     public boolean isValid(int slot, ItemStack stack) {
         if (slot == 3) {
             return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
-        } else if (slot == 4) { // fuel
+        } else if (slot == 4) {
             return stack.isOf(Items.GUNPOWDER);
         } else {
             return stack.isOf(Items.GLASS_BOTTLE) && this.getStack(slot).isEmpty();

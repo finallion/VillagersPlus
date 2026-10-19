@@ -21,7 +21,7 @@ import java.util.Iterator;
 public class HorticulturistTableBlockEntity extends BlockEntity implements Inventory, SidedInventory {
     public static final float MIN_PLANT_SCALE = 0.5F;
     public static final float MAX_PLANT_SCALE = 2.0F;
-    // Tall plants at 2x would reach ~3 blocks and clip the block above / get section-culled.
+    // A 2x-scale plant pokes into the block above, which section culling hides.
     public static final float MAX_TALL_PLANT_SCALE = 1.5F;
     public static final float PLANT_SCALE_STEP = 0.25F;
 
@@ -87,7 +87,6 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         this.inventory.set(slot, ItemStack.EMPTY);
 
         if (this.isEmpty()) {
-            // A freshly planted tub always starts at normal size.
             this.plantScale = 1.0F;
         }
 
