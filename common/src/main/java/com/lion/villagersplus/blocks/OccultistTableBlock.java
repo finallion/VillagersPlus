@@ -119,14 +119,8 @@ public class OccultistTableBlock extends WorkstationBlock {
         }
     }
 
-    @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClientSide()) {
-            this.tryDropExperience((ServerLevel) world, pos, ItemStack.EMPTY, ConstantInt.of(table.getLevels()));
-        }
-
-        super.affectNeighborsAfterRemoval(state, world, pos, moved);
+    public void dropStoredExperience(ServerLevel world, BlockPos pos, int amount) {
+        this.tryDropExperience(world, pos, ItemStack.EMPTY, ConstantInt.of(amount));
     }
 
     @Override

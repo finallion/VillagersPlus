@@ -1,8 +1,10 @@
 package com.lion.villagersplus.blockentities;
 
 import com.lion.villagersplus.VillagersPlus;
+import com.lion.villagersplus.blocks.OccultistTableBlock;
 import com.lion.villagersplus.init.VPBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,34 +26,63 @@ public class OccultistTableBlockEntity extends BlockEntity {
     }
 
     public void interact(Level world, Player player) {
+        if (world.isClientSide()) {
+            return;
+        }
+
         if (player.isShiftKeyDown()) {
-            if (levels <= MAX_EXP_STORAGE - AMOUNT) {
-                if (player.totalExperience < AMOUNT) {
-                    if (!world.isClientSide()) {
-                        this.levels += player.totalExperience;
-                        player.giveExperiencePoints(-(player.totalExperience));
-                    }
-                } else {
-                    if (!world.isClientSide()) {
-                        player.giveExperiencePoints(-AMOUNT);
-                        this.levels += AMOUNT;
-                    }
-                }
-            }
+            deposit(player);
         } else {
-            if (levels > 0) {
-                if (levels >= AMOUNT) {
-                    if (!world.isClientSide()) {
-                        player.giveExperiencePoints(AMOUNT);
-                        this.levels -= AMOUNT;
-                    }
-                } else {
-                    if (!world.isClientSide()) {
-                        player.giveExperiencePoints(levels);
-                        this.levels = 0;
-                    }
-                }
-            }
+            withdraw(player);
+        }
+
+        setChanged();
+    }
+
+    private void deposit(Player player) {
+        if (levels > MAX_EXP_STORAGE - AMOUNT) {
+            return;
+        }
+
+        int amount = Math.min(AMOUNT, currentExperience(player));
+
+        if (amount > 0) {
+            player.giveExperiencePoints(-amount);
+            this.levels += amount;
+        }
+    }
+
+    private void withdraw(Player player) {
+        int amount = Math.min(AMOUNT, levels);
+
+        if (amount > 0) {
+            player.giveExperiencePoints(amount);
+            this.levels -= amount;
+        }
+    }
+
+    private static int currentExperience(Player player) {
+        int level = player.experienceLevel;
+        double pointsForLevels;
+
+        if (level <= 16) {
+            pointsForLevels = level * level + 6.0D * level;
+        } else if (level <= 31) {
+            pointsForLevels = 2.5D * level * level - 40.5D * level + 360.0D;
+        } else {
+            pointsForLevels = 4.5D * level * level - 162.5D * level + 2220.0D;
+        }
+
+        return (int) Math.round(pointsForLevels) + Math.round(player.experienceProgress * player.getXpNeededForNextLevel());
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState oldState) {
+        super.preRemoveSideEffects(pos, oldState);
+
+        if (getLevel() instanceof ServerLevel serverLevel && levels > 0 && oldState.getBlock() instanceof OccultistTableBlock block) {
+            block.dropStoredExperience(serverLevel, pos, levels);
+            levels = 0;
         }
     }
 
