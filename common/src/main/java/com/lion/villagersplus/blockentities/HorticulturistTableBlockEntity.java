@@ -163,6 +163,11 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Conta
         return SLOTS;
     }
 
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return false;
+    }
+
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
         return this.canPlaceItem(slot, stack);
     }

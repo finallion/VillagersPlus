@@ -34,6 +34,7 @@ public class OmegaConfig {
                     T object = GSON.fromJson(res.toString(), configClass);
 
                     object.save();
+                    object.validate();
                     return object;
                 } catch (Exception e) {
                     VillagersPlus.LOGGER.error(e.toString());
@@ -42,6 +43,7 @@ public class OmegaConfig {
                 }
             }
 
+            config.validate();
             return config;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
                 InvocationTargetException exception) {

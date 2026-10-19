@@ -134,7 +134,9 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
         if (state.getValue(FLOWERS) < 4) {
             if (holdingTall && state.getValue(FLOWERS) == 0) {
-                blockEntity.insertFlower(itemStack, state.getValue(FLOWERS));
+                if (!blockEntity.insertFlower(itemStack, state.getValue(FLOWERS))) {
+                    return InteractionResult.TRY_WITH_EMPTY_HAND;
+                }
 
                 if (!world.isClientSide()) {
                     world.setBlock(pos, state.setValue(FLOWERS, 4).setValue(IS_TALL_FLOWER, true).setValue(LIGHT, lightFor(blockEntity)), 3);
@@ -147,7 +149,9 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
                 return InteractionResult.SUCCESS;
             } else if (holdingSmall) {
-                blockEntity.insertFlower(itemStack, state.getValue(FLOWERS));
+                if (!blockEntity.insertFlower(itemStack, state.getValue(FLOWERS))) {
+                    return InteractionResult.TRY_WITH_EMPTY_HAND;
+                }
 
                 if (!world.isClientSide()) {
                     world.setBlock(pos, state.setValue(FLOWERS, state.getValue(FLOWERS) + 1).setValue(IS_TALL_FLOWER, false).setValue(LIGHT, lightFor(blockEntity)), 3);
