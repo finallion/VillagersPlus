@@ -156,7 +156,7 @@ public class AlchemistTableScreenHandler extends AbstractContainerMenu {
         }
 
         public static boolean matches(ItemStack stack) {
-            // A water bottle is the brew base. A stack without potion contents is not water.
+            // Water bottles do not match. Items without a potion component pass.
             PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
 
             if (contents != null && contents.is(Potions.WATER)) {

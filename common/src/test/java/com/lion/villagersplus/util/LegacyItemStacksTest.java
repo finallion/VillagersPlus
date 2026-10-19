@@ -80,7 +80,7 @@ class LegacyItemStacksTest {
         assertEquals(parse(entry), firstStack(chunk), "a current chunk must come back untouched");
     }
 
-    /// The vanilla chunk fixer must not rewrite the migrated entries again.
+    /// The vanilla fixer leaves the migrated entries as they are.
     @Test
     void vanillasChunkFixerLeavesTheMigratedEntriesAlone() {
         CompoundTag chunk = chunkWith("{Slot:1b,id:\"minecraft:coal\",Count:32b}");

@@ -24,7 +24,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 public class HorticulturistTableBlockEntity extends BlockEntity implements Container, WorldlyContainer {
     public static final float MIN_PLANT_SCALE = 0.5F;
     public static final float MAX_PLANT_SCALE = 2.0F;
-    // Tall plants at 2x reach about 3 blocks and get culled with the section above.
+    // A 2x-scale plant pokes into the block above, which section culling hides.
     public static final float MAX_TALL_PLANT_SCALE = 1.5F;
     public static final float PLANT_SCALE_STEP = 0.25F;
 

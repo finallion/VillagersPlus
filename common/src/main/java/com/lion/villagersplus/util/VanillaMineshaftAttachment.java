@@ -66,16 +66,15 @@ public final class VanillaMineshaftAttachment {
         return Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, path);
     }
 
-    /// Runs for every jigsaw structure. Returns early without a miner house.
+    /// Returns early without a miner house.
     public static void append(StructurePiecesBuilder collector, Structure.GenerationContext context) {
         for (PoolElementStructurePiece hut : findMinerHouses(collector)) {
             appendShaft(collector, context, hut);
         }
     }
 
-    /// Both tests keep no state, so they survive a reload of the structure start.
+    /// The checks use no state, so they work after a structure start reloads.
     public static boolean isBeardExempt(StructurePiece piece) {
-        // Only our pieces reach here, because vanilla mineshafts declare no adaptation.
         StructurePieceType type = piece.getType();
 
         if (type == StructurePieceType.MINE_SHAFT_CORRIDOR || type == StructurePieceType.MINE_SHAFT_CROSSING
@@ -164,7 +163,6 @@ public final class VanillaMineshaftAttachment {
         BoundingBox anchor = shaft.get(shaft.size() - 1).getBoundingBox();
         BlockPos center = anchor.getCenter();
 
-        // Seeded from the anchor, so the layout is independent of the shaft segment count.
         RandomSource random = randomFor(context, anchor);
 
         Direction direction = Direction.from2DDataValue(random.nextInt(4));
@@ -182,14 +180,14 @@ public final class VanillaMineshaftAttachment {
             default -> center.getZ() - 1;
         };
 
-        // Measure against an empty holder. The first corridor must overlap the shaft wall.
+        // Measure against an empty holder. The first corridor overlaps the shaft wall.
         BoundingBox box = MineshaftPieces.MineShaftCorridor.findCorridorSize(new StructurePiecesBuilder(), random, startX, y, startZ, direction);
 
         if (box == null) {
             return;
         }
 
-        // Later corridors use their own collector seeded with the shaft, so out-of-reach pieces are not taken.
+        // Stage the pieces apart from the real collector, so out-of-range ones stay out.
         StructurePiecesBuilder staging = new StructurePiecesBuilder();
         for (PoolElementStructurePiece piece : shaft) {
             staging.addPiece(piece);
@@ -208,14 +206,13 @@ public final class VanillaMineshaftAttachment {
         }
     }
 
-    /// Whether a piece is close enough to the village chunk to be placed. Structure references reach eight chunks.
+    /// Structure references reach eight chunks around the village chunk.
     private static boolean isReachable(ChunkPos origin, BoundingBox box) {
         int reach = 8 * 16;
         return box.minX() >= origin.getMinBlockX() - reach && box.maxX() <= origin.getMaxBlockX() + reach
                 && box.minZ() >= origin.getMinBlockZ() - reach && box.maxZ() <= origin.getMaxBlockZ() + reach;
     }
 
-    /// Positions a shaft template so its upward jigsaw lands on `connect`.
     private static PoolElementStructurePiece place(
             SinglePoolElement element,
             StructureTemplateManager templates,
@@ -235,7 +232,7 @@ public final class VanillaMineshaftAttachment {
         return new PoolElementStructurePiece(templates, element, pos, 0, rotation, box, LiquidSettings.APPLY_WATERLOGGING);
     }
 
-    /// World position of the jigsaw called `name` that points in `facing`, or null.
+    /// Returns null when no such jigsaw exists.
     private static BlockPos jigsawPos(
             StructurePoolElement element,
             StructureTemplateManager templates,

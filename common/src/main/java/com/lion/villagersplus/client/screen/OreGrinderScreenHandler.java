@@ -20,7 +20,6 @@ public class OreGrinderScreenHandler extends AbstractContainerMenu {
 
     private final Container inventory;
     private final ContainerData propertyDelegate;
-    /// Fuel values are per level, so the handler keeps its level.
     private final net.minecraft.world.level.Level world;
 
     public OreGrinderScreenHandler(int syncId, Inventory playerInventory) {

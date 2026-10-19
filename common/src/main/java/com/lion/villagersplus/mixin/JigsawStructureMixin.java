@@ -15,7 +15,6 @@ import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 @Mixin(JigsawStructure.class)
 public class JigsawStructureMixin {
 
-    /// Grows a vanilla mineshaft off the miner's shaft after the jigsaw run.
     @Inject(method = "findGenerationPoint", at = @At("RETURN"), cancellable = true)
     private void villagersplus$attachVanillaMineshaft(Structure.GenerationContext context, CallbackInfoReturnable<Optional<Structure.GenerationStub>> cir) {
         Optional<Structure.GenerationStub> result = cir.getReturnValue();

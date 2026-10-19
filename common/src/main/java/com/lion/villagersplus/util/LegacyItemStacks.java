@@ -14,8 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /// Converts this mod's stored inventories to the current item format when a world loads.
 ///
-/// Vanilla's chunk fixer skips modded block entities, so their `Items` lose counts, variants and enchantments.
-/// The conversion uses the vanilla fixer, driven by the `DataVersion` of the chunk file.
+/// Vanilla's fixer skips modded block entities.
 public final class LegacyItemStacks {
 
     private static final String BLOCK_ENTITIES = "block_entities";
@@ -23,14 +22,13 @@ public final class LegacyItemStacks {
     private static final String SLOT = "Slot";
     private static final String ID = "id";
 
-    /// Own logger, because the logger of [VillagersPlus] pulls in the config.
     private static final Logger LOGGER = LoggerFactory.getLogger(VillagersPlus.MOD_ID);
 
     private static volatile int announcedVersion;
 
     private LegacyItemStacks() {}
 
-    /// Rewrites the stored items of this mod's block entities in one chunk. -1 means no `DataVersion`.
+    /// A `DataVersion` of -1 means the chunk has none.
     public static void migrateChunk(CompoundTag chunkNbt, int fromVersion) {
         migrateChunk(chunkNbt, fromVersion, SharedConstants.getCurrentVersion().dataVersion().version());
     }
@@ -75,7 +73,6 @@ public final class LegacyItemStacks {
             try {
                 after = update(before, from, to);
             } catch (RuntimeException e) {
-                // Log the failing entry and continue. One bad entry does not stop the chunk.
                 LOGGER.error("Could not migrate {} in {}", before, id, e);
                 continue;
             }
