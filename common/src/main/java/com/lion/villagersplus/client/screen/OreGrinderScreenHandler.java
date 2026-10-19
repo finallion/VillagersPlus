@@ -25,7 +25,12 @@ public class OreGrinderScreenHandler extends AbstractContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(OreGrinderBlockEntity.INVENTORY_SIZE), new SimpleContainerData(4));
     }
 
-    public OreGrinderScreenHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData propertyDelegate) {
+    public OreGrinderScreenHandler(
+            int syncId,
+            Inventory playerInventory,
+            Container inventory,
+            ContainerData propertyDelegate
+    ) {
         super(VPScreens.ORE_GRINDER_SCREEN_HANDLER, syncId);
         checkContainerSize(inventory, OreGrinderBlockEntity.INVENTORY_SIZE);
         checkContainerDataCount(propertyDelegate, 4);
@@ -57,13 +62,16 @@ public class OreGrinderScreenHandler extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
+
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
+
             if (index == OreGrinderBlockEntity.OUTPUT_SLOT) {
                 if (!this.moveItemStackTo(itemStack2, INV_START, HOTBAR_END, true)) {
                     return ItemStack.EMPTY;
                 }
+
                 slot.onQuickCraft(itemStack2, itemStack);
             } else if (index >= INV_START) {
                 if (OreGrinderBlockEntity.canUseAsFuel(itemStack2)) {
@@ -117,9 +125,11 @@ public class OreGrinderScreenHandler extends AbstractContainerMenu {
 
     public int getFuelProgress() {
         int fuelTime = this.propertyDelegate.get(1);
+
         if (fuelTime == 0) {
             fuelTime = 200;
         }
+
         return this.propertyDelegate.get(0) * 13 / fuelTime;
     }
 

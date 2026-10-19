@@ -40,8 +40,10 @@ class LegacyItemStacksTest {
 
         CompoundTag enchantments = pickaxe.getCompoundOrEmpty("components")
                 .getCompoundOrEmpty("minecraft:enchantments");
-        assertTrue(enchantments.toString().contains("minecraft:efficiency"),
-                "enchantments after migration: " + pickaxe);
+        assertTrue(
+                enchantments.toString().contains("minecraft:efficiency"),
+                "enchantments after migration: " + pickaxe
+        );
     }
 
     /// The variant shape depends on the target version, not on the stored form.
@@ -51,10 +53,11 @@ class LegacyItemStacksTest {
                 "{Slot:0b,id:\"minecraft:tropical_fish_bucket\",Count:1b,tag:{BucketVariantTag:117506305}}");
 
         CompoundTag components = bucket.getCompoundOrEmpty("components");
-        assertTrue(components.contains("minecraft:tropical_fish/base_color"),
-                "fish variant after migration: " + bucket);
-        assertTrue(components.contains("minecraft:tropical_fish/pattern"),
-                "fish variant after migration: " + bucket);
+        assertTrue(
+                components.contains("minecraft:tropical_fish/base_color"),
+                "fish variant after migration: " + bucket
+        );
+        assertTrue(components.contains("minecraft:tropical_fish/pattern"), "fish variant after migration: " + bucket);
     }
 
     @Test
@@ -63,8 +66,7 @@ class LegacyItemStacksTest {
                 "{Slot:0b,id:\"minecraft:axolotl_bucket\",Count:1b,tag:{Variant:2,Age:0,Health:14.0f}}");
 
         CompoundTag components = bucket.getCompoundOrEmpty("components");
-        assertTrue(components.contains("minecraft:axolotl/variant"),
-                "axolotl variant after migration: " + bucket);
+        assertTrue(components.contains("minecraft:axolotl/variant"), "axolotl variant after migration: " + bucket);
     }
 
     @Test
@@ -88,8 +90,11 @@ class LegacyItemStacksTest {
         LegacyItemStacks.migrateChunk(chunk, MC_1_20_1);
         CompoundTag afterVanilla = DataFixTypes.CHUNK.update(DataFixers.getDataFixer(), chunk, MC_1_20_1, current);
 
-        assertEquals(32, firstStack(afterVanilla).getIntOr("count", -1),
-                "vanilla's fixer must not touch the entries again: " + afterVanilla);
+        assertEquals(
+                32,
+                firstStack(afterVanilla).getIntOr("count", -1),
+                "vanilla's fixer must not touch the entries again: " + afterVanilla
+        );
     }
 
     @Test

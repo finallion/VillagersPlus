@@ -25,7 +25,12 @@ public class AlchemistTableScreenHandler extends AbstractContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(5), new SimpleContainerData(2));
     }
 
-    public AlchemistTableScreenHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData propertyDelegate) {
+    public AlchemistTableScreenHandler(
+            int syncId,
+            Inventory playerInventory,
+            Container inventory,
+            ContainerData propertyDelegate
+    ) {
         super(VPScreens.ALCHEMIST_TABLE_SCREEN_HANDLER, syncId);
         checkContainerSize(inventory, 5);
         checkContainerDataCount(propertyDelegate, 2);
@@ -58,9 +63,11 @@ public class AlchemistTableScreenHandler extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);
+
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
+
             if ((index < 0 || index > 2) && index != 3 && index != 4) {
                 if (AlchemistTableScreenHandler.FuelSlot.matches(itemStack)) {
                     if (this.moveItemStackTo(itemStack2, 4, 5, false) || this.ingredientSlot.mayPlace(itemStack2) && !this.moveItemStackTo(itemStack2, 3, 4, false)) {
@@ -151,9 +158,11 @@ public class AlchemistTableScreenHandler extends AbstractContainerMenu {
         public static boolean matches(ItemStack stack) {
             // A water bottle is the brew base. A stack without potion contents is not water.
             PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+
             if (contents != null && contents.is(Potions.WATER)) {
                 return false;
             }
+
             return stack.is(Items.POTION) || stack.is(Items.SPLASH_POTION) || stack.is(Items.LINGERING_POTION);
         }
     }

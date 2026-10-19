@@ -28,8 +28,7 @@ public final class LegacyItemStacks {
 
     private static volatile int announcedVersion;
 
-    private LegacyItemStacks() {
-    }
+    private LegacyItemStacks() {}
 
     /// Rewrites the stored items of this mod's block entities in one chunk. -1 means no `DataVersion`.
     public static void migrateChunk(CompoundTag chunkNbt, int fromVersion) {
@@ -46,6 +45,7 @@ public final class LegacyItemStacks {
         for (int i = 0; i < blockEntities.size(); i++) {
             CompoundTag blockEntity = blockEntities.getCompoundOrEmpty(i);
             String id = blockEntity.getStringOr(ID, "");
+
             if (id.startsWith(VillagersPlus.MOD_ID + ":")) {
                 announce(fromVersion, current);
                 migrateInventory(blockEntity, id, fromVersion, current);
@@ -66,6 +66,7 @@ public final class LegacyItemStacks {
 
         for (int i = 0; i < items.size(); i++) {
             CompoundTag before = items.getCompoundOrEmpty(i);
+
             if (before.isEmpty()) {
                 continue;
             }
@@ -80,15 +81,23 @@ public final class LegacyItemStacks {
             }
 
             items.set(i, after);
+
             if (!changed.isEmpty()) {
                 changed.append(", ");
             }
+
             changed.append(describe(before, after));
         }
 
         if (!changed.isEmpty()) {
-            LOGGER.info("{} at {},{},{}: {}", id,
-                    blockEntity.getIntOr("x", 0), blockEntity.getIntOr("y", 0), blockEntity.getIntOr("z", 0), changed);
+            LOGGER.info(
+                    "{} at {},{},{}: {}",
+                    id,
+                    blockEntity.getIntOr("x", 0),
+                    blockEntity.getIntOr("y", 0),
+                    blockEntity.getIntOr("z", 0),
+                    changed
+            );
         }
     }
 
@@ -102,12 +111,15 @@ public final class LegacyItemStacks {
                 References.ITEM_STACK,
                 new Dynamic<>(NbtOps.INSTANCE, stack),
                 from,
-                to);
+                to
+        );
 
         CompoundTag result = (CompoundTag) fixed.getValue();
+
         if (slot != null) {
             result.put(SLOT, slot);
         }
+
         return result;
     }
 
@@ -116,12 +128,17 @@ public final class LegacyItemStacks {
         StringBuilder line = new StringBuilder()
                 .append("slot ").append(before.getIntOr(SLOT, -1))
                 .append(' ').append(after.getStringOr(ID, before.getStringOr(ID, "?")))
-                .append(' ').append(count(before)).append(" -> ").append(count(after));
+                .append(' ')
+                .append(count(before))
+                .append(" -> ")
+                .append(count(after));
 
         CompoundTag components = after.getCompoundOrEmpty("components");
+
         if (!components.isEmpty()) {
             line.append(' ').append(components.keySet());
         }
+
         return line.toString();
     }
 

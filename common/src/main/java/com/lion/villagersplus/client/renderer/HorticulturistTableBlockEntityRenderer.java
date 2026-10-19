@@ -89,7 +89,13 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
     }
 
     @Override
-    public void extractRenderState(HorticulturistTableBlockEntity blockEntity, State state, float tickProgress, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+    public void extractRenderState(
+            HorticulturistTableBlockEntity blockEntity,
+            State state,
+            float tickProgress,
+            Vec3 cameraPos,
+            ModelFeatureRenderer.CrumblingOverlay crumblingOverlay
+    ) {
         BlockEntityRenderState.extractBase(blockEntity, state, crumblingOverlay);
         NonNullList<ItemStack> inventory = blockEntity.getInventory();
         for (int n = 0; n < state.plants.length; n++) {
@@ -102,20 +108,24 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         for (BlockModelRenderState model : state.models) {
             model.clear();
         }
+
         if (!state.valid) {
             return;
         }
 
         state.tallFlower = tableState.getValue(HorticulturistTableBlock.IS_TALL_FLOWER);
         state.flowers = tableState.getValue(HorticulturistTableBlock.FLOWERS);
+
         if (state.tallFlower) {
             Block flower = state.plants[0];
+
             if (flower instanceof DoublePlantBlock) {
                 resolve(state.models[0], tallState(flower, DoubleBlockHalf.LOWER));
                 resolve(state.models[UPPER_HALF], tallState(flower, DoubleBlockHalf.UPPER));
             } else {
                 resolve(state.models[0], displayState(flower));
             }
+
             return;
         }
 
@@ -140,6 +150,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         if (state.tallFlower) {
             matrixStack.pushPose();
             Block flower = state.plants[0];
+
             if (flower instanceof DoublePlantBlock) {
                 matrixStack.translate(0.0D, 0.95D, 0.0D);
                 applyPlantScale(matrixStack, scale);
@@ -156,6 +167,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                 applyPlantScale(matrixStack, scale);
                 state.models[0].submit(matrixStack, queue, light, OverlayTexture.NO_OVERLAY, 0);
             }
+
             matrixStack.popPose();
             return;
         }
@@ -187,7 +199,15 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    private void renderFlowerAt(State state, int slot, float x, float y, float z, PoseStack matrixStack, SubmitNodeCollector queue) {
+    private void renderFlowerAt(
+            State state,
+            int slot,
+            float x,
+            float y,
+            float z,
+            PoseStack matrixStack,
+            SubmitNodeCollector queue
+    ) {
         matrixStack.pushPose();
         matrixStack.translate(x, y, z);
         applyPlantScale(matrixStack, state.plantScale);
@@ -199,6 +219,7 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         if (flower instanceof SegmentableBlock segmented) {
             return flower.defaultBlockState().setValue(segmented.getSegmentAmountProperty(), SegmentableBlock.MAX_SEGMENT);
         }
+
         return flower.defaultBlockState();
     }
 

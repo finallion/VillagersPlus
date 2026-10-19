@@ -38,11 +38,19 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static void registerItemGroup(ResourceKey<CreativeModeTab> registryKey, String name, String literalName, Supplier<Item> item) {
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, registryKey,
+    public static void registerItemGroup(
+            ResourceKey<CreativeModeTab> registryKey,
+            String name,
+            String literalName,
+            Supplier<Item> item
+    ) {
+        Registry.register(
+                BuiltInRegistries.CREATIVE_MODE_TAB,
+                registryKey,
                 FabricCreativeModeTab.builder()
                         .title(Component.literal(literalName))
-                        .icon(() -> new ItemStack(item.get())).build());
+                        .icon(() -> new ItemStack(item.get())).build()
+        );
     }
 
     public static void addToItemGroup(ResourceKey<CreativeModeTab> itemGroup, Item item) {
@@ -67,21 +75,33 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererProvider<T, S> renderProvider) {
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+            Supplier<BlockEntityType<T>> type,
+            BlockEntityRendererProvider<T, S> renderProvider
+    ) {
         BlockEntityRendererRegistry.register(type.get(), renderProvider);
     }
 
-    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(
+            String name,
+            Supplier<T> pointOfInterestType
+    ) {
         var registry = Registry.register(BuiltInRegistries.POINT_OF_INTEREST_TYPE, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, name), pointOfInterestType.get());
         return () -> registry;
     }
 
-    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
+    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(
+            String name,
+            Supplier<T> villagerProfession
+    ) {
         var registry = Registry.register(BuiltInRegistries.VILLAGER_PROFESSION, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, name), villagerProfession.get());
         return () -> registry;
     }
 
-    public static void registerStructureProcessorType(String name, MapCodec<? extends StructureProcessor> structureProcessorCodec) {
+    public static void registerStructureProcessorType(
+            String name,
+            MapCodec<? extends StructureProcessor> structureProcessorCodec
+    ) {
         Registry.register(BuiltInRegistries.STRUCTURE_PROCESSOR, Identifier.fromNamespaceAndPath(VillagersPlus.MOD_ID, name), structureProcessorCodec);
     }
 

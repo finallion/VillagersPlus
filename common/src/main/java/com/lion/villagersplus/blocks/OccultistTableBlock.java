@@ -45,7 +45,13 @@ public class OccultistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(
+            BlockState state,
+            Level world,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hit
+    ) {
         if (world.getBlockEntity(pos) instanceof OccultistTableBlockEntity tile && !player.isCreative()) {
             tile.interact(world, player);
 
@@ -79,8 +85,10 @@ public class OccultistTableBlock extends WorkstationBlock {
 
                 world.setBlock(pos, state, 2);
             }
+
             return InteractionResult.SUCCESS;
         }
+
         return InteractionResult.PASS;
 
     }
@@ -90,7 +98,18 @@ public class OccultistTableBlock extends WorkstationBlock {
         return true;
     }
 
-    public static <T extends ParticleOptions> void createParticleSpiral(Level world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int length, T type, RandomSource random) {
+    public static <T extends ParticleOptions> void createParticleSpiral(
+            Level world,
+            double x,
+            double y,
+            double z,
+            double velocityX,
+            double velocityY,
+            double velocityZ,
+            int length,
+            T type,
+            RandomSource random
+    ) {
         double yCoord = y + 1.1D;
 
         for (int i = 0; i < length; i++) {
@@ -98,6 +117,7 @@ public class OccultistTableBlock extends WorkstationBlock {
             double xCoord = x + Mth.sin(densityFactor) / 3;
             yCoord += 0.0075;
             double zCoord = z + Mth.cos(densityFactor) / 3;
+
             if (random.nextInt(7) == 0) {
                 world.addParticle(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
             }
