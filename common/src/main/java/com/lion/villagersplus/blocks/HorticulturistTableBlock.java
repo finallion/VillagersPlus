@@ -32,7 +32,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     public static final BooleanProperty IS_TALL_FLOWER;
     public static final IntegerProperty LIGHT;
 
-    /// Light of one torchflower. Four fill the tub: 4, 8, 12, 15.
+    /// One to four torchflowers give light levels 4, 8, 12 and 15.
     private static final int TORCHFLOWER_LIGHT = 4;
 
     private static final int MAX_LIGHT = 15;
@@ -45,7 +45,6 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 .setValue(LIGHT, 0));
     }
 
-    /// Runs the ambient effect of every planted block, anchored where the plants are drawn.
     @Override
     public void animateTick(BlockState state, Level world, BlockPos pos, net.minecraft.util.RandomSource random) {
         if (state.getValue(FLOWERS) == 0 || !(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
@@ -76,7 +75,6 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         return Math.min(light, MAX_LIGHT);
     }
 
-    /// Torchflower adds light only inside the tub. Other plants add the light they emit.
     private static int plantLight(Block plant) {
         if (plant == Blocks.TORCHFLOWER) {
             return TORCHFLOWER_LIGHT;
@@ -115,7 +113,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         boolean holdingBoneMeal = itemStack.is(Items.BONE_MEAL);
         boolean holdingShears = itemStack.is(Items.SHEARS);
 
-        // Bone meal and shears act before the removal fall-through.
+        // Bone meal and shears act first, so they do not remove a plant.
         if ((holdingBoneMeal || holdingShears) && state.getValue(FLOWERS) > 0) {
             if (!world.isClientSide()) {
                 float max = state.getValue(IS_TALL_FLOWER)

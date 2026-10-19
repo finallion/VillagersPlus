@@ -87,7 +87,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
         return !state.getValue(STANDALONE) && neighborState.is(this) && !neighborState.getValue(STANDALONE);
     }
 
-    /// Returns every aquarium in the tank of `start`, stopping at `budget` blocks.
     private Set<BlockPos> collectTank(LevelReader world, BlockPos start, int budget) {
         Set<BlockPos> tank = new HashSet<>();
         tank.add(start);
@@ -259,7 +258,6 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
                     return InteractionResult.SUCCESS;
                 } else if (itemStack.getItem() instanceof MobBucketItem && state.getValue(FISH) < 1) {
-                    // Set FISH only if the slot is empty. A desynced slot must not drop the change.
                     if (!blockEntity.insertCoral(itemStack.copy(), OceanographerTableBlockEntity.FISH_SLOT)) {
                         return InteractionResult.TRY_WITH_EMPTY_HAND;
                     }
@@ -357,7 +355,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
             BlockState neighborState,
             net.minecraft.util.RandomSource random
     ) {
-        // A seam that is open stays open. Only a seam that opens must fit the cap.
+        // An open seam stays open. Only a new seam is checked against the cap.
         boolean connect = this.connectsTo(state, neighborState)
                 && (state.getValue(connectionProperty(direction)) || joinStaysWithinLimit(world, pos, neighborPos));
 
@@ -370,7 +368,7 @@ public class OceanographerTableBlock extends WorkstationBlock {
 
     @Override
     public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
-        // Connecting upward removes the floor of the upper block. Drop its corals.
+        // Connecting upward removes the upper floor, so existing corals there pop out.
         if (!world.isClientSide() && state.getValue(UP)) {
             BlockPos above = pos.above();
             BlockState aboveState = world.getBlockState(above);

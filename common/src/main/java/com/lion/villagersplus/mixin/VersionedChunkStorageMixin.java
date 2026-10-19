@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/// Updates this mod's stored inventories while the chunk still carries its stored `DataVersion`.
+/// Migrates stored inventories while the chunk still has its original `DataVersion`.
+///
+/// The hook misses opened workstations, which skip `WorldChunk.loadBlockEntity`.
+/// Vanilla's fixer skips block entities with an unknown id.
 @Mixin(SimpleRegionStorage.class)
 public class VersionedChunkStorageMixin {
 

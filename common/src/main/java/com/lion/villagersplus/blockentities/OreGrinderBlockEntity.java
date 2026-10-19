@@ -150,7 +150,6 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             return GRIND_TIME_NO_PICKAXE;
         }
 
-        // Base grind time comes from the mining speed of the tool component.
         Tool tool = pickaxe.get(DataComponents.TOOL);
 
         if (tool == null) {
@@ -314,7 +313,6 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
         ItemStack pickaxeStack = this.inventory.get(PICKAXE_SLOT);
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
 
-        // Fortune adds to the base doubling. Efficiency only changes grind speed.
         int fortune = fortuneLevel();
         int count = scaledYield(baseResult);
 
@@ -348,7 +346,6 @@ public class OreGrinderBlockEntity extends BaseContainerBlockEntity implements W
             return;
         }
 
-        // Unbreaking reduces wear with the vanilla probability.
         int unbreaking = enchantmentLevel(this.level, Enchantments.UNBREAKING, pickaxe);
         int damage = Math.max(0, VillagersPlus.CONFIG.ore_grinder_pickaxe_damage);
         for (int i = 0; i < damage; i++) {

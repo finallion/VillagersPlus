@@ -16,9 +16,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.Nullable;
 
-/// Swaps a marker block for a randomly drawn ore while a template is placed.
-///
-/// The draw uses a seed from the block position, so the placement random stays untouched.
+/// The draw seeds from the block position.
 public class OreVeinProcessor implements StructureProcessor {
 
     public static final MapCodec<OreVeinProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
