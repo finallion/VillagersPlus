@@ -28,7 +28,6 @@ import net.minecraft.world.World;
 public class OccultistTableBlock extends WorkstationBlock {
     public static final IntProperty FILLING;
 
-    /** BlockWithEntity requires a codec as of 1.20.5; this block has no state beyond its settings. */
     public static final MapCodec<OccultistTableBlock> CODEC = createCodec(OccultistTableBlock::new);
 
     @Override
@@ -86,8 +85,10 @@ public class OccultistTableBlock extends WorkstationBlock {
 
                 world.setBlockState(pos, state, 2);
             }
+
             return ActionResult.success(world.isClient);
         }
+
         return ActionResult.PASS;
 
     }
@@ -99,7 +100,18 @@ public class OccultistTableBlock extends WorkstationBlock {
 
 
 
-    public static <T extends ParticleEffect> void createParticleSpiral(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int length, T type, Random random) {
+    public static <T extends ParticleEffect> void createParticleSpiral(
+            World world,
+            double x,
+            double y,
+            double z,
+            double velocityX,
+            double velocityY,
+            double velocityZ,
+            int length,
+            T type,
+            Random random
+    ) {
         double yCoord = y + 1.1D; // top of block
 
         for (int i = 0; i < length; i++) {
@@ -107,6 +119,7 @@ public class OccultistTableBlock extends WorkstationBlock {
             double xCoord = x + MathHelper.sin(densityFactor) / 3;
             yCoord += 0.0075;
             double zCoord = z + MathHelper.cos(densityFactor) / 3;
+
             if (random.nextInt(7) == 0) {
                 world.addParticle(type, xCoord, yCoord, zCoord, velocityX, velocityY, velocityZ);
             }
@@ -124,6 +137,7 @@ public class OccultistTableBlock extends WorkstationBlock {
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof OccultistTableBlockEntity table && !world.isClient()) {
                 this.dropExperienceWhenMined((ServerWorld) world, pos, ItemStack.EMPTY, ConstantIntProvider.create(table.getLevels()));
             }

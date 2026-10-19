@@ -6,10 +6,7 @@ import net.minecraft.structure.processor.StructureProcessorType;
 
 public class VPStructures {
 
-    /**
-     * Held as a constant because {@link OreVeinProcessor#getType()} has to hand back the very instance
-     * that was registered - Forge only puts it into the registry later, off the mod event bus.
-     */
+    /// `OreVeinProcessor#getType` must return this registered instance.
     public static final StructureProcessorType<OreVeinProcessor> ORE_VEIN = () -> OreVeinProcessor.CODEC;
 
     static {

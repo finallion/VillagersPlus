@@ -13,7 +13,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 public class OreGrinderScreenHandler extends ScreenHandler {
-    /** Number of machine slots before the player inventory begins. */
     private static final int MACHINE_SLOTS = OreGrinderBlockEntity.INVENTORY_SIZE;
     private static final int INV_START = MACHINE_SLOTS;
     private static final int HOTBAR_START = INV_START + 27;
@@ -26,7 +25,12 @@ public class OreGrinderScreenHandler extends ScreenHandler {
         this(syncId, playerInventory, new SimpleInventory(OreGrinderBlockEntity.INVENTORY_SIZE), new ArrayPropertyDelegate(4));
     }
 
-    public OreGrinderScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    public OreGrinderScreenHandler(
+            int syncId,
+            PlayerInventory playerInventory,
+            Inventory inventory,
+            PropertyDelegate propertyDelegate
+    ) {
         super(VPScreens.ORE_GRINDER_SCREEN_HANDLER, syncId);
         checkSize(inventory, OreGrinderBlockEntity.INVENTORY_SIZE);
         checkDataCount(propertyDelegate, 4);
@@ -58,14 +62,17 @@ public class OreGrinderScreenHandler extends ScreenHandler {
     public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
+
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
+
             if (index == OreGrinderBlockEntity.OUTPUT_SLOT) {
                 // From output into player inventory.
                 if (!this.insertItem(itemStack2, INV_START, HOTBAR_END, true)) {
                     return ItemStack.EMPTY;
                 }
+
                 slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index >= INV_START) {
                 // From player inventory into the machine.
@@ -123,9 +130,11 @@ public class OreGrinderScreenHandler extends ScreenHandler {
 
     public int getFuelProgress() {
         int fuelTime = this.propertyDelegate.get(1);
+
         if (fuelTime == 0) {
             fuelTime = 200;
         }
+
         return this.propertyDelegate.get(0) * 13 / fuelTime;
     }
 

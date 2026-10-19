@@ -43,8 +43,10 @@ class LegacyItemStacksTest {
                         + "tag:{Enchantments:[{id:\"minecraft:efficiency\",lvl:5s}],Damage:12}}");
 
         NbtCompound enchantments = pickaxe.getCompound("components").getCompound("minecraft:enchantments");
-        assertTrue(enchantments.toString().contains("minecraft:efficiency"),
-                "enchantments after migration: " + pickaxe);
+        assertTrue(
+                enchantments.toString().contains("minecraft:efficiency"),
+                "enchantments after migration: " + pickaxe
+        );
     }
 
     /// Up to 1.21.4 the variant rides along inside `bucket_entity_data`; 1.21.5 lifts it into
@@ -55,8 +57,7 @@ class LegacyItemStacksTest {
                 "{Slot:0b,id:\"minecraft:tropical_fish_bucket\",Count:1b,tag:{BucketVariantTag:117506305}}");
 
         NbtCompound bucketData = bucket.getCompound("components").getCompound("minecraft:bucket_entity_data");
-        assertEquals(117506305, bucketData.getInt("BucketVariantTag"),
-                "fish variant after migration: " + bucket);
+        assertEquals(117506305, bucketData.getInt("BucketVariantTag"), "fish variant after migration: " + bucket);
     }
 
     @Test
@@ -92,8 +93,11 @@ class LegacyItemStacksTest {
         LegacyItemStacks.migrateChunk(chunk, MC_1_20_1);
         NbtCompound afterVanilla = DataFixTypes.CHUNK.update(Schemas.getFixer(), chunk, MC_1_20_1, current);
 
-        assertEquals(32, firstStack(afterVanilla).getInt("count"),
-                "vanilla's fixer must not touch the entries again: " + afterVanilla);
+        assertEquals(
+                32,
+                firstStack(afterVanilla).getInt("count"),
+                "vanilla's fixer must not touch the entries again: " + afterVanilla
+        );
     }
 
     @Test

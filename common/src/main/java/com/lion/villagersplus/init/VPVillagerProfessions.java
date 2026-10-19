@@ -42,39 +42,64 @@ public class VPVillagerProfessions {
                     || registryEntry.value() == VPPointOfInterestTypes.HORTICULTURIST_WARPED_POI.get();
 
     static {
-        HORTICULTURIST = RegistryHelper.registerVillagerProfession("horticulturist", () -> new VillagerProfession(
-                VillagersPlus.createStringID("horticulturist"),
-                HORTICULTURIST_PREDICATE,
-                HORTICULTURIST_PREDICATE,
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_FARMER
-        ));
+        HORTICULTURIST = RegistryHelper.registerVillagerProfession(
+                "horticulturist",
+                () -> new VillagerProfession(
+                        VillagersPlus.createStringID("horticulturist"),
+                        HORTICULTURIST_PREDICATE,
+                        HORTICULTURIST_PREDICATE,
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_FARMER
+                )
+        );
 
-        OCCULTIST = RegistryHelper.registerVillagerProfession("occultist", () -> new VillagerProfession(
-                VillagersPlus.createStringID("occultist"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
-        ));
+        OCCULTIST = RegistryHelper.registerVillagerProfession(
+                "occultist",
+                () -> new VillagerProfession(
+                        VillagersPlus.createStringID("occultist"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCCULTIST_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
+                )
+        );
 
-        OCEANOGRAPHER = RegistryHelper.registerVillagerProfession("oceanographer", () -> new VillagerProfession(
-                VillagersPlus.createStringID("oceanographer"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ITEM_BUCKET_FILL
-        ));
+        OCEANOGRAPHER = RegistryHelper.registerVillagerProfession(
+                "oceanographer",
+                () -> new VillagerProfession(
+                        VillagersPlus.createStringID("oceanographer"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.OCEANOGRAPHER_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ITEM_BUCKET_FILL
+                )
+        );
 
-        ALCHEMIST = RegistryHelper.registerVillagerProfession("alchemist", () -> new VillagerProfession(
-                VillagersPlus.createStringID("alchemist"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
-        ));
+        ALCHEMIST = RegistryHelper.registerVillagerProfession(
+                "alchemist",
+                () -> new VillagerProfession(
+                        VillagersPlus.createStringID("alchemist"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.ALCHEMIST_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_CLERIC
+                )
+        );
 
-        MINER = RegistryHelper.registerVillagerProfession("miner", () -> new VillagerProfession(
-                VillagersPlus.createStringID("miner"),
-                holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
-                holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
-                ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH
-        ));
+        MINER = RegistryHelper.registerVillagerProfession(
+                "miner",
+                () -> new VillagerProfession(
+                        VillagersPlus.createStringID("miner"),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
+                        holder -> holder.value().equals(VPPointOfInterestTypes.MINER_POI.get()),
+                        ImmutableSet.of(),
+                        ImmutableSet.of(),
+                        SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH
+                )
+        );
     }
 }

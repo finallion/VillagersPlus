@@ -100,6 +100,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
 
     public static void tick(World world, BlockPos pos, BlockState state, AlchemistTableBlockEntity blockEntity) {
         ItemStack itemStack = blockEntity.inventory.get(4);
+
         if (blockEntity.fuel <= 0 && itemStack.isOf(Items.GUNPOWDER)) {
             blockEntity.fuel = 20;
             itemStack.decrement(1);
@@ -127,6 +128,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
             --blockEntity.brewTime;
             boolean bl3 = blockEntity.brewTime == 0;
             state = (BlockState) state.with(AlchemistTableBlock.IS_BREWING, true);
+
             if (world.random.nextInt(8) == 0) {
                 world.playSound(null, pos, SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 0.5F, 0.5F);
             }
@@ -152,9 +154,11 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         world.setBlockState(pos, state, 2);
 
         boolean[] bls = blockEntity.getSlotsEmpty();
+
         if (!Arrays.equals(bls, blockEntity.slotsEmptyLastTick)) {
             blockEntity.slotsEmptyLastTick = bls;
             BlockState blockState = state;
+
             if (!(state.getBlock() instanceof AlchemistTableBlock)) {
                 return;
             }
@@ -182,6 +186,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
 
     private static boolean canCraft(DefaultedList<ItemStack> slots) {
         ItemStack itemStack = (ItemStack) slots.get(3);
+
         if (itemStack.isEmpty()) {
             return false;
         } else if (!(itemStack.isOf(Items.LINGERING_POTION) || itemStack.isOf(Items.SPLASH_POTION) || itemStack.isOf(Items.POTION))) {
@@ -189,6 +194,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         } else {
             for (int i = 0; i < 3; ++i) {
                 ItemStack itemStack2 = (ItemStack) slots.get(i);
+
                 if (!itemStack2.isEmpty() /*&& BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)*/) {
                     return true;
                 }
@@ -205,6 +211,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         List<RegistryEntry<Potion>> potions = Registries.POTION.streamEntries().collect(Collectors.toList());
 
         int explosionChance = 0;
+
         if (VillagersPlus.CONFIG.can_explode) {
             explosionChance = world.getRandom().nextInt(VillagersPlus.CONFIG.explosion_chance);
         }
@@ -213,8 +220,10 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
             for (int i = 0; i < 3; ++i) {
                 if (!slots.get(i).isEmpty()) {
                     ItemStack brewed = new ItemStack(world.random.nextBoolean() ? Items.SPLASH_POTION : Items.POTION);
-                    brewed.set(DataComponentTypes.POTION_CONTENTS,
-                            new PotionContentsComponent(potions.get(world.random.nextInt(potions.size()))));
+                    brewed.set(
+                            DataComponentTypes.POTION_CONTENTS,
+                            new PotionContentsComponent(potions.get(world.random.nextInt(potions.size())))
+                    );
                     slots.set(i, brewed);
                 }
             }
@@ -232,10 +241,6 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         world.syncWorldEvent(1035, pos, 0);
     }
 
-    /**
-     * LockableContainerBlockEntity declares these abstract as of 1.20.5 so it can move the whole
-     * inventory in and out of the {@code container} item component.
-     */
     @Override
     protected DefaultedList<ItemStack> getHeldStacks() {
         return this.inventory;
@@ -259,6 +264,7 @@ public class AlchemistTableBlockEntity extends LockableContainerBlockEntity impl
         if (this.brewTime > 0) {
             this.itemBrewing = this.inventory.get(3).getItem();
         }
+
         this.fuel = nbt.getByte("Fuel");
     }
 

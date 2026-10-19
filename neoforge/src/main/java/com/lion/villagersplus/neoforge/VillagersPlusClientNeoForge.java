@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
-/** {@code @Mod.EventBusSubscriber} became a top-level {@code @EventBusSubscriber} in NeoForge. */
 @EventBusSubscriber(modid = VillagersPlus.MOD_ID, value = Dist.CLIENT)
 public class VillagersPlusClientNeoForge {
 
@@ -28,10 +27,7 @@ public class VillagersPlusClientNeoForge {
         event.enqueueWork(VillagersPlusClient::postInit);
     }
 
-    /**
-     * {@code HandledScreens.register} is private in vanilla; Fabric API widens it, NeoForge instead
-     * hands out this event. Registering here rather than in client setup is also the supported order.
-     */
+    /// Registers the screens here, because `HandledScreens.register` is private in vanilla.
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(VPScreens.ALCHEMIST_TABLE_SCREEN_HANDLER, AlchemistTableScreen::new);

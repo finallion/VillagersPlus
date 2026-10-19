@@ -39,11 +39,19 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static void registerItemGroup(RegistryKey<ItemGroup> registryKey, String name, String literalName, Supplier<Item> item) {
-        Registry.register(Registries.ITEM_GROUP, registryKey,
+    public static void registerItemGroup(
+            RegistryKey<ItemGroup> registryKey,
+            String name,
+            String literalName,
+            Supplier<Item> item
+    ) {
+        Registry.register(
+                Registries.ITEM_GROUP,
+                registryKey,
                 FabricItemGroup.builder()
                         .displayName(Text.literal(literalName))
-                        .icon(() -> new ItemStack(item.get())).build());
+                        .icon(() -> new ItemStack(item.get())).build()
+        );
     }
 
     public static void addToItemGroup(RegistryKey<ItemGroup> itemGroup, Item item) {
@@ -73,16 +81,25 @@ public class RegistryHelperImpl {
         return () -> registry;
     }
 
-    public static <T extends BlockEntity> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererFactory<T> renderProvider) {
+    public static <T extends BlockEntity> void registerBlockEntityRenderer(
+            Supplier<BlockEntityType<T>> type,
+            BlockEntityRendererFactory<T> renderProvider
+    ) {
         BlockEntityRendererRegistry.register(type.get(), renderProvider);
     }
 
-    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PointOfInterestType> Supplier<T> registerPointOfInterestType(
+            String name,
+            Supplier<T> pointOfInterestType
+    ) {
         var registry = Registry.register(Registries.POINT_OF_INTEREST_TYPE, Identifier.of(VillagersPlus.MOD_ID, name), pointOfInterestType.get());
         return () -> registry;
     }
 
-    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
+    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(
+            String name,
+            Supplier<T> villagerProfession
+    ) {
         var registry = Registry.register(Registries.VILLAGER_PROFESSION, Identifier.of(VillagersPlus.MOD_ID, name), villagerProfession.get());
         return () -> registry;
     }
