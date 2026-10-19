@@ -1,5 +1,6 @@
 package com.lion.villagersplus.blockentities;
 
+import com.lion.villagersplus.VillagersPlus;
 import com.lion.villagersplus.blocks.OceanographerTableBlock;
 import com.lion.villagersplus.init.VPBlockEntities;
 import com.lion.villagersplus.mixin.EntityAccessorMixin;
@@ -19,6 +20,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.item.ItemStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -64,6 +66,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     // --- Client-only display/animation state (never serialized) ---
     private Entity displayFish;
     private Item displayFishItem;
+    private Item failedFishItem;
     private boolean varianceInit;
     private float dirSign = 1.0F;
     private float speedMul = 1.0F;
@@ -284,13 +287,23 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (!(stack.getItem() instanceof EntityBucketItem)) {
             this.displayFish = null;
             this.displayFishItem = null;
+            this.failedFishItem = null;
             this.fishHandedOff = false;
+            return;
+        }
+
+        if (stack.getItem() == this.failedFishItem) {
+            this.displayFish = null;
             return;
         }
 
         if (stack.getItem() != this.displayFishItem || this.displayFish == null) {
             this.displayFishItem = stack.getItem();
             this.displayFish = createFish(world, stack);
+
+            if (this.displayFish == null) {
+                this.failedFishItem = stack.getItem();
+            }
         }
         if (this.displayFish == null) {
             return;
@@ -675,6 +688,16 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
     @Nullable
     private Entity createFish(World world, ItemStack stack) {
+        try {
+            return buildFish(world, stack);
+        } catch (RuntimeException | LinkageError e) {
+            VillagersPlus.LOGGER.error("Cannot create the aquarium fish for {}.", Registries.ITEM.getId(stack.getItem()), e);
+            return null;
+        }
+    }
+
+    @Nullable
+    private Entity buildFish(World world, ItemStack stack) {
         if (!(stack.getItem() instanceof EntityBucketItem bucketItem)) {
             return null;
         }
@@ -705,6 +728,10 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         }
         ((EntityAccessorMixin) fish).setTouchingWater(true);
         return fish;
+    }
+
+    public void requestTankRescan() {
+        this.tankRescanTimer = 0;
     }
 
     @Nullable

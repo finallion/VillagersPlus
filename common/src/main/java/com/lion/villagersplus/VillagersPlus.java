@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 public class VillagersPlus {
 	public static final String MOD_ID = "villagersplus";
-	public static final VPConfig CONFIG = OmegaConfig.register(VPConfig.class);
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final VPConfig CONFIG = OmegaConfig.register(VPConfig.class);
 
 	public static VPConfig getConfig() {
 		return CONFIG;
