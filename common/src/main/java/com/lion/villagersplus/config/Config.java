@@ -1,10 +1,8 @@
 package com.lion.villagersplus.config;
 
 
-/**
- * @author Draylar
- * <a href="https://github.com/Draylar/omega-config">https://github.com/Draylar/omega-config</a>
- */
+/// Based on OmegaConfig by Draylar.
+/// https://github.com/Draylar/omega-config
 @SuppressWarnings({"unchecked"})
 public interface Config {
 

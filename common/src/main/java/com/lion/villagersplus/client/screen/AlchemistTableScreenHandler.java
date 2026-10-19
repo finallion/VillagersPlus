@@ -21,7 +21,12 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
         this(syncId, playerInventory, new SimpleInventory(5), new ArrayPropertyDelegate(2));
     }
 
-    public AlchemistTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    public AlchemistTableScreenHandler(
+            int syncId,
+            PlayerInventory playerInventory,
+            Inventory inventory,
+            PropertyDelegate propertyDelegate
+    ) {
         super(VPScreens.ALCHEMIST_TABLE_SCREEN_HANDLER, syncId);
         checkSize(inventory, 5);
         checkDataCount(propertyDelegate, 2);
@@ -54,9 +59,11 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
     public ItemStack quickMove(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);
+
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
+
             if ((index < 0 || index > 2) && index != 3 && index != 4) {
                 if (AlchemistTableScreenHandler.FuelSlot.matches(itemStack)) {
                     if (this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false)) {
@@ -159,6 +166,7 @@ public class AlchemistTableScreenHandler extends ScreenHandler {
             if (PotionUtil.getPotion(stack) == PotionUtil.getPotion(PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER))) {
                 return false;
             }
+
             return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION);
         }
     }

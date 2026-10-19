@@ -33,7 +33,9 @@ public class OreGrinderBlock extends WorkstationBlock {
 
     public OreGrinderBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, false));
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(FACING, Direction.NORTH)
+                .with(LIT, false));
     }
 
     @Override
@@ -42,15 +44,27 @@ public class OreGrinderBlock extends WorkstationBlock {
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            World world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
         return world.isClient ? null : checkType(type, VPBlockEntities.ORE_GRINDER_BLOCK_ENTITY.get(), OreGrinderBlockEntity::tick);
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(
+            BlockState state,
+            World world,
+            BlockPos pos,
+            PlayerEntity player,
+            Hand hand,
+            BlockHitResult hit
+    ) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof OreGrinderBlockEntity) {
                 player.openHandledScreen((OreGrinderBlockEntity) blockEntity);
             }
@@ -62,6 +76,7 @@ public class OreGrinderBlock extends WorkstationBlock {
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         if (itemStack.hasCustomName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof OreGrinderBlockEntity) {
                 ((OreGrinderBlockEntity) blockEntity).setCustomName(itemStack.getName());
             }
@@ -87,6 +102,7 @@ public class OreGrinderBlock extends WorkstationBlock {
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof OreGrinderBlockEntity) {
                 ItemScatterer.spawn(world, pos, (OreGrinderBlockEntity) blockEntity);
             }

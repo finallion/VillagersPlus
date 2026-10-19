@@ -84,7 +84,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     // Water spans y 2/16 .. 14/16 inside a block (floor slab / lid slab).
     private static final float FLOOR_HEIGHT = 0.125F;
 
-    /** Offsets (relative to this block) of all blocks forming the connected tank, packed via BlockPos.asLong. */
+    /// Offsets are relative to this block and packed with `BlockPos.asLong`.
     private final LongOpenHashSet tankBlocks = new LongOpenHashSet();
     private final LongArrayList tankBlockList = new LongArrayList();
     private int tankRescanTimer;
@@ -100,9 +100,9 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     private float prevWanderPitch;
     private net.minecraft.util.math.random.Random wanderRandom;
 
-    /** Block entities whose fish currently swims inside this block; see {@link #handOffFishToHost}. */
+    /// Owners whose fish this block draws for them.
     private final List<OceanographerTableBlockEntity> guestFish = new ArrayList<>();
-    /** Set while another aquarium of the tank has taken over drawing this block's fish. */
+    /// Set while another aquarium of the tank draws this block's fish.
     private boolean fishHandedOff;
 
     public OceanographerTableBlockEntity(BlockPos pos, BlockState state) {
@@ -132,21 +132,18 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return this.stationary;
     }
 
-    /** Toggles between free swimming and hovering animated in the centre. */
     public void toggleStationary() {
         this.stationary = !this.stationary;
         this.updateListeners();
     }
 
-    /**
-     * Adjusts the aquarium animal's display size by {@code delta}, clamped to [MIN, MAX].
-     * @return true if the size actually changed (i.e. it was not already at the limit).
-     */
     public boolean adjustFishScale(float delta) {
         float next = MathHelper.clamp(this.fishScale + delta, MIN_FISH_SCALE, MAX_FISH_SCALE);
+
         if (next == this.fishScale) {
             return false;
         }
+
         this.fishScale = next;
         this.updateListeners();
         return true;
@@ -156,25 +153,18 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return this.coralScale;
     }
 
-    /**
-     * Adjusts the corals' display size by {@code delta}, clamped to [MIN, MAX].
-     * @return true if the size actually changed (i.e. it was not already at the limit).
-     */
     public boolean adjustCoralScale(float delta) {
         float next = MathHelper.clamp(this.coralScale + delta, MIN_CORAL_SCALE, MAX_CORAL_SCALE);
+
         if (next == this.coralScale) {
             return false;
         }
+
         this.coralScale = next;
         this.updateListeners();
         return true;
     }
 
-    /**
-     * Removes the fish bucket (slot {@link #FISH_SLOT}) and resets the feeding state,
-     * syncing the change to watching clients.
-     * @return the stored fish bucket stack
-     */
     public ItemStack extractFish() {
         ItemStack fishBucket = this.inventory.get(FISH_SLOT);
         this.inventory.set(FISH_SLOT, ItemStack.EMPTY);
@@ -184,17 +174,18 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return fishBucket;
     }
 
-    /** Pops all planted corals out of the tank (used when this block loses its floor). */
     public void ejectCorals() {
         boolean changed = false;
         for (int slot = 0; slot < 4; slot++) {
             ItemStack coral = this.inventory.get(slot);
+
             if (!coral.isEmpty()) {
                 net.minecraft.util.ItemScatterer.spawn(this.world, this.pos.getX() + 0.5D, this.pos.getY() + 1.1D, this.pos.getZ() + 0.5D, coral);
                 this.inventory.set(slot, ItemStack.EMPTY);
                 changed = true;
             }
         }
+
         if (changed) {
             // Freshly planted corals always start at normal size again.
             this.coralScale = 1.0F;
@@ -204,11 +195,13 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
     public boolean insertCoral(ItemStack coral, int slot) {
         ItemStack itemStack = (ItemStack)this.inventory.get(slot);
+
         if (itemStack.isEmpty()) {
             this.inventory.set(slot, coral.split(1));
             this.updateListeners();
             return true;
         }
+
         return false;
     }
 
@@ -273,6 +266,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
     private void animateFish(World world) {
         ItemStack stack = this.inventory.get(FISH_SLOT);
+
         if (!(stack.getItem() instanceof EntityBucketItem)) {
             this.displayFish = null;
             this.displayFishItem = null;
@@ -294,9 +288,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
                 this.failedFishItem = stack.getItem();
             }
         }
+
         if (this.displayFish == null) {
             return;
         }
+
         if (!this.varianceInit) {
             initVariance();
         }
@@ -354,6 +350,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (fish instanceof PufferfishEntity puffer) {
             if (this.puffTimer > 0) {
                 this.puffTimer--;
+
                 if (this.puffTimer == 0) {
                     puffer.setPuffState(0);
                 }
@@ -366,6 +363,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
 
         // Axolotl: occasionally do a playful barrel roll around its own axis.
         this.prevRoll = this.roll;
+
         if (fish instanceof AxolotlEntity) {
             if (this.rollTimer > 0) {
                 this.rollTimer--;
@@ -373,6 +371,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
             } else {
                 this.roll = 0.0F;
                 this.prevRoll = 0.0F;
+
                 if (--this.rollCooldown <= 0) {
                     this.rollTimer = TUMBLE_DURATION;
                     this.rollCooldown = 160 + (int) (this.speedMul * 80.0F);
@@ -383,37 +382,27 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         this.handOffFishToHost(world);
     }
 
-    /**
-     * Hands the fish to the aquarium block it is currently swimming in.
-     *
-     * <p>The fish is animated in tank-local coordinates, so in a connected tank it travels several
-     * blocks - and with them across chunk section borders - away from the block entity that owns it.
-     * Drawing it from the owner made its visibility depend on whether the *owner's* section survived
-     * culling rather than the one the fish is actually in, so it blinked out while the glass around
-     * it stayed on screen. Handing it over ties it to the section the player is looking at.
-     *
-     * <p>If the target block is not an aquarium after all (a stale scan, a half-loaded chunk), the
-     * hand-over is skipped and the owner keeps drawing it - a fish in the wrong section beats no
-     * fish at all.
-     */
+    /// Hands the fish to the aquarium block it swims in, so section culling uses the right block.
     private void handOffFishToHost(World world) {
         this.fishHandedOff = false;
         int bx = MathHelper.floor(this.fishX);
         int by = MathHelper.floor(this.fishY);
         int bz = MathHelper.floor(this.fishZ);
+
         if (bx == 0 && by == 0 && bz == 0) {
             return; // still in its own block
         }
+
         if (world.getBlockEntity(this.pos.add(bx, by, bz)) instanceof OceanographerTableBlockEntity host
                 && host != this) {
             if (!host.guestFish.contains(this)) {
                 host.guestFish.add(this);
             }
+
             this.fishHandedOff = true;
         }
     }
 
-    /** {@return whether this block's fish currently sits in the aquarium at {@code blockPos}} */
     public boolean isFishInBlock(BlockPos blockPos) {
         return this.displayFish != null
                 && this.pos.getX() + MathHelper.floor(this.fishX) == blockPos.getX()
@@ -421,12 +410,10 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
                 && this.pos.getZ() + MathHelper.floor(this.fishZ) == blockPos.getZ();
     }
 
-    /** {@return whether this block entity still draws its own fish} */
     public boolean drawsOwnFish() {
         return this.displayFish != null && !this.fishHandedOff;
     }
 
-    /** {@return the owners whose fish this block currently draws on their behalf} */
     public List<OceanographerTableBlockEntity> getGuestFish() {
         return this.guestFish;
     }
@@ -442,11 +429,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         }
     }
 
-    /**
-     * Flood-fills the connected aquarium blocks around this one (tank-local offsets, all six
-     * directions). Follows the blocks' connection properties, so sneak-placed standalone
-     * aquariums are never counted into the tank.
-     */
+    /// Flood-fills the connected aquariums around this one as tank-local offsets.
     private void rescanTank(World world) {
         this.tankBlocks.clear();
         this.tankBlockList.clear();
@@ -456,15 +439,19 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         while (!queue.isEmpty() && this.tankBlocks.size() < MAX_TANK_BLOCKS) {
             BlockPos current = queue.poll();
             BlockState currentState = world.getBlockState(current);
+
             if (!(currentState.getBlock() instanceof OceanographerTableBlock)) {
                 continue;
             }
+
             for (Direction direction : Direction.values()) {
                 if (!currentState.get(OceanographerTableBlock.connectionProperty(direction))) {
                     continue;
                 }
+
                 BlockPos next = current.offset(direction);
                 long key = BlockPos.asLong(next.getX() - this.pos.getX(), next.getY() - this.pos.getY(), next.getZ() - this.pos.getZ());
+
                 if (!this.tankBlocks.contains(key) && world.getBlockState(next).getBlock() instanceof OceanographerTableBlock) {
                     this.tankBlocks.add(key);
                     queue.add(next);
@@ -474,6 +461,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         this.tankBlockList.addAll(this.tankBlocks);
         boolean wasMulti = this.multiTank;
         this.multiTank = this.tankBlocks.size() > 1;
+
         if (this.multiTank != wasMulti) {
             this.hasTarget = false;
         }
@@ -482,6 +470,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
     private void wanderTank() {
         float inset = this.wallInset();
         float insetY = this.verticalInset();
+
         if (!this.isInsideTank(this.fishX, this.fishY, this.fishZ, 0.0F, 0.0F)) {
             // The tank shrank under the fish (a block was broken): snap back home.
             this.fishX = this.prevFishX = 0.5D;
@@ -495,28 +484,34 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
             this.swimClearOfWalls(inset, insetY);
             return;
         }
+
         double dx = this.targetX - this.fishX;
         double dy = this.targetY - this.fishY;
         double dz = this.targetZ - this.fishZ;
+
         if (!this.hasTarget || dx * dx + dy * dy + dz * dz < 0.04D || --this.repathTimer <= 0) {
             this.pickWanderTarget(inset, insetY);
             dx = this.targetX - this.fishX;
             dz = this.targetZ - this.fishZ;
         }
+
         // Steer smoothly toward the target, then swim along the current heading; when the target
         // is (almost) straight above/below, keep the current heading and just rise/sink.
         float maxTurn = 4.0F * this.speedMul;
+
         if (dx * dx + dz * dz > 0.0025D) {
             float desiredYaw = (float) Math.toDegrees(MathHelper.atan2(-dx, dz));
             float turn = MathHelper.clamp(MathHelper.subtractAngles(this.wanderYaw, desiredYaw), -maxTurn, maxTurn);
             this.wanderYaw = MathHelper.wrapDegrees(this.wanderYaw + turn);
         }
+
         double speed = 0.016D * this.speedMul;
         double rad = Math.toRadians(this.wanderYaw);
         double vy = MathHelper.clamp(this.targetY - this.fishY, -speed * 0.5D, speed * 0.5D);
         double nx = this.fishX - Math.sin(rad) * speed;
         double ny = this.fishY + vy;
         double nz = this.fishZ + Math.cos(rad) * speed;
+
         if (this.isInsideTank(nx, ny, nz, inset, insetY)) {
             this.fishX = nx;
             this.fishY = ny;
@@ -535,26 +530,33 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         }
     }
 
-    /**
-     * Swims the fish back into the part of its block that keeps the required clearance from the
-     * glass, floor and lid. Used when that region shrank around the fish rather than the fish
-     * swimming into it, which the regular wander steps cannot resolve: from inside the margin
-     * every candidate step is still inside it, so the fish would sit motionless in the glass.
-     */
+    /// Swims the fish back out of the clearance margin, which wander steps cannot do.
     private void swimClearOfWalls(float inset, float insetY) {
         int bx = MathHelper.floor(this.fishX);
         int by = MathHelper.floor(this.fishY);
         int bz = MathHelper.floor(this.fishZ);
         float insetFloor = FLOOR_HEIGHT + insetY;
-        double safeX = clampBetweenWalls(this.fishX, bx, inset,
+        double safeX = clampBetweenWalls(
+                this.fishX,
+                bx,
+                inset,
                 this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)),
-                this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)));
-        double safeY = clampBetweenWalls(this.fishY, by, insetFloor,
+                this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz))
+        );
+        double safeY = clampBetweenWalls(
+                this.fishY,
+                by,
+                insetFloor,
                 this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)),
-                this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)));
-        double safeZ = clampBetweenWalls(this.fishZ, bz, inset,
+                this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz))
+        );
+        double safeZ = clampBetweenWalls(
+                this.fishZ,
+                bz,
+                inset,
                 this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)),
-                this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)));
+                this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1))
+        );
 
         double dx = safeX - this.fishX;
         double dy = safeY - this.fishY;
@@ -571,22 +573,20 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
             float turn = MathHelper.clamp(MathHelper.subtractAngles(this.wanderYaw, desiredYaw), -maxTurn, maxTurn);
             this.wanderYaw = MathHelper.wrapDegrees(this.wanderYaw + turn);
         }
+
         this.wanderPitch = approachDegrees(this.wanderPitch, 0.0F, 3.0F);
         this.hasTarget = false;
     }
 
-    /**
-     * Clamps one coordinate into the part of cell {@code cell} that stays {@code margin} away from
-     * the walls on either side; a side with a connected neighbour has no wall to clear. The extra
-     * epsilon keeps the result strictly inside {@link #isInsideTank}'s bounds, so the recovery
-     * always terminates instead of hovering on the boundary.
-     */
+    /// Clamps one coordinate into the cell, `margin` away from walls. Sides with a neighbour have no wall.
     private static double clampBetweenWalls(double value, int cell, float margin, boolean openLow, boolean openHigh) {
         double min = openLow ? cell : cell + margin + 1.0E-3D;
         double max = openHigh ? cell + 1.0D : cell + 1.0D - margin - 1.0E-3D;
+
         if (min > max) {
             return cell + 0.5D; // clearances overlap (fish too big for the cell): aim for the centre
         }
+
         return MathHelper.clamp(value, min, max);
     }
 
@@ -598,6 +598,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
             double tx = rel.getX() + inset + r.nextDouble() * (1.0D - 2.0D * inset);
             double ty = rel.getY() + FLOOR_HEIGHT + insetY + r.nextDouble() * Math.max(0.0D, 1.0D - 2.0D * (FLOOR_HEIGHT + insetY));
             double tz = rel.getZ() + inset + r.nextDouble() * (1.0D - 2.0D * inset);
+
             if (this.isPathClear(tx, ty, tz, inset, insetY)) {
                 this.targetX = tx;
                 this.targetY = ty;
@@ -615,12 +616,12 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         this.repathTimer = 100;
     }
 
-    /** Keeps larger (fed) fish further away from the glass so they don't clip through it. */
+    /// Larger fed fish keep more distance from the glass.
     private float wallInset() {
         return MathHelper.clamp(0.18F * this.fishScale + 0.12F, 0.2F, 0.45F);
     }
 
-    /** Extra distance to floor and lid on top of the slab height. */
+    /// Extra distance to floor and lid on top of the slab height.
     private float verticalInset() {
         return MathHelper.clamp(0.1F * this.fishScale + 0.08F, 0.1F, 0.3F);
     }
@@ -629,16 +630,36 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         int bx = MathHelper.floor(x);
         int by = MathHelper.floor(y);
         int bz = MathHelper.floor(z);
+
         if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz))) {
             return false;
         }
+
         // Only sides without a connected neighbour have glass / floor / lid; keep the inset there.
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)) && x - bx < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)) && bx + 1 - x < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)) && z - bz < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)) && bz + 1 - z < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)) && y - by < FLOOR_HEIGHT + insetY) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)) && by + 1 - y < FLOOR_HEIGHT + insetY) return false;
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)) && x - bx < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)) && bx + 1 - x < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)) && z - bz < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)) && bz + 1 - z < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)) && y - by < FLOOR_HEIGHT + insetY) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)) && by + 1 - y < FLOOR_HEIGHT + insetY) {
+            return false;
+        }
+
         return true;
     }
 
@@ -648,6 +669,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         int steps = Math.max(1, (int) Math.ceil(dist / 0.2D));
         for (int i = 1; i <= steps; i++) {
             double t = (double) i / steps;
+
             if (!this.isInsideTank(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, z0 + (z1 - z0) * t, inset, insetY)) {
                 return false;
             }
@@ -660,7 +682,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return current + diff;
     }
 
-    /** Deterministic per-tub variance so neighbouring aquariums don't all swim identically. */
+    /// Variance per tub, so neighbouring aquariums do not swim in sync.
     private void initVariance() {
         net.minecraft.util.math.random.Random r = net.minecraft.util.math.random.Random.create(this.pos.asLong());
         this.dirSign = r.nextBoolean() ? 1.0F : -1.0F;
@@ -690,18 +712,24 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         if (!(stack.getItem() instanceof EntityBucketItem bucketItem)) {
             return null;
         }
+
         EntityType<?> type = ((DuckBucketable) bucketItem).getEntityType();
+
         if (type == null) {
             return null;
         }
+
         Entity fish = type.create(world);
+
         if (fish == null) {
             return null;
         }
+
         if (stack.getNbt() != null) {
             if (fish instanceof AxolotlEntity axolotl && stack.getNbt().contains("Variant")) {
                 axolotl.setVariant(AxolotlEntity.Variant.byId(stack.getNbt().getInt("Variant")));
             }
+
             if (fish instanceof TropicalFishEntity && stack.getNbt().contains("BucketVariantTag")) {
                 fish.readNbt(stack.getOrCreateNbt());
                 int id = stack.getNbt().getInt("BucketVariantTag");
@@ -711,6 +739,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
                 ((TropicalFishEntityInvoker) fish).setTropicalFishVariantMixin(variant.getId());
             }
         }
+
         ((EntityAccessorMixin) fish).setTouchingWater(true);
         return fish;
     }
@@ -728,7 +757,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return this.multiTank;
     }
 
-    /** Interpolated fish position in tank-local coordinates (0.5 = centre of this block). */
+    /// Tank-local coordinates. 0.5 is the block centre.
     public float getFishX(float tickDelta) {
         return (float) MathHelper.lerp((double) tickDelta, this.prevFishX, this.fishX);
     }
@@ -741,7 +770,6 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Invent
         return (float) MathHelper.lerp((double) tickDelta, this.prevFishZ, this.fishZ);
     }
 
-    /** Interpolated nose-up/-down angle while wandering vertically (degrees, MC pitch convention). */
     public float getFishPitch(float tickDelta) {
         return MathHelper.lerpAngleDegrees(tickDelta, this.prevWanderPitch, this.wanderPitch);
     }

@@ -49,15 +49,13 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
         return this.plantScale;
     }
 
-    /**
-     * Adjusts the display size of the tub's plants by {@code delta}, clamped to [MIN, max].
-     * @return true if the size actually changed (i.e. it was not already at the limit).
-     */
     public boolean adjustPlantScale(float delta, float max) {
         float next = MathHelper.clamp(this.plantScale + delta, MIN_PLANT_SCALE, max);
+
         if (next == this.plantScale) {
             return false;
         }
+
         this.plantScale = next;
         this.updateListeners();
         return true;
@@ -65,28 +63,34 @@ public class HorticulturistTableBlockEntity extends BlockEntity implements Inven
 
     public boolean insertFlower(ItemStack flower, int slot) {
         ItemStack itemStack = (ItemStack)this.inventory.get(slot);
+
         if (itemStack.isEmpty()) {
             this.inventory.set(slot, flower.split(1));
             this.updateListeners();
             return true;
         }
+
         return false;
     }
 
-    /** Removes and returns the flower in the given slot, syncing the change to clients. */
     public ItemStack removeFlower(int slot) {
         if (slot < 0 || slot >= this.inventory.size()) {
             return ItemStack.EMPTY;
         }
+
         ItemStack removed = this.inventory.get(slot);
+
         if (removed.isEmpty()) {
             return ItemStack.EMPTY;
         }
+
         this.inventory.set(slot, ItemStack.EMPTY);
+
         if (this.isEmpty()) {
             // A freshly planted tub always starts at normal size.
             this.plantScale = 1.0F;
         }
+
         this.updateListeners();
         return removed;
     }

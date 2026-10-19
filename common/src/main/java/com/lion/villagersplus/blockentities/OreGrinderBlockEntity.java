@@ -46,10 +46,10 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT, FUEL_SLOT};
     private static final int[] SIDE_SLOTS = new int[]{FUEL_SLOT};
 
-    /** Grind time (ticks) when no pickaxe is inserted. A pickaxe is always faster. */
+    /// Ticks per grind without a pickaxe. A pickaxe is always faster.
     private static final int GRIND_TIME_NO_PICKAXE = 800;
 
-    /** Ore-doubling recipes: input item -> ground result. Populated lazily to avoid classload-order issues. */
+    /// Filled lazily, because of class load order.
     private static Map<Item, ItemStack> GRINDING_RECIPES;
 
     private DefaultedList<ItemStack> inventory;
@@ -115,6 +115,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             addRecipe(recipes, Items.NETHER_QUARTZ_ORE, Items.QUARTZ, 2);
             GRINDING_RECIPES = recipes;
         }
+
         return GRINDING_RECIPES;
     }
 
@@ -127,6 +128,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (input.isEmpty()) {
             return null;
         }
+
         ItemStack result = getGrindingRecipes().get(input.getItem());
         return result == null ? null : result.copy();
     }
@@ -135,25 +137,23 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         return stack.getItem() instanceof PickaxeItem;
     }
 
-    /** True only for ores that have a grinding recipe. Used to restrict the input slot. */
     public static boolean isGrindable(ItemStack stack) {
         return getGrindResult(stack) != null;
     }
 
-    /**
-     * Pickaxe material and Efficiency together determine grinding speed (fewer ticks = faster).
-     * No pickaxe is the slowest. Efficiency adds to the effective speed using the vanilla
-     * mining bonus (level^2 + 1), so a higher Efficiency level noticeably speeds things up.
-     */
+    /// Efficiency adds the vanilla mining bonus (level squared plus one) to the speed.
     private static int getGrindTime(ItemStack pickaxe) {
         if (!isPickaxe(pickaxe)) {
             return GRIND_TIME_NO_PICKAXE;
         }
+
         float speed = ((ToolItem) pickaxe.getItem()).getMaterial().getMiningSpeedMultiplier();
         int efficiency = EnchantmentHelper.getLevel(Enchantments.EFFICIENCY, pickaxe);
+
         if (efficiency > 0) {
             speed += (float) (efficiency * efficiency + 1);
         }
+
         // Base material: wood ~2 -> 600, stone ~4 -> 300, iron ~6 -> 200, diamond ~8 -> 150, gold ~12 -> 100.
         // Efficiency V on diamond ~34 -> clamps to the 40-tick floor.
         return MathHelper.clamp((int) (1200.0F / speed), 40, 600);
@@ -209,10 +209,12 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             if (!blockEntity.isBurning() && canAccept && hasFuel) {
                 blockEntity.burnTime = getFuelTime(fuelStack);
                 blockEntity.fuelTime = blockEntity.burnTime;
+
                 if (blockEntity.isBurning()) {
                     dirty = true;
                     Item fuelItem = fuelStack.getItem();
                     fuelStack.decrement(1);
+
                     if (fuelStack.isEmpty()) {
                         Item remainder = fuelItem.getRecipeRemainder();
                         blockEntity.inventory.set(FUEL_SLOT, remainder == null ? ItemStack.EMPTY : new ItemStack(remainder));
@@ -222,6 +224,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
 
             if (blockEntity.isBurning() && canAccept) {
                 ++blockEntity.grindProgress;
+
                 if (blockEntity.grindProgress >= blockEntity.grindTimeTotal) {
                     blockEntity.grindProgress = 0;
                     blockEntity.grind(result);
@@ -236,6 +239,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         }
 
         boolean lit = blockEntity.isBurning() && !disabled;
+
         if (state.get(OreGrinderBlock.LIT) != lit) {
             dirty = true;
             state = state.with(OreGrinderBlock.LIT, lit);
@@ -251,13 +255,17 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (result == null) {
             return false;
         }
+
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
+
         if (outputStack.isEmpty()) {
             return true;
         }
+
         if (!outputStack.isOf(result.getItem())) {
             return false;
         }
+
         int worstCaseYield = scaledYield(result) * (fortuneLevel() + 1);
         int combined = outputStack.getCount() + worstCaseYield;
         return combined <= this.getMaxCountPerStack() && combined <= outputStack.getMaxCount();
@@ -280,6 +288,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (baseResult == null || !this.canAcceptOutput(baseResult)) {
             return;
         }
+
         ItemStack inputStack = this.inventory.get(INPUT_SLOT);
         ItemStack pickaxeStack = this.inventory.get(PICKAXE_SLOT);
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
@@ -289,15 +298,19 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         // output and the Fortune effect are configurable for balancing.
         int fortune = fortuneLevel();
         int count = scaledYield(baseResult);
+
         if (fortune > 0) {
             int bonus = this.world.random.nextInt(fortune + 2) - 1;
+
             if (bonus < 0) {
                 bonus = 0;
             }
+
             count *= (bonus + 1);
         }
 
         int max = Math.min(baseResult.getMaxCount(), this.getMaxCountPerStack());
+
         if (outputStack.isEmpty()) {
             ItemStack newStack = baseResult.copy();
             newStack.setCount(Math.min(count, max));
@@ -315,6 +328,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (!isPickaxe(pickaxe) || !pickaxe.isDamageable()) {
             return;
         }
+
         // Configurable wear per ground ore; honour Unbreaking per durability point with the
         // vanilla probability (like ItemStack#damage does).
         int unbreaking = EnchantmentHelper.getLevel(Enchantments.UNBREAKING, pickaxe);
@@ -323,7 +337,9 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             if (unbreaking > 0 && this.world.random.nextInt(unbreaking + 1) != 0) {
                 continue;
             }
+
             pickaxe.setDamage(pickaxe.getDamage() + 1);
+
             if (pickaxe.getDamage() >= pickaxe.getMaxDamage()) {
                 this.inventory.set(PICKAXE_SLOT, ItemStack.EMPTY);
                 this.world.playSound(null, this.pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -336,6 +352,7 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         if (fuel.isEmpty()) {
             return 0;
         }
+
         Item item = fuel.getItem();
         return AbstractFurnaceBlockEntity.createFuelTimeMap().getOrDefault(item, 0);
     }
@@ -381,9 +398,11 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             ItemStack existing = this.inventory.get(slot);
             boolean sameItem = !stack.isEmpty() && ItemStack.canCombine(stack, existing);
             this.inventory.set(slot, stack);
+
             if (stack.getCount() > this.getMaxCountPerStack()) {
                 stack.setCount(this.getMaxCountPerStack());
             }
+
             if (slot == INPUT_SLOT && !sameItem) {
                 this.grindProgress = 0;
                 this.markDirty();

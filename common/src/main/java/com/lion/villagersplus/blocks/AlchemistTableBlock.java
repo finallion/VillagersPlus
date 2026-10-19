@@ -35,7 +35,14 @@ public class AlchemistTableBlock extends WorkstationBlock {
 
     public AlchemistTableBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(BOTTLE_PROPERTIES[0], false).with(BOTTLE_PROPERTIES[1], false).with(BOTTLE_PROPERTIES[2], false).with(BOTTLE_PROPERTIES[3], false).with(IS_BREWING, false).with(HAS_FUEL, false).with(FACING, Direction.NORTH));
+        this.setDefaultState(this.stateManager.getDefaultState()
+                .with(BOTTLE_PROPERTIES[0], false)
+                .with(BOTTLE_PROPERTIES[1], false)
+                .with(BOTTLE_PROPERTIES[2], false)
+                .with(BOTTLE_PROPERTIES[3], false)
+                .with(IS_BREWING, false)
+                .with(HAS_FUEL, false)
+                .with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -53,15 +60,27 @@ public class AlchemistTableBlock extends WorkstationBlock {
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            World world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
         return world.isClient ? null : checkType(type, VPBlockEntities.ALCHEMIST_TABLE_BLOCK_ENTITY.get(), AlchemistTableBlockEntity::tick);
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(
+            BlockState state,
+            World world,
+            BlockPos pos,
+            PlayerEntity player,
+            Hand hand,
+            BlockHitResult hit
+    ) {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof AlchemistTableBlockEntity) {
                 player.openHandledScreen((AlchemistTableBlockEntity)blockEntity);
             }
@@ -73,6 +92,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         if (itemStack.hasCustomName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof AlchemistTableBlockEntity) {
                 ((AlchemistTableBlockEntity)blockEntity).setCustomName(itemStack.getName());
             }
@@ -119,6 +139,7 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof AlchemistTableBlockEntity) {
                 ItemScatterer.spawn(world, pos, (AlchemistTableBlockEntity)blockEntity);
             }

@@ -24,6 +24,7 @@ public class BubbleParticle extends SpriteBillboardParticle {
 
     public void tick() {
         super.tick();
+
         if (!this.dead && y - prevPosY > 0.0325) {
             this.markDead();
         }
@@ -46,7 +47,16 @@ public class BubbleParticle extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(
+                DefaultParticleType defaultParticleType,
+                ClientWorld clientWorld,
+                double d,
+                double e,
+                double f,
+                double g,
+                double h,
+                double i
+        ) {
             BubbleParticle bubble = new BubbleParticle(clientWorld, d, e, f, g, h, i);
             bubble.setSprite(this.spriteProvider);
             return bubble;

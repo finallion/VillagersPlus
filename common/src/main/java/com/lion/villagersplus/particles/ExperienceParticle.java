@@ -9,7 +9,16 @@ import net.minecraft.util.math.MathHelper;
 
 public class ExperienceParticle extends SpriteBillboardParticle {
 
-    public ExperienceParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    public ExperienceParticle(
+            ClientWorld world,
+            SpriteProvider spriteProvider,
+            double x,
+            double y,
+            double z,
+            double velocityX,
+            double velocityY,
+            double velocityZ
+    ) {
         super(world, x, y - 0.125D, z, velocityX, velocityY, velocityZ);
         this.setBoundingBoxSpacing(0.01F, 0.01F);
         this.setSprite(spriteProvider);
@@ -32,7 +41,16 @@ public class ExperienceParticle extends SpriteBillboardParticle {
             this.spriteProvider = spriteProvider;
         }
 
-        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(
+                DefaultParticleType defaultParticleType,
+                ClientWorld clientWorld,
+                double d,
+                double e,
+                double f,
+                double g,
+                double h,
+                double i
+        ) {
             ExperienceParticle waterSuspendParticle = new ExperienceParticle(clientWorld, this.spriteProvider, d, e, f, 0.0D, -0.800000011920929D, 0.0D);
             waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);
             waterSuspendParticle.gravityStrength = 0.01F;
