@@ -68,14 +68,12 @@ public class OreGrinderScreenHandler extends ScreenHandler {
             itemStack = itemStack2.copy();
 
             if (index == OreGrinderBlockEntity.OUTPUT_SLOT) {
-                // From output into player inventory.
                 if (!this.insertItem(itemStack2, INV_START, HOTBAR_END, true)) {
                     return ItemStack.EMPTY;
                 }
 
                 slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index >= INV_START) {
-                // From player inventory into the machine.
                 if (OreGrinderBlockEntity.canUseAsFuel(itemStack2)) {
                     if (!this.insertItem(itemStack2, OreGrinderBlockEntity.FUEL_SLOT, OreGrinderBlockEntity.FUEL_SLOT + 1, false)) {
                         return ItemStack.EMPTY;
@@ -89,16 +87,13 @@ public class OreGrinderScreenHandler extends ScreenHandler {
                         return ItemStack.EMPTY;
                     }
                 } else if (index >= INV_START && index < HOTBAR_START) {
-                    // Main inventory -> hotbar.
                     if (!this.insertItem(itemStack2, HOTBAR_START, HOTBAR_END, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (index >= HOTBAR_START && index < HOTBAR_END && !this.insertItem(itemStack2, INV_START, HOTBAR_START, false)) {
-                    // Hotbar -> main inventory.
                     return ItemStack.EMPTY;
                 }
             } else if (!this.insertItem(itemStack2, INV_START, HOTBAR_END, false)) {
-                // From an input/fuel/pickaxe slot back into the player inventory.
                 return ItemStack.EMPTY;
             }
 
@@ -144,7 +139,6 @@ public class OreGrinderScreenHandler extends ScreenHandler {
         }
 
         public boolean canInsert(ItemStack stack) {
-            // Only ores that have a grinding recipe are accepted.
             return OreGrinderBlockEntity.isGrindable(stack);
         }
     }

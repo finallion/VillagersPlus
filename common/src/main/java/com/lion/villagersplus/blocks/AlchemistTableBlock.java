@@ -34,10 +34,6 @@ public class AlchemistTableBlock extends WorkstationBlock {
     public static final DirectionProperty FACING;
     protected static final VoxelShape SHAPE;
 
-    // The onPlaced override that copied a named block item's name onto the block entity is gone:
-    // LockableContainerBlockEntity reads minecraft:custom_name out of the item's components itself now
-    // (see its readComponents), so doing it here would only duplicate vanilla.
-
     public static final MapCodec<AlchemistTableBlock> CODEC = createCodec(AlchemistTableBlock::new);
 
     @Override

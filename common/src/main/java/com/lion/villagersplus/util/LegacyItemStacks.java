@@ -12,16 +12,9 @@ import net.minecraft.nbt.NbtOps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/// Brings this mod's stored inventories up to the current item format when an older world is read.
+/// Brings this mod's stored inventories up to the current item format.
 ///
-/// Vanilla's chunk fixer walks only the block entities it has a schema for and passes a modded one
-/// through untouched. Its `Items` then meet a codec that reads today's fields, ignores the ones that
-/// are actually there, and hands back something diminished: a stack of any size reduced to one, a
-/// bucket with no fish variant, a pickaxe with no enchantments.
-///
-/// The conversion is Mojang's own fixer, driven by the `DataVersion` the chunk file carries. Nothing
-/// here maps an old key onto a component by hand, and nothing infers the source version from the
-/// shape of the data.
+/// Vanilla's fixer skips modded block entities, so their `Items` keep the old format.
 public final class LegacyItemStacks {
 
     private static final String BLOCK_ENTITIES = "block_entities";
@@ -29,21 +22,13 @@ public final class LegacyItemStacks {
     private static final String SLOT = "Slot";
     private static final String ID = "id";
 
-    /// Own logger rather than the one on [VillagersPlus], whose static setup pulls in the config and
-    /// would drag a bare JVM into platform code this class does not need.
     private static final Logger LOGGER = LoggerFactory.getLogger(VillagersPlus.MOD_ID);
 
-    /// Source version the log has already been told about. A duplicate line under a race costs
-    /// nothing, so this stays a plain field.
     private static volatile int announcedVersion;
 
     private LegacyItemStacks() {}
 
-    /// Rewrites the stored items of every block entity of this mod in one chunk read from disk.
-    ///
-    /// `fromVersion` is the chunk's own `DataVersion`, so it is exactly what these entries were last
-    /// written by, and -1 means the file carried none. The guard is the same one vanilla applies to
-    /// the chunk a moment later, so a current world walks straight back out.
+    /// A `DataVersion` of -1 means the chunk has none.
     public static void migrateChunk(NbtCompound chunkNbt, int fromVersion) {
         int current = SharedConstants.getGameVersion().getSaveVersion().getId();
 
@@ -85,9 +70,6 @@ public final class LegacyItemStacks {
             try {
                 after = update(before, from, to);
             } catch (RuntimeException e) {
-                // One entry the fixer cannot read must not take the whole chunk down, but it may not
-                // disappear quietly either: without the line there is no way to tell this case apart
-                // from the migration never having run.
                 LOGGER.error("Could not migrate {} in {}", before, id, e);
                 continue;
             }
@@ -114,8 +96,7 @@ public final class LegacyItemStacks {
     }
 
     private static NbtCompound update(NbtCompound entry, int from, int to) {
-        // The slot is the inventory's own bookkeeping and means nothing to an item fixer, so it is
-        // lifted out and put back afterwards rather than fed through.
+        // Lift the slot out of the item fixer's reach.
         NbtElement slot = entry.get(SLOT);
         NbtCompound stack = entry.copy();
         stack.remove(SLOT);
@@ -136,8 +117,6 @@ public final class LegacyItemStacks {
         return result;
     }
 
-    /// One slot as `slot 3 minecraft:diamond_pickaxe 1 -> 1 [minecraft:enchantments]`, so a test run
-    /// shows what the fixer made of an entry rather than only that it touched one.
     private static String describe(NbtCompound before, NbtCompound after) {
         StringBuilder line = new StringBuilder()
                 .append("slot ").append(before.contains(SLOT) ? before.getInt(SLOT) : -1)
@@ -156,8 +135,7 @@ public final class LegacyItemStacks {
         return line.toString();
     }
 
-    /// `Count` before 1.20.5, `count` after. A missing field reads as one, which is what the codec
-    /// would have defaulted to and exactly the loss being repaired here.
+    /// Reads `Count` or `count`. A missing key means one.
     private static int count(NbtCompound stack) {
         if (stack.contains("count")) {
             return stack.getInt("count");

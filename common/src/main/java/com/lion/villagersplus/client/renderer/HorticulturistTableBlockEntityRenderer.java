@@ -20,8 +20,6 @@ import net.minecraft.world.World;
 
 public class HorticulturistTableBlockEntityRenderer implements BlockEntityRenderer<HorticulturistTableBlockEntity> {
 
-    // Absolute X/Z positions per plant, measured from the block origin. Each plant renders inside
-    // its own push()/pop(), so these never accumulate across plants.
     public static float[] twoFlowerXOffset = new float[]{
                 VillagersPlus.CONFIG.first_flower_in_two_X,
                 VillagersPlus.CONFIG.second_flower_in_two_X};
@@ -49,7 +47,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
                 VillagersPlus.CONFIG.third_flower_in_four_Z,
                 VillagersPlus.CONFIG.forth_flower_in_four_Z};
 
-    // Slight per-plant height so a fuller tub steps down gently. Index = plant count - 1.
     private static final float[] twoFlowerY = new float[]{0.95F, 0.95F};
     private static final float[] threeFlowerY = new float[]{0.95F, 0.90F, 0.90F};
     private static final float[] fourFlowerY = new float[]{0.95F, 0.90F, 0.90F, 0.85F};
@@ -77,7 +74,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
             return;
         }
 
-        // Bone-meal / shears size; applied per plant around its base so it stays on the soil.
         float scale = blockEntity.getPlantScale();
 
         if (blockState.get(HorticulturistTableBlock.IS_TALL_FLOWER)) {
@@ -87,8 +83,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
             if (flower instanceof TallPlantBlock) {
                 Vec3d offset = flower.getDefaultState().getModelOffset(world, pos);
                 matrixStack.translate(-offset.x, -offset.y + 0.95D, -offset.z);
-                // Scale once before BOTH halves so the upper half's translate happens in
-                // scaled space and the two halves stay attached.
                 applyPlantScale(matrixStack, scale);
                 renderTallFlower(flower.getDefaultState().getBlock(), world, pos, matrixStack, vertexConsumerProvider, true, j);
                 matrixStack.translate(-offset.x, -offset.y + 1.0D, -offset.z);
@@ -131,7 +125,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /// Scales around the centre of the plant base.
     private static void applyPlantScale(MatrixStack matrixStack, float scale) {
         if (scale != 1.0F) {
             matrixStack.translate(0.5F * (1.0F - scale), 0.0F, 0.5F * (1.0F - scale));
@@ -139,7 +132,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         }
     }
 
-    /// Renders one plant in its own matrix, so offsets do not add up.
     private void renderFlowerAt(
             DefaultedList<ItemStack> list,
             int slot,
@@ -174,7 +166,6 @@ public class HorticulturistTableBlockEntityRenderer implements BlockEntityRender
         this.manager.getModelRenderer().render(world, this.manager.getModel(state), state, pos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getCutoutMipped()), false, Random.create(), state.getRenderingSeed(pos), overlay);
     }
 
-    /// Fills every segment of a flowerbed, so it covers the whole slot.
     private static BlockState displayState(Block flower) {
         if (flower instanceof FlowerbedBlock) {
             int max = FlowerbedBlock.FLOWER_AMOUNT.getValues().stream()

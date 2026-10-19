@@ -50,10 +50,8 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     private static final int[] BOTTOM_SLOTS = new int[]{OUTPUT_SLOT, FUEL_SLOT};
     private static final int[] SIDE_SLOTS = new int[]{FUEL_SLOT};
 
-    /// Ticks per grind without a pickaxe. A pickaxe is always faster.
     private static final int GRIND_TIME_NO_PICKAXE = 800;
 
-    /// Filled lazily, because of class load order.
     private static Map<Item, ItemStack> GRINDING_RECIPES;
 
     private DefaultedList<ItemStack> inventory;
@@ -97,7 +95,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     private static Map<Item, ItemStack> getGrindingRecipes() {
         if (GRINDING_RECIPES == null) {
             Map<Item, ItemStack> recipes = new HashMap<>();
-            // Raw-metal ores double their raw drop.
             addRecipe(recipes, Items.IRON_ORE, Items.RAW_IRON, 2);
             addRecipe(recipes, Items.DEEPSLATE_IRON_ORE, Items.RAW_IRON, 2);
             addRecipe(recipes, Items.GOLD_ORE, Items.RAW_GOLD, 2);
@@ -105,7 +102,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             addRecipe(recipes, Items.NETHER_GOLD_ORE, Items.RAW_GOLD, 2);
             addRecipe(recipes, Items.COPPER_ORE, Items.RAW_COPPER, 3);
             addRecipe(recipes, Items.DEEPSLATE_COPPER_ORE, Items.RAW_COPPER, 3);
-            // Gem/mineral ores double their drop.
             addRecipe(recipes, Items.COAL_ORE, Items.COAL, 2);
             addRecipe(recipes, Items.DEEPSLATE_COAL_ORE, Items.COAL, 2);
             addRecipe(recipes, Items.DIAMOND_ORE, Items.DIAMOND, 2);
@@ -145,7 +141,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         return getGrindResult(stack) != null;
     }
 
-    /// Efficiency adds the vanilla mining bonus (level squared plus one) to the speed.
     private static int getGrindTime(@Nullable World world, ItemStack pickaxe) {
         if (!isPickaxe(pickaxe)) {
             return GRIND_TIME_NO_PICKAXE;
@@ -158,8 +153,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             speed += (float) (efficiency * efficiency + 1);
         }
 
-        // Base material: wood ~2 -> 600, stone ~4 -> 300, iron ~6 -> 200, diamond ~8 -> 150, gold ~12 -> 100.
-        // Efficiency V on diamond ~34 -> clamps to the 40-tick floor.
         return MathHelper.clamp((int) (1200.0F / speed), 40, 600);
     }
 
@@ -310,9 +303,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
         ItemStack pickaxeStack = this.inventory.get(PICKAXE_SLOT);
         ItemStack outputStack = this.inventory.get(OUTPUT_SLOT);
 
-        // Fortune boosts the yield (vanilla ore-drop formula) on top of the base doubling;
-        // Efficiency (handled in getGrindTime) only affects grinding speed. Both the base
-        // output and the Fortune effect are configurable for balancing.
         int fortune = fortuneLevel();
         int count = scaledYield(baseResult);
 
@@ -346,8 +336,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
             return;
         }
 
-        // Configurable wear per ground ore; honour Unbreaking per durability point with the
-        // vanilla probability (like ItemStack#damage does).
         int unbreaking = enchantmentLevel(this.world, Enchantments.UNBREAKING, pickaxe);
         int damage = Math.max(0, VillagersPlus.CONFIG.ore_grinder_pickaxe_damage);
         for (int i = 0; i < damage; i++) {
@@ -423,7 +411,6 @@ public class OreGrinderBlockEntity extends LockableContainerBlockEntity implemen
     public void setStack(int slot, ItemStack stack) {
         if (slot >= 0 && slot < this.inventory.size()) {
             ItemStack existing = this.inventory.get(slot);
-            // canCombine is gone; the equivalent check is item plus components.
             boolean sameItem = !stack.isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, existing);
             this.inventory.set(slot, stack);
 

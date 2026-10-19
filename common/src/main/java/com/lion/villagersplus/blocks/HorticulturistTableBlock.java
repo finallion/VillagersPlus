@@ -29,7 +29,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     public static final BooleanProperty IS_TALL_FLOWER;
     public static final IntProperty LIGHT;
 
-    /// Light of one torchflower. Four fill the tub: 4, 8, 12, 15.
+    /// One to four torchflowers give light levels 4, 8, 12 and 15.
     private static final int TORCHFLOWER_LIGHT = 4;
 
     private static final int MAX_LIGHT = 15;
@@ -49,7 +49,6 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 .with(LIGHT, 0));
     }
 
-    /// Every plant adds light, so a packed tub is brighter than a single plant.
     private static int lightFor(HorticulturistTableBlockEntity blockEntity) {
         int light = 0;
         for (ItemStack stack : blockEntity.getInventory()) {
@@ -60,7 +59,6 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         return Math.min(light, MAX_LIGHT);
     }
 
-    /// Torchflower adds light only inside the tub. Other plants add the light they emit.
     private static int plantLight(Block plant) {
         if (plant == Blocks.TORCHFLOWER) {
             return TORCHFLOWER_LIGHT;
@@ -99,8 +97,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         boolean holdingBoneMeal = itemStack.isOf(Items.BONE_MEAL);
         boolean holdingShears = itemStack.isOf(Items.SHEARS);
 
-        // Bone meal grows the tub's plants, shears trim them back down. Handled (and consumed as
-        // a use) BEFORE the removal fall-through below so neither item ever pulls a plant out.
+        // Bone meal and shears act first, so they do not remove a plant.
         if ((holdingBoneMeal || holdingShears) && state.get(FLOWERS) > 0) {
             if (!world.isClient()) {
                 float max = state.get(IS_TALL_FLOWER)
@@ -173,7 +170,6 @@ public class HorticulturistTableBlock extends WorkstationBlock {
             }
         }
 
-        // Right-clicking without a plantable in hand returns the top-most plant, one per use.
         if (!holdingTall && !holdingSmall && state.get(FLOWERS) > 0) {
             boolean tall = state.get(IS_TALL_FLOWER);
             int topSlot = tall ? 0 : state.get(FLOWERS) - 1;

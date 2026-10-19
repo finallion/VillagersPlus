@@ -106,7 +106,6 @@ public class OmegaConfig {
         String fieldName = field.getName();
         Annotation[] annotations = field.getDeclaredAnnotations();
 
-        // Find comment
         for (Annotation annotation : annotations) {
             if (annotation instanceof Description) {
                 keyToComments.put(fieldName, ((Description) annotation).value());

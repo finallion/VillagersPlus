@@ -32,10 +32,6 @@ public class OreGrinderBlock extends WorkstationBlock {
     public static final DirectionProperty FACING;
     public static final BooleanProperty LIT;
 
-    // The onPlaced override that copied a named block item's name onto the block entity is gone:
-    // LockableContainerBlockEntity reads minecraft:custom_name out of the item's components itself now
-    // (see its readComponents), so doing it here would only duplicate vanilla.
-
     public static final MapCodec<OreGrinderBlock> CODEC = createCodec(OreGrinderBlock::new);
 
     @Override
