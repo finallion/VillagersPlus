@@ -99,6 +99,7 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
 
     public static void tick(Level world, BlockPos pos, BlockState state, AlchemistTableBlockEntity blockEntity) {
         ItemStack itemStack = blockEntity.inventory.get(4);
+
         if (blockEntity.fuel <= 0 && itemStack.is(Items.GUNPOWDER)) {
             blockEntity.fuel = 20;
             itemStack.shrink(1);
@@ -125,6 +126,7 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
             --blockEntity.brewTime;
             boolean bl3 = blockEntity.brewTime == 0;
             state = (BlockState) state.setValue(AlchemistTableBlock.IS_BREWING, true);
+
             if (world.getRandom().nextInt(8) == 0) {
                 world.playSound(null, pos, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 0.5F, 0.5F);
             }
@@ -150,9 +152,11 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
         world.setBlock(pos, state, 2);
 
         boolean[] bls = blockEntity.getSlotsEmpty();
+
         if (!Arrays.equals(bls, blockEntity.slotsEmptyLastTick)) {
             blockEntity.slotsEmptyLastTick = bls;
             BlockState blockState = state;
+
             if (!(state.getBlock() instanceof AlchemistTableBlock)) {
                 return;
             }
@@ -180,6 +184,7 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
 
     private static boolean canCraft(NonNullList<ItemStack> slots) {
         ItemStack itemStack = (ItemStack) slots.get(3);
+
         if (itemStack.isEmpty()) {
             return false;
         } else if (!(itemStack.is(Items.LINGERING_POTION) || itemStack.is(Items.SPLASH_POTION) || itemStack.is(Items.POTION))) {
@@ -187,6 +192,7 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
         } else {
             for (int i = 0; i < 3; ++i) {
                 ItemStack itemStack2 = (ItemStack) slots.get(i);
+
                 if (!itemStack2.isEmpty() ) {
                     return true;
                 }
@@ -201,6 +207,7 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
         List<Holder<Potion>> potions = BuiltInRegistries.POTION.listElements().collect(Collectors.toList());
 
         int explosionChance = 0;
+
         if (VillagersPlus.CONFIG.can_explode) {
             explosionChance = world.getRandom().nextInt(VillagersPlus.CONFIG.explosion_chance);
         }
@@ -209,8 +216,10 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
             for (int i = 0; i < 3; ++i) {
                 if (!slots.get(i).isEmpty()) {
                     ItemStack brewed = new ItemStack(world.getRandom().nextBoolean() ? Items.SPLASH_POTION : Items.POTION);
-                    brewed.set(DataComponents.POTION_CONTENTS,
-                            new PotionContents(potions.get(world.getRandom().nextInt(potions.size()))));
+                    brewed.set(
+                            DataComponents.POTION_CONTENTS,
+                            new PotionContents(potions.get(world.getRandom().nextInt(potions.size())))
+                    );
                     slots.set(i, brewed);
                 }
             }
@@ -244,9 +253,11 @@ public class AlchemistTableBlockEntity extends BaseContainerBlockEntity implemen
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(view, this.inventory);
         this.brewTime = view.getShortOr("BrewTime", (short) 0);
+
         if (this.brewTime > 0) {
             this.itemBrewing = this.inventory.get(3).getItem();
         }
+
         this.fuel = view.getByteOr("Fuel", (byte) 0);
     }
 

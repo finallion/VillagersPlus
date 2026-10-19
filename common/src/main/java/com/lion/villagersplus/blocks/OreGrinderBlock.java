@@ -46,7 +46,9 @@ public class OreGrinderBlock extends WorkstationBlock {
 
     public OreGrinderBlock(BlockBehaviour.Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(LIT, false));
     }
 
     @Override
@@ -55,16 +57,27 @@ public class OreGrinderBlock extends WorkstationBlock {
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level world,
+            BlockState state,
+            BlockEntityType<T> type
+    ) {
         return world.isClientSide() ? null : createTickerHelper(type, VPBlockEntities.ORE_GRINDER_BLOCK_ENTITY.get(), OreGrinderBlockEntity::tick);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(
+            BlockState state,
+            Level world,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hit
+    ) {
         if (world.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+
             if (blockEntity instanceof OreGrinderBlockEntity) {
                 player.openMenu((OreGrinderBlockEntity) blockEntity);
             }
@@ -93,6 +106,7 @@ public class OreGrinderBlock extends WorkstationBlock {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
         if (blockEntity instanceof OreGrinderBlockEntity) {
             Containers.dropContents(world, pos, (OreGrinderBlockEntity) blockEntity);
         }

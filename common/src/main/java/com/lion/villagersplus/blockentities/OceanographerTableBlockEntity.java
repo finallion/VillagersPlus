@@ -134,9 +134,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     public boolean adjustFishScale(float delta) {
         float next = Mth.clamp(this.fishScale + delta, MIN_FISH_SCALE, MAX_FISH_SCALE);
+
         if (next == this.fishScale) {
             return false;
         }
+
         this.fishScale = next;
         this.updateListeners();
         return true;
@@ -148,9 +150,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     public boolean adjustCoralScale(float delta) {
         float next = Mth.clamp(this.coralScale + delta, MIN_CORAL_SCALE, MAX_CORAL_SCALE);
+
         if (next == this.coralScale) {
             return false;
         }
+
         this.coralScale = next;
         this.updateListeners();
         return true;
@@ -169,12 +173,14 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         boolean changed = false;
         for (int slot = 0; slot < 4; slot++) {
             ItemStack coral = this.inventory.get(slot);
+
             if (!coral.isEmpty()) {
                 net.minecraft.world.Containers.dropItemStack(this.level, this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 1.1D, this.worldPosition.getZ() + 0.5D, coral);
                 this.inventory.set(slot, ItemStack.EMPTY);
                 changed = true;
             }
         }
+
         if (changed) {
             this.coralScale = 1.0F;
             this.updateListeners();
@@ -183,11 +189,13 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     public boolean insertCoral(ItemStack coral, int slot) {
         ItemStack itemStack = (ItemStack)this.inventory.get(slot);
+
         if (itemStack.isEmpty()) {
             this.inventory.set(slot, coral.split(1));
             this.updateListeners();
             return true;
         }
+
         return false;
     }
 
@@ -247,6 +255,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
     private void animateFish(Level world) {
         ItemStack stack = this.inventory.get(FISH_SLOT);
+
         if (!(stack.getItem() instanceof MobBucketItem)) {
             this.displayFish = null;
             this.displayFishItem = null;
@@ -268,9 +277,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
                 this.failedFishItem = stack.getItem();
             }
         }
+
         if (this.displayFish == null) {
             return;
         }
+
         if (!this.varianceInit) {
             initVariance();
         }
@@ -330,6 +341,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         if (fish instanceof Pufferfish puffer) {
             if (this.puffTimer > 0) {
                 this.puffTimer--;
+
                 if (this.puffTimer == 0) {
                     puffer.setPuffState(0);
                 }
@@ -341,6 +353,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         }
 
         this.prevRoll = this.roll;
+
         if (fish instanceof Axolotl) {
             if (this.rollTimer > 0) {
                 this.rollTimer--;
@@ -348,6 +361,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
             } else {
                 this.roll = 0.0F;
                 this.prevRoll = 0.0F;
+
                 if (--this.rollCooldown <= 0) {
                     this.rollTimer = TUMBLE_DURATION;
                     this.rollCooldown = 160 + (int) (this.speedMul * 80.0F);
@@ -364,14 +378,17 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         int bx = Mth.floor(this.fishX);
         int by = Mth.floor(this.fishY);
         int bz = Mth.floor(this.fishZ);
+
         if (bx == 0 && by == 0 && bz == 0) {
             return;
         }
+
         if (world.getBlockEntity(this.worldPosition.offset(bx, by, bz)) instanceof OceanographerTableBlockEntity host
                 && host != this) {
             if (!host.guestFish.contains(this)) {
                 host.guestFish.add(this);
             }
+
             this.fishHandedOff = true;
         }
     }
@@ -412,15 +429,19 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         while (!queue.isEmpty() && this.tankBlocks.size() < MAX_TANK_BLOCKS) {
             BlockPos current = queue.poll();
             BlockState currentState = world.getBlockState(current);
+
             if (!(currentState.getBlock() instanceof OceanographerTableBlock)) {
                 continue;
             }
+
             for (Direction direction : Direction.values()) {
                 if (!currentState.getValue(OceanographerTableBlock.connectionProperty(direction))) {
                     continue;
                 }
+
                 BlockPos next = current.relative(direction);
                 long key = BlockPos.asLong(next.getX() - this.worldPosition.getX(), next.getY() - this.worldPosition.getY(), next.getZ() - this.worldPosition.getZ());
+
                 if (!this.tankBlocks.contains(key) && world.getBlockState(next).getBlock() instanceof OceanographerTableBlock) {
                     this.tankBlocks.add(key);
                     queue.add(next);
@@ -430,6 +451,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         this.tankBlockList.addAll(this.tankBlocks);
         boolean wasMulti = this.multiTank;
         this.multiTank = this.tankBlocks.size() > 1;
+
         if (this.multiTank != wasMulti) {
             this.hasTarget = false;
         }
@@ -438,6 +460,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     private void wanderTank() {
         float inset = this.wallInset();
         float insetY = this.verticalInset();
+
         if (!this.isInsideTank(this.fishX, this.fishY, this.fishZ, 0.0F, 0.0F)) {
             this.fishX = this.prevFishX = 0.5D;
             this.fishY = this.prevFishY = 0.5D;
@@ -448,26 +471,32 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
             this.swimClearOfWalls(inset, insetY);
             return;
         }
+
         double dx = this.targetX - this.fishX;
         double dy = this.targetY - this.fishY;
         double dz = this.targetZ - this.fishZ;
+
         if (!this.hasTarget || dx * dx + dy * dy + dz * dz < 0.04D || --this.repathTimer <= 0) {
             this.pickWanderTarget(inset, insetY);
             dx = this.targetX - this.fishX;
             dz = this.targetZ - this.fishZ;
         }
+
         float maxTurn = 4.0F * this.speedMul;
+
         if (dx * dx + dz * dz > 0.0025D) {
             float desiredYaw = (float) Math.toDegrees(Mth.atan2(-dx, dz));
             float turn = Mth.clamp(Mth.degreesDifference(this.wanderYaw, desiredYaw), -maxTurn, maxTurn);
             this.wanderYaw = Mth.wrapDegrees(this.wanderYaw + turn);
         }
+
         double speed = 0.016D * this.speedMul;
         double rad = Math.toRadians(this.wanderYaw);
         double vy = Mth.clamp(this.targetY - this.fishY, -speed * 0.5D, speed * 0.5D);
         double nx = this.fishX - Math.sin(rad) * speed;
         double ny = this.fishY + vy;
         double nz = this.fishZ + Math.cos(rad) * speed;
+
         if (this.isInsideTank(nx, ny, nz, inset, insetY)) {
             this.fishX = nx;
             this.fishY = ny;
@@ -490,15 +519,27 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         int by = Mth.floor(this.fishY);
         int bz = Mth.floor(this.fishZ);
         float insetFloor = FLOOR_HEIGHT + insetY;
-        double safeX = clampBetweenWalls(this.fishX, bx, inset,
+        double safeX = clampBetweenWalls(
+                this.fishX,
+                bx,
+                inset,
                 this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)),
-                this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)));
-        double safeY = clampBetweenWalls(this.fishY, by, insetFloor,
+                this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz))
+        );
+        double safeY = clampBetweenWalls(
+                this.fishY,
+                by,
+                insetFloor,
                 this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)),
-                this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)));
-        double safeZ = clampBetweenWalls(this.fishZ, bz, inset,
+                this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz))
+        );
+        double safeZ = clampBetweenWalls(
+                this.fishZ,
+                bz,
+                inset,
                 this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)),
-                this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)));
+                this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1))
+        );
 
         double dx = safeX - this.fishX;
         double dy = safeY - this.fishY;
@@ -514,6 +555,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
             float turn = Mth.clamp(Mth.degreesDifference(this.wanderYaw, desiredYaw), -maxTurn, maxTurn);
             this.wanderYaw = Mth.wrapDegrees(this.wanderYaw + turn);
         }
+
         this.wanderPitch = approachDegrees(this.wanderPitch, 0.0F, 3.0F);
         this.hasTarget = false;
     }
@@ -522,9 +564,11 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     private static double clampBetweenWalls(double value, int cell, float margin, boolean openLow, boolean openHigh) {
         double min = openLow ? cell : cell + margin + 1.0E-3D;
         double max = openHigh ? cell + 1.0D : cell + 1.0D - margin - 1.0E-3D;
+
         if (min > max) {
             return cell + 0.5D;
         }
+
         return Mth.clamp(value, min, max);
     }
 
@@ -536,6 +580,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
             double tx = rel.getX() + inset + r.nextDouble() * (1.0D - 2.0D * inset);
             double ty = rel.getY() + FLOOR_HEIGHT + insetY + r.nextDouble() * Math.max(0.0D, 1.0D - 2.0D * (FLOOR_HEIGHT + insetY));
             double tz = rel.getZ() + inset + r.nextDouble() * (1.0D - 2.0D * inset);
+
             if (this.isPathClear(tx, ty, tz, inset, insetY)) {
                 this.targetX = tx;
                 this.targetY = ty;
@@ -564,15 +609,35 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         int bx = Mth.floor(x);
         int by = Mth.floor(y);
         int bz = Mth.floor(z);
+
         if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz))) {
             return false;
         }
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)) && x - bx < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)) && bx + 1 - x < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)) && z - bz < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)) && bz + 1 - z < inset) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)) && y - by < FLOOR_HEIGHT + insetY) return false;
-        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)) && by + 1 - y < FLOOR_HEIGHT + insetY) return false;
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx - 1, by, bz)) && x - bx < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx + 1, by, bz)) && bx + 1 - x < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz - 1)) && z - bz < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by, bz + 1)) && bz + 1 - z < inset) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by - 1, bz)) && y - by < FLOOR_HEIGHT + insetY) {
+            return false;
+        }
+
+        if (!this.tankBlocks.contains(BlockPos.asLong(bx, by + 1, bz)) && by + 1 - y < FLOOR_HEIGHT + insetY) {
+            return false;
+        }
+
         return true;
     }
 
@@ -582,6 +647,7 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         int steps = Math.max(1, (int) Math.ceil(dist / 0.2D));
         for (int i = 1; i <= steps; i++) {
             double t = (double) i / steps;
+
             if (!this.isInsideTank(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, z0 + (z1 - z0) * t, inset, insetY)) {
                 return false;
             }
@@ -623,16 +689,21 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
         if (!(stack.getItem() instanceof MobBucketItem bucketItem)) {
             return null;
         }
+
         EntityType<?> type = ((DuckBucketable) bucketItem).getEntityType();
+
         if (type == null) {
             return null;
         }
+
         Entity fish = type.create(world, EntitySpawnReason.LOAD);
+
         if (fish == null) {
             return null;
         }
 
         CustomData bucketData = stack.get(DataComponents.BUCKET_ENTITY_DATA);
+
         if (bucketData != null) {
             CompoundTag entityNbt = bucketData.copyTag();
             try (ProblemReporter.ScopedCollector reporter =

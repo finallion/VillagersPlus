@@ -46,7 +46,10 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
     public HorticulturistTableBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FLOWERS, 0).setValue(IS_TALL_FLOWER, false).setValue(LIGHT, 0));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FLOWERS, 0)
+                .setValue(IS_TALL_FLOWER, false)
+                .setValue(LIGHT, 0));
     }
 
     /// Runs the ambient effect of every planted block, anchored where the plants are drawn.
@@ -61,7 +64,9 @@ public class HorticulturistTableBlock extends WorkstationBlock {
             if (stack.isEmpty()) {
                 continue;
             }
+
             Block plant = Block.byItem(stack.getItem());
+
             if (plant != Blocks.AIR) {
                 plant.animateTick(plant.defaultBlockState(), world, plantPos, random);
             }
@@ -83,6 +88,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
         if (plant == Blocks.TORCHFLOWER) {
             return TORCHFLOWER_LIGHT;
         }
+
         return plant.defaultBlockState().getLightEmission();
     }
 
@@ -97,7 +103,15 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useItemOn(
+            ItemStack itemStack,
+            BlockState state,
+            Level world,
+            BlockPos pos,
+            Player player,
+            InteractionHand hand,
+            BlockHitResult hit
+    ) {
 
         if (!(world.getBlockEntity(pos) instanceof HorticulturistTableBlockEntity blockEntity)) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;
@@ -116,6 +130,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                         : HorticulturistTableBlockEntity.MAX_PLANT_SCALE;
                 float delta = holdingBoneMeal ? HorticulturistTableBlockEntity.PLANT_SCALE_STEP
                                               : -HorticulturistTableBlockEntity.PLANT_SCALE_STEP;
+
                 if (blockEntity.adjustPlantScale(delta, max)) {
                     if (holdingBoneMeal) {
                         if (!player.getAbilities().instabuild) {
@@ -124,11 +139,13 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                     } else {
                         itemStack.hurtAndBreak(1, player, hand.asEquipmentSlot());
                     }
+
                     world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
             } else {
                 world.playSound(null, pos, holdingBoneMeal ? SoundEvents.BONE_MEAL_USE : SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
+
             return InteractionResult.SUCCESS;
         }
 
@@ -139,7 +156,13 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 }
 
                 if (!world.isClientSide()) {
-                    world.setBlock(pos, state.setValue(FLOWERS, 4).setValue(IS_TALL_FLOWER, true).setValue(LIGHT, lightFor(blockEntity)), 3);
+                    world.setBlock(
+                            pos,
+                            state.setValue(FLOWERS, 4)
+                                    .setValue(IS_TALL_FLOWER, true)
+                                    .setValue(LIGHT, lightFor(blockEntity)),
+                            3
+                    );
                     world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
@@ -154,13 +177,20 @@ public class HorticulturistTableBlock extends WorkstationBlock {
                 }
 
                 if (!world.isClientSide()) {
-                    world.setBlock(pos, state.setValue(FLOWERS, state.getValue(FLOWERS) + 1).setValue(IS_TALL_FLOWER, false).setValue(LIGHT, lightFor(blockEntity)), 3);
+                    world.setBlock(
+                            pos,
+                            state.setValue(FLOWERS, state.getValue(FLOWERS) + 1)
+                                    .setValue(IS_TALL_FLOWER, false)
+                                    .setValue(LIGHT, lightFor(blockEntity)),
+                            3
+                    );
                     world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 }
 
                 if (world.isClientSide()) {
                     world.playSound(null, pos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
+
                 return InteractionResult.SUCCESS;
             }
         }
@@ -171,18 +201,27 @@ public class HorticulturistTableBlock extends WorkstationBlock {
 
             if (!world.isClientSide()) {
                 ItemStack removed = blockEntity.removeFlower(topSlot);
+
                 if (removed.isEmpty()) {
                     return InteractionResult.TRY_WITH_EMPTY_HAND;
                 }
+
                 player.getInventory().placeItemBackInInventory(removed);
                 int remaining = tall ? 0 : state.getValue(FLOWERS) - 1;
-                world.setBlock(pos, state.setValue(FLOWERS, remaining).setValue(IS_TALL_FLOWER, false).setValue(LIGHT, lightFor(blockEntity)), 3);
+                world.setBlock(
+                        pos,
+                        state.setValue(FLOWERS, remaining)
+                                .setValue(IS_TALL_FLOWER, false)
+                                .setValue(LIGHT, lightFor(blockEntity)),
+                        3
+                );
                 world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             }
 
             if (world.isClientSide()) {
                 world.playSound(null, pos, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
+
             return InteractionResult.SUCCESS;
         }
 
@@ -192,6 +231,7 @@ public class HorticulturistTableBlock extends WorkstationBlock {
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
+
         if (blockEntity instanceof HorticulturistTableBlockEntity) {
             Containers.dropContents(world, pos, (HorticulturistTableBlockEntity)blockEntity);
         }

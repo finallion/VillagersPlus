@@ -26,6 +26,7 @@ public class JigsawStructureMixin {
 
         Structure.GenerationStub position = result.get();
         Optional<Consumer<StructurePiecesBuilder>> generator = position.generator().left();
+
         if (generator.isEmpty()) {
             return;
         }

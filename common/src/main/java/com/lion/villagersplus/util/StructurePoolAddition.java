@@ -60,21 +60,39 @@ public class StructurePoolAddition {
         addBuildingToPool(templatePoolRegistry, processorListRegistry, desertPoolLocation, "villagersplus:village/desert/desert_occultist", VillagersPlus.CONFIG.desert_occultist_weight);
     }
 
-    public static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry, Registry<StructureProcessorList> processorListRegistry, Identifier poolRL, String nbtPieceRL, int weight) {
+    public static void addBuildingToPool(
+            Registry<StructureTemplatePool> templatePoolRegistry,
+            Registry<StructureProcessorList> processorListRegistry,
+            Identifier poolRL,
+            String nbtPieceRL,
+            int weight
+    ) {
         addBuildingToPool(templatePoolRegistry, poolRL, nbtPieceRL, weight, processorListRegistry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY));
     }
 
     /// Looks up a processor list, falling back to the empty one when a datapack removed ours.
-    private static Holder<StructureProcessorList> processorList(Registry<StructureProcessorList> registry, ResourceKey<StructureProcessorList> key) {
+    private static Holder<StructureProcessorList> processorList(
+            Registry<StructureProcessorList> registry,
+            ResourceKey<StructureProcessorList> key
+    ) {
         return registry.get(key).map(entry -> (Holder<StructureProcessorList>) entry).orElseGet(() -> {
             VillagersPlus.LOGGER.warn("Processor list {} is missing, placing that building unprocessed", key.identifier());
             return registry.getOrThrow(EMPTY_PROCESSOR_LIST_KEY);
         });
     }
 
-    public static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry, Identifier poolRL, String nbtPieceRL, int weight, Holder<StructureProcessorList> processorList) {
+    public static void addBuildingToPool(
+            Registry<StructureTemplatePool> templatePoolRegistry,
+            Identifier poolRL,
+            String nbtPieceRL,
+            int weight,
+            Holder<StructureProcessorList> processorList
+    ) {
         StructureTemplatePool pool = templatePoolRegistry.getValue(poolRL);
-        if (pool == null) return;
+
+        if (pool == null) {
+            return;
+        }
 
         SinglePoolElement piece = SinglePoolElement.single(nbtPieceRL, processorList).apply(StructureTemplatePool.Projection.RIGID);
 

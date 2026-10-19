@@ -38,10 +38,14 @@ public class OreVeinProcessor extends StructureProcessor {
 
     @Override
     @Nullable
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader world, BlockPos pos, BlockPos pivot,
-                                                       StructureTemplate.StructureBlockInfo originalBlockInfo,
-                                                       StructureTemplate.StructureBlockInfo currentBlockInfo,
-                                                       StructurePlaceSettings data) {
+    public StructureTemplate.StructureBlockInfo processBlock(
+            LevelReader world,
+            BlockPos pos,
+            BlockPos pivot,
+            StructureTemplate.StructureBlockInfo originalBlockInfo,
+            StructureTemplate.StructureBlockInfo currentBlockInfo,
+            StructurePlaceSettings data
+    ) {
         if (!currentBlockInfo.state().is(this.target)) {
             return currentBlockInfo;
         }

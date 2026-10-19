@@ -46,10 +46,18 @@ public class RegistryHelperImpl {
         return TILE_ENTITIES.register(name, blockEntity);
     }
 
-    public static void registerItemGroup(ResourceKey<CreativeModeTab> registryKey, String name, String literalName, Supplier<Item> item) {
-        CREATIVE_TABS.register(name, () -> new CreativeModeTab.Builder(CreativeModeTab.Row.TOP,0)
-                .icon(() -> new ItemStack(item.get()))
-                .title(Component.literal(literalName)).build());
+    public static void registerItemGroup(
+            ResourceKey<CreativeModeTab> registryKey,
+            String name,
+            String literalName,
+            Supplier<Item> item
+    ) {
+        CREATIVE_TABS.register(
+                name,
+                () -> new CreativeModeTab.Builder(CreativeModeTab.Row.TOP,0)
+                        .icon(() -> new ItemStack(item.get()))
+                        .title(Component.literal(literalName)).build()
+        );
     }
 
     public static <T extends Item> Supplier<T> registerItem(String name, Supplier<T> item) {
@@ -73,14 +81,23 @@ public class RegistryHelperImpl {
         MENUS.register(name, () -> screenHandlerType);
     }
 
-    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererProvider<T, S> renderProvider) {
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+            Supplier<BlockEntityType<T>> type,
+            BlockEntityRendererProvider<T, S> renderProvider
+    ) {
     }
 
-    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
+    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(
+            String name,
+            Supplier<T> villagerProfession
+    ) {
         return VILLAGER_PROFESSIONS.register(name, villagerProfession);
     }
 
-    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(
+            String name,
+            Supplier<T> pointOfInterestType
+    ) {
         return POINT_OF_INTEREST_TYPES.register(name, pointOfInterestType);
     }
 

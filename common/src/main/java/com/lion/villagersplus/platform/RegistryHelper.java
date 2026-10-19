@@ -29,7 +29,12 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static void registerItemGroup(ResourceKey<CreativeModeTab> registryKey, String name, String literalName, Supplier<Item> item) {
+    public static void registerItemGroup(
+            ResourceKey<CreativeModeTab> registryKey,
+            String name,
+            String literalName,
+            Supplier<Item> item
+    ) {
         throw new AssertionError();
     }
 
@@ -54,17 +59,26 @@ public class RegistryHelper {
     }
 
     @ExpectPlatform
-    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(Supplier<BlockEntityType<T>> type, BlockEntityRendererProvider<T, S> renderProvider) {
+    public static <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
+            Supplier<BlockEntityType<T>> type,
+            BlockEntityRendererProvider<T, S> renderProvider
+    ) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(String name, Supplier<T> pointOfInterestType) {
+    public static <T extends PoiType> Supplier<T> registerPointOfInterestType(
+            String name,
+            Supplier<T> pointOfInterestType
+    ) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(String name, Supplier<T> villagerProfession) {
+    public static <T extends VillagerProfession> Supplier<T> registerVillagerProfession(
+            String name,
+            Supplier<T> villagerProfession
+    ) {
         throw new AssertionError();
     }
 
