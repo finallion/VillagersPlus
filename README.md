@@ -1,9 +1,9 @@
 # VillagersPlus - a villager extension
 
 ## Introduction
-This mod adds new villager types, trades and unique and useful workstations.
+This mod adds new villager types, trades and workstations.
 
-For Minecraft 1.21.8 on Fabric and NeoForge. Fabric API is required on Fabric.
+For Minecraft 1.20.1 (Fabric, Forge), 1.21.1 and 1.21.8 (Fabric, NeoForge). Fabric API is required on Fabric.
 
 Currently added professions:
 - Horticulturist

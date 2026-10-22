@@ -10,7 +10,7 @@ on: [pull_request, push]
 env:
   # Branch of the library that matches this branch. Bump this together with minecraft_version when
   # opening a new Minecraft branch, otherwise the build silently compiles against the old library.
-  VTP_REF: '1.21.1'
+  VTP_REF: '1.21.8'
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
       - name: checkout VillagerTradingPlus
         uses: actions/checkout@v4
         with:
-          repository: finallion/VillagerTradingPlus
+          repository: finallion/VillagersTradingPlus
           ref: ${{ env.VTP_REF }}
           path: villagertradingplus
 

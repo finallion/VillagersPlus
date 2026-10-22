@@ -25,7 +25,7 @@ permissions:
 
 env:
   # Keep in sync with build.yml.
-  VTP_REF: '1.21.1'
+  VTP_REF: '1.21.8'
 
 jobs:
   release:
@@ -37,7 +37,7 @@ jobs:
       - name: checkout VillagerTradingPlus
         uses: actions/checkout@v4
         with:
-          repository: finallion/VillagerTradingPlus
+          repository: finallion/VillagersTradingPlus
           ref: ${{ env.VTP_REF }}
           path: villagertradingplus
 
