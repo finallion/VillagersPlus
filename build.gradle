@@ -130,7 +130,7 @@ publishMods {
 		displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version} (Fabric)"
 		modLoaders.add("fabric")
 		requires { slug = "fabric-api" }
-		requires { slug = "villagertradingplus" }
+		requires { slug = "villagerstradingplus" }
 	}
 
 	modrinth("modrinthNeoForge") {
@@ -139,13 +139,13 @@ publishMods {
 		version = "${project.version}-neoforge"
 		displayName = "VillagersPlus ${rootProject.mod_version} for MC ${rootProject.minecraft_version} (NeoForge)"
 		modLoaders.add("neoforge")
-		requires { slug = "villagertradingplus" }
+		requires { slug = "villagerstradingplus" }
 	}
 
 	// A single GitHub release carrying both jars.
 	github {
 		accessToken = providers.environmentVariable("GITHUB_TOKEN").getOrElse("")
-		repository = "finallion/VillagersPlus_-FABRIC-"
+		repository = "finallion/VillagersPlus"
 		commitish = providers.environmentVariable("GITHUB_SHA").getOrElse(rootProject.minecraft_version)
 		file project(":fabric")
 		additionalFiles.from(project(":neoforge").tasks.named("remapJar").flatMap { it.archiveFile })

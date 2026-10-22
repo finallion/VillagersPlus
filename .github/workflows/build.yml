@@ -27,7 +27,7 @@ jobs:
       - name: checkout VillagerTradingPlus
         uses: actions/checkout@v4
         with:
-          repository: finallion/VillagerTradingPlus
+          repository: finallion/VillagersTradingPlus
           ref: ${{ env.VTP_REF }}
           path: villagertradingplus
 

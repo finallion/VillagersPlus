@@ -8,7 +8,7 @@ license = "GPL-3.0-only"
 modId = "villagersplus"
 version = "${version}"
 displayName = "VillagersPlus"
-authors = "Lion"
+authors = "Finallion"
 description = '''
 New villagers, new trades and new beautiful and useful workstations.
 '''
@@ -24,14 +24,14 @@ config = "villagersplus-common.mixins.json"
 modId = "neoforge"
 # "mandatory" was replaced by "type" in the 1.20.5 loader generation.
 type = "required"
-versionRange = "[21.1.0,21.2.0)"
+versionRange = "[21.0.167,21.2.0)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagersplus]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1,1.21.2)"
+versionRange = "[1.21,1.21.2)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -40,6 +40,6 @@ side = "BOTH"
 [[dependencies.villagersplus]]
 modId = "villagertradingplus"
 type = "required"
-versionRange = "[1.0.0,)"
+versionRange = "[1.1.0,2)"
 ordering = "AFTER"
 side = "BOTH"
