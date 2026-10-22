@@ -1,7 +1,7 @@
 modLoader = "javafml"
 # NeoForge javafml declares version 3, so the range [3,) accepts it.
 loaderVersion = "[3,)"
-license = "CC0-1.0"
+license = "GPL-3.0-only"
 
 [[mods]]
 modId = "villagersplus"
