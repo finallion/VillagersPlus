@@ -1,12 +1,12 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[46,)"
 license = "GPL-3.0-only"
 
 [[mods]]
 modId = "villagersplus"
 version = "${version}"
 displayName = "VillagersPlus"
-authors = "Lion"
+authors = "Finallion"
 description = '''
 New villagers, new trades and new beautiful and useful workstations.
 '''
@@ -15,20 +15,20 @@ logoFile = "villagersplus_logo.png"
 [[dependencies.villagersplus]]
 modId = "forge"
 mandatory = true
-versionRange = "[47.0.0,)"
+versionRange = "[46.0.14,48)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagersplus]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.1,1.20.2)"
+versionRange = "[1.20,1.20.2)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.villagersplus]]
 modId = "villagertradingplus"
 mandatory = true
-versionRange = "[1.0.0,)"
+versionRange = "[1.1.0,2)"
 ordering = "AFTER"
 side = "BOTH"

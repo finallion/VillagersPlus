@@ -10,3 +10,7 @@ architectury {
 loom {
 	accessWidenerPath = file("src/main/resources/villagersplus.accesswidener")
 }
+
+processResources {
+	from(rootProject.file("LICENSE"))
+}
