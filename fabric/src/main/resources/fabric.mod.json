@@ -35,5 +35,13 @@
     "villagertradingplus": ">=1.1.0",
     "minecraft": ">=26.1.2 <26.2",
     "java": ">=25"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.donate": "https://www.patreon.com/cw/LithiumPlus"
+      }
+    }
   }
 }
