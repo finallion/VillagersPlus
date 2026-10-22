@@ -2,7 +2,7 @@ modLoader = "javafml"
 # NeoForge's javafml, not Forge's — it declares [3,] for itself, so [3,) accepts it and anything
 # newer. The old Forge numbering ([37,)) matches nothing here and refuses to load.
 loaderVersion = "[3,)"
-license = "CC0-1.0"
+license = "GPL-3.0-only"
 
 [[mods]]
 modId = "villagersplus"
