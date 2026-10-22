@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-license = "CC0-1.0"
+license = "GPL-3.0-only"
 
 [[mods]]
 modId = "villagersplus"
