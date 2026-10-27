@@ -2,14 +2,15 @@
   "schemaVersion": 1,
   "id": "villagersplus",
   "version": "${version}",
-  "name": "Villagers Plus",
-  "description": "New villagers, new trades and new beautiful and useful workstations.",
+  "name": "VillagersPlus",
+  "description": "This mod adds new villager types, trades and workstations.",
   "authors": [
-    "Finallion"
+    "LithiumPlus"
   ],
   "contact": {
-    "homepage": "https://github.com/finallion/VillagersPlus_-FABRIC-",
-    "sources": "https://github.com/finallion/VillagersPlus_-FABRIC-"
+    "homepage": "https://modrinth.com/mod/villagersplus",
+    "sources": "https://github.com/finallion/VillagersPlus",
+    "issues": "https://github.com/finallion/VillagersPlus/issues"
   },
 
   "license": "GPL-3.0-only",
@@ -31,8 +32,8 @@
 
   "depends": {
     "fabricloader": ">=0.16.0",
-    "fabric-api": "*",
-    "villagertradingplus": ">=1.1.0",
+    "fabric-api": ">=0.161.0",
+    "villagertradingplus": ">=1.1.0 <2",
     "minecraft": ">=26.2 <26.3",
     "java": ">=25"
   },

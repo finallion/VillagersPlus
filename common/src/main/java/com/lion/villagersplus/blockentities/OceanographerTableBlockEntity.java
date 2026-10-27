@@ -13,6 +13,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -63,6 +64,8 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
     private float coralScale = 1.0F;
     private boolean stationary = false;
     private static final int[] SLOTS = new int[]{0, 1, 2, 3, 4};
+    /// Client-only entities throw on getId(). Display fish use negative IDs.
+    private static final AtomicInteger DISPLAY_FISH_IDS = new AtomicInteger();
 
     private Entity displayFish;
     private Item displayFishItem;
@@ -693,6 +696,10 @@ public class OceanographerTableBlockEntity extends BlockEntity implements Contai
 
         if (fish == null) {
             return null;
+        }
+
+        if (world.isClientSide()) {
+            fish.setId(DISPLAY_FISH_IDS.decrementAndGet());
         }
 
         CustomData bucketData = stack.get(DataComponents.BUCKET_ENTITY_DATA);
