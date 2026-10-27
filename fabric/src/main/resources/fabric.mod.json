@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "villagersplus",
   "version": "${version}",
-  "name": "Villagers Plus",
-  "description": "New villagers, new trades and new beautiful and useful workstations.",
+  "name": "VillagersPlus",
+  "description": "This mod adds new villager types, trades and workstations.",
   "authors": [
-    "Finallion"
+    "LithiumPlus"
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/villagersplus",

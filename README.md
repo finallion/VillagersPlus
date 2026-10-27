@@ -1,7 +1,7 @@
 # VillagersPlus - a villager extension
 
 ## Introduction
-This mod adds new villager types, trades and unique and useful workstations.
+This mod adds new villager types, trades and workstations.
 
 For Minecraft 1.21.1 on Fabric and NeoForge. Fabric API is required on Fabric.
 
@@ -14,7 +14,7 @@ Currently added professions:
 
 Currently added workstations:
 - **Flower Tub** (Horticulturist): Holds up to 4 small plants or 1 tall plant, including flowers, corals, grass ...
-- **Aquarium** (Oceanographer): Holds up to 4 seaplants and 1 bucketable entity. Feed it Fish Food to enlarge the fish, Diet Food to shrink it again, and Calming Food to settle it down. Place more aquariums next to it, to create an even larger one!
+- **Aquarium** (Oceanographer): Holds up to 4 seaplants and 1 bucketable entity. Feed it Fish Food to enlarge the fish, Diet Food to shrink it again, and Calming Food to settle it down. Place more aquariums next to it to build a larger one.
 - **Alchemist Table**: Burns gunpowder as fuel and converts one potion into three random potions, each of them either a normal or a splash potion. By default 2 of 3 brews explode instead. `explosion_chance` N makes 1 in N brews succeed. The explosion destroys the bottles and the fuel, but leaves the terrain intact.
 - **Enchanted Basin** (Occultist): Stores experience. Right-click to take experience, shift right-click to store experience.
 - **Ore Grinder** (Miner): A furnace-style ore doubler. Four slots: input, fuel, output and a pickaxe.
@@ -35,7 +35,7 @@ The miner's house generates in plains, savanna and taiga villages.
 
 | Mod | Required | Notes |
 | --- | --- | --- |
-| **VillagersTradingPlus** | Yes, on both loaders | The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
+| **VillagersTradingPlus** | Yes, on both loaders | Version 1.1.0 or newer. The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
 | Fabric API | Yes, on Fabric | Not needed on NeoForge. |
 
 
