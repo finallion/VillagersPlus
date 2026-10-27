@@ -204,6 +204,19 @@
         },
         "max_uses": 12,
         "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "breeze_rod",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 5
+        },
+        "max_uses": 12,
+        "villager_experience": 4
       }
     ],
     "expert": [

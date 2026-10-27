@@ -219,6 +219,45 @@
         },
         "max_uses": 4,
         "villager_experience": 10
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "tuff_bricks",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "polished_tuff",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "chiseled_tuff",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
       }
     ],
     "expert": [

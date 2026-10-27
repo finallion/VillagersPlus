@@ -8,9 +8,11 @@ license = "GPL-3.0-only"
 modId = "villagersplus"
 version = "${version}"
 displayName = "VillagersPlus"
-authors = "Finallion"
+authors = "LithiumPlus"
+displayURL = "https://modrinth.com/mod/villagersplus"
+issueTrackerURL = "https://github.com/finallion/VillagersPlus/issues"
 description = '''
-New villagers, new trades and new beautiful and useful workstations.
+This mod adds new villager types, trades and workstations.
 
 Support: https://www.patreon.com/cw/LithiumPlus
 '''
