@@ -819,6 +819,19 @@
         },
         "max_uses": 12,
         "villager_experience": 2
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "golden_dandelion",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 8
+        },
+        "max_uses": 12,
+        "villager_experience": 5
       }
     ]
   }

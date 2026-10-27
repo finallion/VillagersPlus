@@ -7,9 +7,11 @@ license = "GPL-3.0-only"
 modId = "villagersplus"
 version = "${version}"
 displayName = "VillagersPlus"
-authors = "Lion"
+authors = "LithiumPlus"
+displayURL = "https://modrinth.com/mod/villagersplus"
+issueTrackerURL = "https://github.com/finallion/VillagersPlus/issues"
 description = '''
-New villagers, new trades and new beautiful and useful workstations.
+This mod adds new villager types, trades and workstations.
 
 Support: https://www.patreon.com/cw/LithiumPlus
 '''
@@ -35,10 +37,10 @@ versionRange = "[26.1.2,26.2)"
 ordering = "NONE"
 side = "BOTH"
 
-# Load order only. The trade code comes from VillagerTradingPlus.
+# Load order only. The trade code comes from VillagersTradingPlus.
 [[dependencies.villagersplus]]
 modId = "villagertradingplus"
 type = "required"
-versionRange = "[1.1.0,)"
+versionRange = "[1.1.0,2)"
 ordering = "AFTER"
 side = "BOTH"
