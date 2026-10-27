@@ -35,7 +35,7 @@ The miner's house generates in plains, savanna and taiga villages.
 
 | Mod | Required | Notes |
 | --- | --- | --- |
-| **VillagersTradingPlus** | Yes, on both loaders | The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
+| **VillagersTradingPlus** | Yes, on both loaders | Version 1.1.0 or newer. The trade engine. VillagersPlus ships trade JSON for it and will not load without it. |
 | Fabric API | Yes, on Fabric | Not needed on Forge. |
 
 
