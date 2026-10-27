@@ -66,6 +66,19 @@
         },
         "max_uses": 16,
         "villager_experience": 1
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "copper_torch",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 16,
+        "villager_experience": 1
       }
     ],
     "apprentice": [
@@ -129,6 +142,32 @@
         "type": "villagertradingplus:sell_item",
         "sell": {
           "item": "iron_bars",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "copper_lantern",
+          "count": 1
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 3
+        },
+        "max_uses": 12,
+        "villager_experience": 3
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "copper_bars",
           "count": 8
         },
         "priceIn": {
@@ -219,6 +258,71 @@
         },
         "max_uses": 4,
         "villager_experience": 10
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "tuff_bricks",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "polished_tuff",
+          "count": 8
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "chiseled_tuff",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:sell_item",
+        "sell": {
+          "item": "copper_chain",
+          "count": 4
+        },
+        "priceIn": {
+          "item": "emerald",
+          "count": 2
+        },
+        "max_uses": 12,
+        "villager_experience": 5
+      },
+      {
+        "type": "villagertradingplus:buy_item",
+        "buy": {
+          "item": "copper_nugget",
+          "count": 16
+        },
+        "reward": {
+          "item": "emerald",
+          "count": 1
+        },
+        "max_uses": 12,
+        "villager_experience": 5
       }
     ],
     "expert": [
